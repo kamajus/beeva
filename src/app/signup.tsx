@@ -7,12 +7,16 @@ import { TextInput, Button } from 'react-native-paper';
 import * as yup from 'yup';
 
 interface FormData {
+  firstName?: string;
+  lastName?: string;
   email?: string;
   password?: string;
 }
 
 const schema = yup.object({
   email: yup.string().required().email(),
+  firstName: yup.string().required(),
+  lastName: yup.string().required(),
   password: yup.string().required(),
 });
 
@@ -23,6 +27,12 @@ export default function SignIn() {
     reset,
     formState: { errors },
   } = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+    },
     resolver: yupResolver(schema),
   });
 
@@ -34,15 +44,65 @@ export default function SignIn() {
     reset({
       email: '',
       password: '',
+      firstName: '',
+      lastName: '',
     });
   }
 
   return (
     <ScrollView className="bg-white">
       <View className="px-7 mt-[15%] bg-white">
-        <Text className="text-xl font-semibold mb-5">Iniciar sessão</Text>
+        <Text className="text-xl font-semibold mb-5">Registrar-se</Text>
 
         <View className="flex flex-col gap-y-3">
+          <View>
+            <Controller
+              control={control}
+              name="firstName"
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur } }) => (
+                <TextInput
+                  mode="outlined"
+                  label="Primeiro nome"
+                  style={{
+                    fontSize: 15,
+                  }}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  outlineColor="transparent"
+                  activeOutlineColor="#8b6cef"
+                  error={errors.firstName?.message !== undefined}
+                />
+              )}
+            />
+          </View>
+
+          <View>
+            <Controller
+              control={control}
+              name="lastName"
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, onBlur } }) => (
+                <TextInput
+                  mode="outlined"
+                  label="Último nome"
+                  style={{
+                    fontSize: 15,
+                  }}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  outlineColor="transparent"
+                  activeOutlineColor="#8b6cef"
+                  error={errors.lastName?.message !== undefined}
+                />
+              )}
+            />
+          </View>
+
           <View>
             <Controller
               control={control}
@@ -50,16 +110,15 @@ export default function SignIn() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field: { onChange, onBlur } }) => (
                 <TextInput
                   mode="outlined"
                   label="Email"
                   style={{
                     fontSize: 15,
                   }}
-                  onChangeText={onChange}
                   onBlur={onBlur}
-                  value={value}
+                  onChangeText={onChange}
                   inputMode="email"
                   outlineColor="transparent"
                   activeOutlineColor="#8b6cef"
@@ -76,7 +135,7 @@ export default function SignIn() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field: { onChange, onBlur } }) => (
                 <TextInput
                   mode="outlined"
                   label="Senha"
@@ -86,9 +145,8 @@ export default function SignIn() {
                   outlineColor="transparent"
                   activeOutlineColor="#8b6cef"
                   secureTextEntry={!passwordVisible}
-                  onChangeText={onChange}
                   onBlur={onBlur}
-                  value={value}
+                  onChangeText={onChange}
                   error={errors.password?.message !== undefined}
                   right={
                     <TextInput.Icon
@@ -102,7 +160,12 @@ export default function SignIn() {
             />
           </View>
 
-          <Text className="text-[#8b6cef] font-medium">Algo deu errado?</Text>
+          <Text className="w-full font-normal text-gray-500">
+            Ao se inscrever, você está concordando com os nossos{' '}
+            <Text className="text-gray-700 font-medium">
+              Termos, Condições e Políticas de Privacidade.
+            </Text>
+          </Text>
 
           <Button
             style={{
@@ -116,15 +179,15 @@ export default function SignIn() {
             textColor="white"
             uppercase={false}
             onPress={handleSubmit(onSubmit)}>
-            Entrar
+            Continuar
           </Button>
-        </View>
 
-        <View className="flex justify-center items-center flex-row gap-2 w-full mt-5">
-          <Text className="font-medium text-gray-700">Ainda não tem uma conta?</Text>
-          <Link className="text-[#8b6cef] font-medium" href="/signup">
-            Crie uma
-          </Link>
+          <View className="flex justify-center items-center flex-row gap-2 w-full mt-5">
+            <Text className="font-medium text-gray-700">Já tem uma conta?</Text>
+            <Link className="text-[#8b6cef] font-medium" href="/signin">
+              Entrar
+            </Link>
+          </View>
         </View>
       </View>
 
