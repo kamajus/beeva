@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { ScrollView, Text, View, StatusBar } from 'react-native';
@@ -17,6 +17,7 @@ const schema = yup.object({
 });
 
 export default function SignIn() {
+  const router = useRouter();
   const {
     handleSubmit,
     control,
@@ -35,6 +36,8 @@ export default function SignIn() {
       email: '',
       password: '',
     });
+
+    router.replace('/house');
   }
 
   return (
