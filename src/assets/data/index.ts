@@ -1,15 +1,6 @@
-interface HouseType {
-  id: number;
-  image: any;
-  location: string;
-  status: 'sell' | 'rent';
-  price: number;
-  description?: string;
-}
+import { ResidenceProps } from '../@types';
 
-type HousesType = HouseType[];
-
-export const HOMEDATA: HousesType = [
+export const RESIDENCE_DATA: ResidenceProps[] = [
   {
     id: 1,
     image: require('../images/home.jpg'),

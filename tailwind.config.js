@@ -7,6 +7,8 @@ module.exports = {
       medium: 'poppins-medium',
       semibold: 'poppins-semibold',
       bold: 'poppins-bold',
+      'inter-regular': 'inter-regular',
+      'inter-medium': 'inter-medium',
     },
     fontWeight: {},
   },

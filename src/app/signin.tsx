@@ -37,7 +37,7 @@ export default function SignIn() {
       password: '',
     });
 
-    router.replace('/house');
+    router.replace('/(root)/home');
   }
 
   return (

@@ -6,22 +6,27 @@ export const categories = [
   {
     name: 'Todos',
     value: 'all',
+    emoji: '🌐',
   },
   {
     name: 'Apartamentos',
     value: 'apartments',
+    emoji: '🏢',
   },
   {
     name: 'Vivendas',
     value: 'houses',
+    emoji: '🏡',
   },
   {
     name: 'Terrenos',
     value: 'lands',
+    emoji: '🚧',
   },
   {
     name: 'Lojas',
     value: 'shops',
+    emoji: '🏪',
   },
 ];
 
@@ -33,7 +38,7 @@ export default function Filter() {
   }
 
   return (
-    <ScrollView className="mt-6 mb-2">
+    <ScrollView className="mb-4">
       <View>
         <FlatList
           data={categories}
@@ -47,11 +52,8 @@ export default function Filter() {
                 'mr-0': categories[categories.length - 1] === item,
               })}
               onPress={() => onButtonActive(item.name)}>
-              <Text
-                className={clsx('font-medium text-gray-500 text-sm', {
-                  'text-black': buttonActive === item.name,
-                })}>
-                {item.name}
+              <Text className="font-medium text-black text-sm">
+                {item.emoji} {item.name}
               </Text>
             </Pressable>
           )}

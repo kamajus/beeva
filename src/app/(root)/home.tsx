@@ -1,8 +1,9 @@
+import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { View, ScrollView, StatusBar, FlatList, Text } from 'react-native';
+import { View, ScrollView, FlatList, Text } from 'react-native';
 import { IconButton, Searchbar } from 'react-native-paper';
 
-import { HOMEDATA } from '../../assets/data';
+import { RESIDENCE_DATA } from '../../assets/data';
 import Filter from '../../components/Filter';
 import HomeCard from '../../components/HomeCard';
 
@@ -32,13 +33,11 @@ export default function House() {
           value={searchQuery}
         />
 
-        <Filter />
-
         <HomeCard.Root title="Em alta" icon="fire" iconColor="#E25822">
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={HOMEDATA}
+            data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             renderItem={({ item }) => (
               <HomeCard.Big
@@ -52,11 +51,12 @@ export default function House() {
           />
         </HomeCard.Root>
 
-        <HomeCard.Root title="O seu histórico">
+        <HomeCard.Root title="Recomendações">
+          <Filter />
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={HOMEDATA}
+            data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             renderItem={({ item }) => (
               <HomeCard.Small
@@ -74,7 +74,7 @@ export default function House() {
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={HOMEDATA}
+            data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             renderItem={({ item }) => (
               <HomeCard.Small
@@ -92,7 +92,7 @@ export default function House() {
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={HOMEDATA}
+            data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             renderItem={({ item }) => (
               <HomeCard.Small
@@ -110,7 +110,7 @@ export default function House() {
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={HOMEDATA}
+            data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             renderItem={({ item }) => (
               <HomeCard.Small
@@ -124,7 +124,7 @@ export default function House() {
           />
         </HomeCard.Root>
       </View>
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+      <StatusBar style="light" backgroundColor="black" />
     </ScrollView>
   );
 }

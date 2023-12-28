@@ -1,7 +1,7 @@
 import { Stack } from 'expo-router';
 import { PaperProvider, MD2LightTheme, configureFonts } from 'react-native-paper';
 
-export default function StackLayout() {
+export default function () {
   const fontConfig = {
     android: {
       regular: {
@@ -34,8 +34,14 @@ export default function StackLayout() {
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name="index" options={{ headerTitle: 'index', headerShown: false }} />
-        <Stack.Screen name="signin" options={{ headerTitle: 'signin', headerShown: false }} />
+        <Stack.Screen name="index" />
+        <Stack.Screen
+          name="residence/[id]"
+          options={{
+            headerShown: false,
+            title: 'Propriedade',
+          }}
+        />
       </Stack>
     </PaperProvider>
   );

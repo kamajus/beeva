@@ -7,14 +7,12 @@ export default function HomeLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: 77,
+          height: 70,
           paddingBottom: 10,
-          borderTopRightRadius: 20,
-          borderTopLeftRadius: 20,
         },
       }}>
       <Tabs.Screen
-        name="house"
+        name="home"
         options={{
           title: 'Início',
           tabBarIcon: ({ color, focused, size }) => <Icon name="home" size={23} color="#8b6cef" />,
