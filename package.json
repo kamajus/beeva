@@ -13,6 +13,7 @@
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo-google-fonts/poppins": "^0.2.3",
+    "@expo/react-native-action-sheet": "^4.0.1",
     "@hookform/resolvers": "^3.3.2",
     "clsx": "^2.0.0",
     "expo": "~49.0.15",

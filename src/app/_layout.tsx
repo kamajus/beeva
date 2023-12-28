@@ -1,6 +1,8 @@
 import { Stack } from 'expo-router';
 import { PaperProvider, MD2LightTheme, configureFonts } from 'react-native-paper';
 
+import Header from '../components/Header';
+
 export default function () {
   const fontConfig = {
     android: {
@@ -40,6 +42,16 @@ export default function () {
           options={{
             headerShown: false,
             title: 'Propriedade',
+          }}
+        />
+        <Stack.Screen
+          name="notification"
+          options={{
+            headerShown: true,
+            title: 'Notificações',
+            header: ({ navigation }) => (
+              <Header.NormalHeader title="Notificações" goBack={navigation.goBack} />
+            ),
           }}
         />
       </Stack>

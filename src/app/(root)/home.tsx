@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { View, ScrollView, FlatList, Text } from 'react-native';
@@ -9,13 +10,14 @@ import HomeCard from '../../components/HomeCard';
 
 export default function House() {
   const [searchQuery, setSearchQuery] = useState('');
-
   return (
     <ScrollView className="bg-white">
       <View className="px-4 mt-[15%] bg-white">
         <View className="flex flex-row justify-between items-center mb-4">
           <Text className="font-bold text-2xl">Encontre uma acomodação perfeita</Text>
-          <IconButton icon="bell" iconColor="#8b6cef" />
+          <Link href="/notification">
+            <IconButton icon="bell" iconColor="#8b6cef" />
+          </Link>
         </View>
 
         <Searchbar
