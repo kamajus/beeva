@@ -10,16 +10,29 @@ export default function HomeLayout() {
           height: 70,
           paddingBottom: 10,
         },
+        tabBarActiveTintColor: '#8b6cef',
+        tabBarInactiveTintColor: '#212121',
+        tabBarHideOnKeyboard: true,
+        tabBarLabelStyle: {
+          fontFamily: 'poppins-medium',
+        },
+        tabBarIconStyle: {
+          width: 23,
+          height: 23,
+        },
       }}>
       <Tabs.Screen
         name="home"
         options={{
           title: 'Início',
-          tabBarIcon: ({ color, focused, size }) => <Icon name="home" size={23} color="#8b6cef" />,
-          tabBarLabelStyle: {
-            color: '#8b6cef',
-            fontFamily: 'poppins-regular',
-          },
+          tabBarIcon: ({ color, size }) => <Icon name="home" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="post"
+        options={{
+          title: 'Criar',
+          tabBarIcon: ({ color, size }) => <Icon name="add-circle" size={size} color={color} />,
         }}
       />
     </Tabs>
