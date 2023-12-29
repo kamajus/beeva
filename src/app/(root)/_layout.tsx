@@ -29,10 +29,13 @@ export default function HomeLayout() {
         }}
       />
       <Tabs.Screen
-        name="post"
+        name="create"
         options={{
           title: 'Criar',
           tabBarIcon: ({ color, size }) => <Icon name="add-circle" size={size} color={color} />,
+          tabBarStyle: {
+            display: 'none',
+          },
         }}
       />
     </Tabs>

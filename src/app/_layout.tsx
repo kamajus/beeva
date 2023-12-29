@@ -50,7 +50,7 @@ export default function () {
             headerShown: true,
             title: 'Notificações',
             header: ({ navigation }) => (
-              <Header.NormalHeader title="Notificações" goBack={navigation.goBack} />
+              <Header.Normal title="Notificações" goBack={navigation.goBack} />
             ),
           }}
         />

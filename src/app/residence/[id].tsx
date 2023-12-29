@@ -127,7 +127,7 @@ export default function ResidenceDetail() {
         </HomeCard.Root>
       </View>
 
-      <Header.CarouselHeader goBack={router.back} />
+      <Header.Carousel goBack={router.back} />
       <StatusBar style="light" backgroundColor="black" />
     </ScrollView>
   );

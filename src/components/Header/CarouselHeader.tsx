@@ -22,7 +22,7 @@ export default function CarouselHeader({ goBack }: CarouselHeaderProps) {
         <IconButton
           icon={saved ? 'heart' : 'cards-heart-outline'}
           mode="outlined"
-          iconColor={saved ? '#8b6cef' : '#000'}
+          iconColor={saved ? '#fd6963' : '#000'}
           containerColor={saved ? '#fff' : 'transparent'}
           onPress={() => setSaved(!saved)}
         />
