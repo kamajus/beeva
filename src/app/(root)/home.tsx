@@ -1,7 +1,7 @@
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { View, ScrollView, FlatList, Text } from 'react-native';
+import { View, ScrollView, FlatList, Text, Dimensions } from 'react-native';
 import { IconButton, Searchbar } from 'react-native-paper';
 
 import { RESIDENCE_DATA } from '../../assets/data';
@@ -10,6 +10,8 @@ import HomeCard from '../../components/HomeCard';
 
 export default function House() {
   const [searchQuery, setSearchQuery] = useState('');
+  const { width } = Dimensions.get('window');
+
   return (
     <ScrollView className="bg-white">
       <View className="px-4 mt-[15%] bg-white">
@@ -20,20 +22,26 @@ export default function House() {
           </Link>
         </View>
 
-        <Searchbar
-          style={{
-            shadowColor: 'transparent',
-            backgroundColor: '#f5f5f5',
-          }}
-          inputStyle={{
-            height: 58,
-            fontSize: 15,
-            fontFamily: 'poppins-medium',
-          }}
-          placeholder="Procurar por ..."
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-        />
+        <Link href="/search">
+          <Searchbar
+            style={{
+              shadowColor: 'transparent',
+              backgroundColor: '#f5f5f5',
+              flex: 1,
+              width: width - 32, // Total screen width minus horizontal margin
+            }}
+            inputStyle={{
+              height: 58,
+              fontSize: 15,
+              alignSelf: 'stretch',
+              fontFamily: 'poppins-medium',
+            }}
+            placeholder="Procurar por ..."
+            onChangeText={setSearchQuery}
+            value={searchQuery}
+            editable={false}
+          />
+        </Link>
 
         <HomeCard.Root title="Em alta" icon="fire" iconColor="#E25822">
           <FlatList

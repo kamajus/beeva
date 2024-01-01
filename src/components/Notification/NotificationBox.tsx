@@ -1,5 +1,5 @@
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 interface NotificationBoxProps {
@@ -46,7 +46,7 @@ export default function NotificationBox() {
 
 function Box({ onLongPress }: NotificationBoxProps) {
   return (
-    <TouchableOpacity
+    <Pressable
       onLongPress={() => onLongPress()}
       className="px-2 py-2 flex items-center flex-row bg-[#fff] border-t border-t-slate-200">
       <Icon source="camera" color="#8b6cef" size={30} />
@@ -57,6 +57,6 @@ function Box({ onLongPress }: NotificationBoxProps) {
         </Text>
         <Text className="font-medium text-xs text-gray-500">Há 3 minutos</Text>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }

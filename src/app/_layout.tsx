@@ -48,10 +48,22 @@ export default function () {
           name="notification"
           options={{
             headerShown: true,
-            title: 'Notificações',
             header: ({ navigation }) => (
               <Header.Normal title="Notificações" goBack={navigation.goBack} />
             ),
+          }}
+        />
+        <Stack.Screen
+          name="search"
+          options={{
+            headerShown: true,
+            header: ({ navigation }) => <Header.Search goBack={navigation.goBack} />,
+          }}
+        />
+        <Stack.Screen
+          name="(settings)"
+          options={{
+            headerShown: false,
           }}
         />
       </Stack>
