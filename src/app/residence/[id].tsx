@@ -42,7 +42,7 @@ export default function ResidenceDetail() {
 
   return (
     <ScrollView className="bg-white relative w-full">
-      <Carousel />
+      <Carousel autoplay loop style={{ height: 460 }} />
 
       <View className="px-4 bg-white flex mt-7">
         <View className="flex flex-row items-center justify-between">

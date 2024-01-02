@@ -9,7 +9,6 @@ import Filter from '../../components/Filter';
 import HomeCard from '../../components/HomeCard';
 
 export default function House() {
-  const [searchQuery, setSearchQuery] = useState('');
   const { width } = Dimensions.get('window');
 
   return (
@@ -37,8 +36,7 @@ export default function House() {
               fontFamily: 'poppins-medium',
             }}
             placeholder="Procurar por ..."
-            onChangeText={setSearchQuery}
-            value={searchQuery}
+            value=""
             editable={false}
           />
         </Link>

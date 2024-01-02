@@ -6,6 +6,8 @@ import { ScrollView, Text, View, StatusBar } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import * as yup from 'yup';
 
+import Constants from '../constants';
+
 interface FormData {
   email?: string;
   password?: string;
@@ -65,7 +67,7 @@ export default function SignIn() {
                   value={value}
                   inputMode="email"
                   outlineColor="transparent"
-                  activeOutlineColor="#8b6cef"
+                  activeOutlineColor={Constants.colors.primary}
                   error={errors.email?.message !== undefined}
                 />
               )}
@@ -87,7 +89,7 @@ export default function SignIn() {
                     fontSize: 15,
                   }}
                   outlineColor="transparent"
-                  activeOutlineColor="#8b6cef"
+                  activeOutlineColor={Constants.colors.primary}
                   secureTextEntry={!passwordVisible}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -115,7 +117,7 @@ export default function SignIn() {
               marginTop: 10,
             }}
             mode="contained"
-            buttonColor="#8b6cef"
+            buttonColor={Constants.colors.primary}
             textColor="white"
             uppercase={false}
             onPress={handleSubmit(onSubmit)}>

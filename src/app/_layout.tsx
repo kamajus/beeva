@@ -56,8 +56,7 @@ export default function () {
         <Stack.Screen
           name="search"
           options={{
-            headerShown: true,
-            header: ({ navigation }) => <Header.Search goBack={navigation.goBack} />,
+            headerShown: false,
           }}
         />
         <Stack.Screen

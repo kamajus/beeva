@@ -6,6 +6,8 @@ import { ScrollView, Text, View, StatusBar } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import * as yup from 'yup';
 
+import Constants from '../constants';
+
 interface FormData {
   firstName?: string;
   lastName?: string;
@@ -72,7 +74,7 @@ export default function SignIn() {
                   onBlur={onBlur}
                   onChangeText={onChange}
                   outlineColor="transparent"
-                  activeOutlineColor="#8b6cef"
+                  activeOutlineColor={Constants.colors.primary}
                   error={errors.firstName?.message !== undefined}
                 />
               )}
@@ -96,7 +98,7 @@ export default function SignIn() {
                   onBlur={onBlur}
                   onChangeText={onChange}
                   outlineColor="transparent"
-                  activeOutlineColor="#8b6cef"
+                  activeOutlineColor={Constants.colors.primary}
                   error={errors.lastName?.message !== undefined}
                 />
               )}
@@ -121,7 +123,7 @@ export default function SignIn() {
                   onChangeText={onChange}
                   inputMode="email"
                   outlineColor="transparent"
-                  activeOutlineColor="#8b6cef"
+                  activeOutlineColor={Constants.colors.primary}
                   error={errors.email?.message !== undefined}
                 />
               )}
@@ -143,7 +145,7 @@ export default function SignIn() {
                     fontSize: 15,
                   }}
                   outlineColor="transparent"
-                  activeOutlineColor="#8b6cef"
+                  activeOutlineColor={Constants.colors.primary}
                   secureTextEntry={!passwordVisible}
                   onBlur={onBlur}
                   onChangeText={onChange}
@@ -175,7 +177,7 @@ export default function SignIn() {
               marginTop: 10,
             }}
             mode="contained"
-            buttonColor="#8b6cef"
+            buttonColor={Constants.colors.primary}
             textColor="white"
             uppercase={false}
             onPress={handleSubmit(onSubmit)}>

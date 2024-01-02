@@ -24,8 +24,8 @@ export const categories = [
     emoji: '🚧',
   },
   {
-    name: 'Lojas',
-    value: 'shops',
+    name: 'Outros',
+    value: 'others',
     emoji: '🏪',
   },
 ];
@@ -38,7 +38,7 @@ export default function Filter() {
   }
 
   return (
-    <ScrollView className="mb-4">
+    <ScrollView>
       <View>
         <FlatList
           data={categories}
