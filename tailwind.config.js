@@ -3,10 +3,10 @@ module.exports = {
   content: ['./App.{js,jsx,ts,tsx}', './src/**/*.{js,jsx,ts,tsx}'],
   theme: {
     fontFamily: {
-      normal: 'poppins-regular',
-      medium: 'poppins-medium',
-      semibold: 'poppins-semibold',
-      bold: 'poppins-bold',
+      'poppins-regular': 'poppins-regular',
+      'poppins-medium': 'poppins-medium',
+      'poppins-semibold': 'poppins-semibold',
+      'poppins-bold': 'poppins-bold',
       'inter-regular': 'inter-regular',
       'inter-medium': 'inter-medium',
     },

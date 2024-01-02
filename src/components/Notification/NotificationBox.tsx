@@ -52,10 +52,10 @@ function Box({ onLongPress }: NotificationBoxProps) {
       <Icon source="camera" color="#8b6cef" size={30} />
 
       <View className="p-4 pr-8">
-        <Text className="font-medium text-sm leading-relaxed text-black">
+        <Text className="font-poppins-medium text-sm leading-relaxed text-black">
           Você recebeu um convite para fazer parte da empresa Rocketseat
         </Text>
-        <Text className="font-medium text-xs text-gray-500">Há 3 minutos</Text>
+        <Text className="font-poppins-medium text-xs text-gray-500">Há 3 minutos</Text>
       </View>
     </Pressable>
   );

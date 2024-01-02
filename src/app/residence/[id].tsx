@@ -47,8 +47,8 @@ export default function ResidenceDetail() {
           <View className="flex gap-x-3 flex-row">
             <Avatar.Image size={50} source={require('../../assets/images/avatar.png')} />
             <View className="">
-              <Text className="font-medium text-base">Roberto Carlos</Text>
-              <Text className="font-normal text-sm text-gray-400">Dono</Text>
+              <Text className="font-poppins-medium text-base">Roberto Carlos</Text>
+              <Text className="font-poppins-regular text-sm text-gray-400">Dono</Text>
             </View>
           </View>
 
@@ -59,40 +59,40 @@ export default function ResidenceDetail() {
         </View>
 
         <View className="flex gap-1 flex-row items-center mt-4">
-          <Text className="text-2xl font-semibold">{money.format(300)}</Text>
-          <Text className="text-xs font-normal text-gray-400">/mês</Text>
+          <Text className="text-2xl font-poppins-semibold">{money.format(300)}</Text>
+          <Text className="text-xs font-poppins-regular text-gray-400">/mês</Text>
         </View>
 
         <View className="mt-4">
-          <Text className="font-normal text-xs text-gray-400">Tipo</Text>
-          <Text className="font-medium">Apartamento</Text>
+          <Text className="font-poppins-regular text-xs text-gray-400">Tipo</Text>
+          <Text className="font-poppins-medium">Apartamento</Text>
         </View>
 
         <View className="mt-4">
-          <Text className="font-normal text-xs text-gray-400">Data da postagem</Text>
-          <Text className="font-medium">Há 2 dia</Text>
+          <Text className="font-poppins-regular text-xs text-gray-400">Data da postagem</Text>
+          <Text className="font-poppins-medium">Há 2 dia</Text>
         </View>
 
         <View className="mt-4">
-          <Text className="font-semibold text-lg">Descrição</Text>
-          <Text className="font-normal text-gray-600">
+          <Text className="font-poppins-semibold text-lg">Descrição</Text>
+          <Text className="font-poppins-regular text-gray-600">
             Lorem ipsum dolor sit amet, consect adipiscing elit, sed do eiusmod tempor incididunt ut
             labore et dolore magna aliqua{'\n'}
-            <Text className="font-normal text-[#8b6cef]">Ver mais...</Text>
+            <Text className="font-poppins-regular text-[#8b6cef]">Ver mais...</Text>
           </Text>
         </View>
 
         <View className="mt-4">
-          <Text className="font-semibold text-lg mb-2">Galeria</Text>
+          <Text className="font-poppins-semibold text-lg mb-2">Galeria</Text>
           <Galery />
         </View>
 
         <View className="mt-4">
-          <Text className="font-semibold text-lg">Localização</Text>
+          <Text className="font-poppins-semibold text-lg">Localização</Text>
 
           <View className="flex flex-row items-center">
             <MapPin size={20} />
-            <Text className="font-medium text-xs ml-1 text-gray-600 mt-2 mb-2">
+            <Text className="font-poppins-medium text-xs ml-1 text-gray-600 mt-2 mb-2">
               Grand City St.100, New York, United States
             </Text>
           </View>
@@ -117,7 +117,7 @@ export default function ResidenceDetail() {
                 key={item.id}
                 image={item.image}
                 location={item.location}
-                price={item.price}
+                price={money.format(item.price)}
                 status={item.status}
               />
             )}

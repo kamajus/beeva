@@ -52,7 +52,7 @@ export default function Filter() {
                 'mr-0': categories[categories.length - 1] === item,
               })}
               onPress={() => onButtonActive(item.name)}>
-              <Text className="font-medium text-black text-sm">
+              <Text className="font-poppins-medium text-black text-sm">
                 {item.emoji} {item.name}
               </Text>
             </Pressable>

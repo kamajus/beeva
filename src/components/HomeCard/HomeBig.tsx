@@ -25,14 +25,14 @@ export default function HomeBig({ id, image, location, price, status }: Residenc
         <View className="w-full gap-1">
           <View className="flex flex-row items-center">
             <MapPin size={19} />
-            <Text className="font-medium text-sm ml-1">{location}</Text>
+            <Text className="font-poppins-medium text-sm ml-1">{location}</Text>
           </View>
-          <Text className="font-semibold text-base">{price}</Text>
+          <Text className="font-poppins-semibold text-base">{price}</Text>
         </View>
 
         <Text
           className={clsx(
-            'text-sm font-medium text-white bg-[#6c80efb7] rounded-full px-6 py-2 absolute top-[186px] right-4',
+            'text-sm font-poppins-medium text-white bg-[#6c80efb7] rounded-full px-6 py-2 absolute top-[186px] right-4',
             {
               hidden: status === 'sell',
             },

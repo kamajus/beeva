@@ -16,7 +16,7 @@ interface FormData {
 }
 
 const schema = yup.object({
-  email: yup.string().required().email(),
+  phone: yup.string().required(),
   firstName: yup.string().required(),
   lastName: yup.string().required(),
   password: yup.string().required(),
@@ -30,7 +30,7 @@ export default function SignIn() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: '',
+      phone: '',
       password: '',
       firstName: '',
       lastName: '',
@@ -44,7 +44,7 @@ export default function SignIn() {
     console.log('onSubmit: ', data);
 
     reset({
-      email: '',
+      phone: '',
       password: '',
       firstName: '',
       lastName: '',
@@ -54,7 +54,7 @@ export default function SignIn() {
   return (
     <ScrollView className="bg-white">
       <View className="px-7 mt-[15%] bg-white">
-        <Text className="text-xl font-semibold mb-5">Registrar-se</Text>
+        <Text className="text-xl font-poppins-semibold mb-5">Registrar-se</Text>
 
         <View className="flex flex-col gap-y-3">
           <View>
@@ -108,23 +108,24 @@ export default function SignIn() {
           <View>
             <Controller
               control={control}
-              name="email"
+              name="phone"
               rules={{
                 required: true,
               }}
               render={({ field: { onChange, onBlur } }) => (
                 <TextInput
                   mode="outlined"
-                  label="Email"
+                  label="Telefone"
                   style={{
                     fontSize: 15,
                   }}
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  inputMode="email"
                   outlineColor="transparent"
+                  inputMode="tel"
                   activeOutlineColor={Constants.colors.primary}
-                  error={errors.email?.message !== undefined}
+                  error={errors.phone?.message !== undefined}
+                  keyboardType="numeric"
                 />
               )}
             />
@@ -162,9 +163,9 @@ export default function SignIn() {
             />
           </View>
 
-          <Text className="w-full font-normal text-gray-500">
+          <Text className="w-full font-poppins-regular text-gray-500">
             Ao se inscrever, você está concordando com os nossos{' '}
-            <Text className="text-gray-700 font-medium">
+            <Text className="text-gray-700 font-poppins-medium">
               Termos, Condições e Políticas de Privacidade.
             </Text>
           </Text>
@@ -185,8 +186,8 @@ export default function SignIn() {
           </Button>
 
           <View className="flex justify-center items-center flex-row gap-2 w-full mt-5">
-            <Text className="font-medium text-gray-700">Já tem uma conta?</Text>
-            <Link className="text-primary font-medium" href="/signin">
+            <Text className="font-poppins-medium text-gray-700">Já tem uma conta?</Text>
+            <Link className="text-primary font-poppins-medium" href="/signin">
               Entrar
             </Link>
           </View>

@@ -3,10 +3,12 @@ import { Pressable, Text, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
 import MapPin from '../../assets/images/map-pin';
+import useMoneyFormat from '../../hooks/useMoneyFormat';
 import Carousel from '../Carousel';
 
 export default function HomeSearch() {
   const [saved, setSaved] = useState(false);
+  const money = useMoneyFormat();
 
   return (
     <Pressable style={{ position: 'relative', paddingHorizontal: 16, marginBottom: 30 }}>
@@ -14,9 +16,9 @@ export default function HomeSearch() {
       <View className="w-full gap-1 mt-2">
         <View className="flex flex-row items-center">
           <MapPin size={19} />
-          <Text className="font-medium text-sm ml-1">Angola, Luanda</Text>
+          <Text className="font-poppins-medium text-sm ml-1">Angola, Luanda</Text>
         </View>
-        <Text className="text-base font-semibold">{39593}</Text>
+        <Text className="font-poppins-semibold text-base">{money.format(39546)}</Text>
       </View>
 
       <IconButton

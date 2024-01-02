@@ -13,7 +13,7 @@ export default function () {
       <View className="bg-white">
         <Header.Search goBack={router.back} />
         <ScrollView className="bg-white flex flex-col">
-          <Text className="p-4 font-semibold">Mais de 1000 encontrados</Text>
+          <Text className="p-4 font-poppins-semibold text-lg">Mais de 1000 encontrados</Text>
           <HomeCard.Search />
           <HomeCard.Search />
           <HomeCard.Search />

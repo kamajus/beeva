@@ -1,6 +1,8 @@
+import ExpoConstants from 'expo-constants';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { View, ScrollView, FlatList, Text, Dimensions } from 'react-native';
+import { useCallback, useState } from 'react';
+import { View, ScrollView, FlatList, Text, Dimensions, RefreshControl } from 'react-native';
 import { IconButton, Searchbar } from 'react-native-paper';
 
 import { RESIDENCE_DATA } from '../../assets/data';
@@ -10,12 +12,24 @@ import Constants from '../../constants';
 import useMoneyFormat from '../../hooks/useMoneyFormat';
 
 export default function House() {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   const { width } = Dimensions.get('window');
   const money = useMoneyFormat();
 
   return (
-    <ScrollView className="bg-white">
-      <View className="px-4 mt-[15%] bg-white">
+    <ScrollView
+      className="bg-white"
+      style={{ marginTop: ExpoConstants.statusBarHeight }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+      <View className="px-4 mt-[7%] bg-white">
         <View className="flex flex-row justify-between items-center mb-4">
           <Text className="font-bold text-2xl">Encontre uma acomodação perfeita</Text>
           <Link href="/notification">
@@ -134,7 +148,7 @@ export default function House() {
           />
         </HomeCard.Root>
       </View>
-      <StatusBar style="light" backgroundColor="black" />
+      <StatusBar style="dark" backgroundColor="white" />
     </ScrollView>
   );
 }

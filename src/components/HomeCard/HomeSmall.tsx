@@ -26,14 +26,14 @@ export default function HomeSmall({ id, image, location, price, status }: Reside
         <View className="w-full gap-1">
           <View className="flex flex-row items-center">
             <MapPin size={18} />
-            <Text className="font-medium text-xs ml-1">{location}</Text>
+            <Text className="font-poppins-medium text-xs ml-1">{location}</Text>
           </View>
-          <Text className="font-semibold text-sm ">{price}</Text>
+          <Text className="font-poppins-semibold text-sm ">{price}</Text>
         </View>
 
         <Text
           className={clsx(
-            'font-medium text-sm text-white bg-[#6c80efb7] rounded-full px-6 py-2 absolute top-[156px] right-4',
+            'font-poppins-medium text-sm text-white bg-[#6c80efb7] rounded-full px-6 py-2 absolute top-[156px] right-4',
             {
               hidden: status === 'sell',
             },

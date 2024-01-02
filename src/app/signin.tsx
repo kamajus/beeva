@@ -9,12 +9,12 @@ import * as yup from 'yup';
 import Constants from '../constants';
 
 interface FormData {
-  email?: string;
+  phone?: string;
   password?: string;
 }
 
 const schema = yup.object({
-  email: yup.string().required().email(),
+  phone: yup.string().required(),
   password: yup.string().required(),
 });
 
@@ -35,7 +35,7 @@ export default function SignIn() {
     console.log('onSubmit: ', data);
 
     reset({
-      email: '',
+      phone: '',
       password: '',
     });
 
@@ -45,29 +45,30 @@ export default function SignIn() {
   return (
     <ScrollView className="bg-white">
       <View className="px-7 mt-[15%] bg-white">
-        <Text className="font-semibold text-xl mb-5">Iniciar sessão</Text>
+        <Text className="font-poppins-semibold text-xl mb-5">Iniciar sessão</Text>
         <View className="flex flex-col gap-y-3">
           <View>
             <Controller
               control={control}
-              name="email"
+              name="phone"
               rules={{
                 required: true,
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
                   mode="outlined"
-                  label="Email"
+                  label="Telefone"
                   style={{
                     fontSize: 15,
                   }}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   value={value}
-                  inputMode="email"
                   outlineColor="transparent"
+                  inputMode="tel"
+                  keyboardType="numeric"
                   activeOutlineColor={Constants.colors.primary}
-                  error={errors.email?.message !== undefined}
+                  error={errors.phone?.message !== undefined}
                 />
               )}
             />

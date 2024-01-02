@@ -27,7 +27,9 @@ export default function Settings() {
               <Avatar.Image size={50} source={require('../../assets/images/avatar.png')} />
               <View>
                 <Text className="font-medium text-base">Roberto Carlos</Text>
-                <Text className="font-normal text-sm text-gray-400">zizo.hamdy016@gmail.com</Text>
+                <Text className="font-poppins-regular text-sm text-gray-400">
+                  zizo.hamdy016@gmail.com
+                </Text>
               </View>
             </View>
             <Icon source="chevron-right" size={30} />
@@ -69,8 +71,8 @@ export default function Settings() {
         </View>
 
         <View className="w-full px-4 mb-4 flex-row gap-x-2 items-center">
-          <Text className="text-sm font-semibold text-violet-500">Versão</Text>
-          <Text className="text-sm font-normal text-violet-500">1.0.0</Text>
+          <Text className="text-sm font-poppins-semibold text-violet-500">Versão</Text>
+          <Text className="text-sm font-poppins-regular text-violet-500">1.0.0</Text>
         </View>
 
         <StatusBar style="dark" backgroundColor="#fff" />

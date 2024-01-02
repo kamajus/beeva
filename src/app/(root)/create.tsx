@@ -119,7 +119,7 @@ export default function Post() {
           <View>
             <TextField.Label>Estado</TextField.Label>
             <View className="flex flex-row justify-between items-center">
-              <Text className="text-sm font-normal">Arrendamento</Text>
+              <Text className="text-sm font-poppins-regular">Arrendamento</Text>
               <RadioButton
                 value="rent"
                 status={state === 'rent' ? 'checked' : 'unchecked'}
@@ -129,7 +129,7 @@ export default function Post() {
             </View>
 
             <View className="flex flex-row justify-between items-center">
-              <Text className="text-sm font-normal">À Venda</Text>
+              <Text className="text-sm font-poppins-regular">À Venda</Text>
               <RadioButton
                 value="sell"
                 status={state === 'sell' ? 'checked' : 'unchecked'}
@@ -142,7 +142,7 @@ export default function Post() {
           <View>
             <TextField.Label>Tipo</TextField.Label>
             <View className="flex flex-row justify-between items-center">
-              <Text className="text-sm font-normal">Apartamento</Text>
+              <Text className="text-sm font-poppins-regular">Apartamento</Text>
               <RadioButton
                 value="apartment"
                 status={kind === 'apartment' ? 'checked' : 'unchecked'}
@@ -152,7 +152,7 @@ export default function Post() {
             </View>
 
             <View className="flex flex-row justify-between items-center">
-              <Text className="text-sm font-normal">Vivenda</Text>
+              <Text className="text-sm font-poppins-regular">Vivenda</Text>
               <RadioButton
                 value="villa"
                 status={kind === 'villa' ? 'checked' : 'unchecked'}
@@ -162,7 +162,7 @@ export default function Post() {
             </View>
 
             <View className="flex flex-row justify-between items-center">
-              <Text className="text-sm font-normal">Terreno</Text>
+              <Text className="text-sm font-poppins-regular">Terreno</Text>
               <RadioButton
                 value="land"
                 status={kind === 'land' ? 'checked' : 'unchecked'}
@@ -172,7 +172,7 @@ export default function Post() {
             </View>
 
             <View className="flex flex-row justify-between items-center">
-              <Text className="text-sm font-normal">Outros</Text>
+              <Text className="text-sm font-poppins-regular">Outros</Text>
               <RadioButton
                 value="others"
                 status={kind === 'others' ? 'checked' : 'unchecked'}

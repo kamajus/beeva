@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
-import ActionSheet, { SheetProps } from 'react-native-actions-sheet';
-import { Button, Icon, RadioButton } from 'react-native-paper';
+import ActionSheet, { SheetProps, SheetManager } from 'react-native-actions-sheet';
+import { Button, IconButton, RadioButton } from 'react-native-paper';
 
 import Constants from '../../constants';
 import Filter from '../Filter';
@@ -12,8 +12,8 @@ export default function SearchActionSheet(props: SheetProps) {
   return (
     <ActionSheet id={props.sheetId}>
       <View>
-        <View className="flex flex-row items-center gap-x-4 px-8 py-4 border-b border-b-gray-300">
-          <Icon source="close" size={20} />
+        <View className="flex flex-row items-center gap-x-1 px-2 py-4 border-b border-b-gray-300">
+          <IconButton icon="close" size={20} onPress={() => SheetManager.hide('search-sheet')} />
           <Text className="font-semibold text-lg">Filtros</Text>
         </View>
 
@@ -25,7 +25,7 @@ export default function SearchActionSheet(props: SheetProps) {
         <View className="p-4">
           <Text className="font-medium text-base mb-3">Tipo de venda</Text>
           <View className="flex flex-row justify-between items-center">
-            <Text className="text-sm font-normal">Arrendamento</Text>
+            <Text className="text-sm font-poppins-regular">Arrendamento</Text>
             <RadioButton
               value="rent"
               status={state === 'rent' ? 'checked' : 'unchecked'}
@@ -35,7 +35,7 @@ export default function SearchActionSheet(props: SheetProps) {
           </View>
 
           <View className="flex flex-row justify-between items-center">
-            <Text className="text-sm font-normal">À Venda</Text>
+            <Text className="text-sm font-poppins-regular">À Venda</Text>
             <RadioButton
               value="sell"
               status={state === 'sell' ? 'checked' : 'unchecked'}
@@ -47,12 +47,20 @@ export default function SearchActionSheet(props: SheetProps) {
 
         <View className="p-4">
           <Text className="font-medium text-base mb-3">Preço minimo</Text>
-          <TextInput className="bg-[#f5f5f5] h-14 p-4 rounded" placeholder="0.0 Kz" />
+          <TextInput
+            className="bg-[#f5f5f5] h-14 p-4 rounded font-poppins-medium"
+            placeholder="0.0 Kz"
+            keyboardType="number-pad"
+          />
         </View>
 
         <View className="p-4">
           <Text className="font-medium text-base mb-3">Preço máximo</Text>
-          <TextInput className="bg-[#f5f5f5] h-14 p-4 rounded" placeholder="0.0 Kz" />
+          <TextInput
+            className="bg-[#f5f5f5] h-14 p-4 rounded font-poppins-medium"
+            placeholder="0.0 Kz"
+            keyboardType="number-pad"
+          />
         </View>
 
         <View className="flex flex-row justify-between items-center px-4 gap-x-2">

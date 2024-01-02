@@ -19,7 +19,7 @@ export default function NormalHeader({ title, styles, goBack }: NormalHeaderProp
         styles
       }>
       <Icon name="arrow-left" color="#000" size={25} onPress={goBack} />
-      <Text className="font-medium text-lg">{title}</Text>
+      <Text className="font-poppins-medium text-lg">{title}</Text>
     </View>
   );
 }

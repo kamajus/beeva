@@ -11,7 +11,7 @@ interface GaleryProps {
 }
 
 export default function Galery({ images, setImages }: GaleryProps) {
-  const pickImage = async () => {
+  async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       aspect: [4, 3],
@@ -23,7 +23,7 @@ export default function Galery({ images, setImages }: GaleryProps) {
     if (!result.canceled) {
       setImages([...images, ...result.assets]);
     }
-  };
+  }
 
   return (
     <View>
