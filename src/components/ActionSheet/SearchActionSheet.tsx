@@ -8,7 +8,6 @@ import Filter from '../Filter';
 
 export default function SearchActionSheet(props: SheetProps) {
   const [state, setState] = useState('sell');
-  const [searchQuery, setSearchQuery] = useState('');
 
   return (
     <ActionSheet id={props.sheetId}>

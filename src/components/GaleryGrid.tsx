@@ -1,13 +1,16 @@
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { FlatList, Image, TouchableOpacity, View } from 'react-native';
 import { Button, IconButton } from 'react-native-paper';
 
 import constants from '../constants';
 
-export default function Galery() {
-  const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
+interface GaleryProps {
+  images: ImagePicker.ImagePickerAsset[];
+  setImages: Dispatch<SetStateAction<ImagePicker.ImagePickerAsset[]>>;
+}
 
+export default function Galery({ images, setImages }: GaleryProps) {
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,

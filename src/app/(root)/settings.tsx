@@ -20,7 +20,7 @@ export default function Settings() {
       <View>
         <Header.Normal title="Perfil & Configurações" goBack={router.back} />
       </View>
-      <ScrollView className="bg-[#F4F4F4]">
+      <ScrollView className="bg-input">
         <Link href="/(settings)/perfil">
           <View style={{ width }} className="px-4 py-6 flex-row justify-between items-center">
             <View className="flex gap-x-3 flex-row">

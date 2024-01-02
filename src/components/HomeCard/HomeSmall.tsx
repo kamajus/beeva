@@ -4,16 +4,11 @@ import React, { useState } from 'react';
 import { Image, Text, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
-import { ResidenceProps } from '../../assets/@types';
+import { ResidencePropsCard } from '../../assets/@types';
 import MapPin from '../../assets/images/map-pin';
 
-export default function HomeSmall({ id, image, location, price, status }: ResidenceProps) {
+export default function HomeSmall({ id, image, location, price, status }: ResidencePropsCard) {
   const [saved, setSaved] = useState(false);
-
-  const euro = Intl.NumberFormat('en-DE', {
-    style: 'currency',
-    currency: 'EUR',
-  });
 
   return (
     <Link href={`/residence/${id}`}>
@@ -33,12 +28,12 @@ export default function HomeSmall({ id, image, location, price, status }: Reside
             <MapPin size={18} />
             <Text className="font-medium text-xs ml-1">{location}</Text>
           </View>
-          <Text className="text-sm font-semibold">{euro.format(price)}</Text>
+          <Text className="font-semibold text-sm ">{price}</Text>
         </View>
 
         <Text
           className={clsx(
-            'text-sm font-medium text-white bg-[#6c80efb7] rounded-full px-6 py-2 absolute top-[156px] right-4',
+            'font-medium text-sm text-white bg-[#6c80efb7] rounded-full px-6 py-2 absolute top-[156px] right-4',
             {
               hidden: status === 'sell',
             },

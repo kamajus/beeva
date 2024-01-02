@@ -1,11 +1,18 @@
 import { ImageSourcePropType } from 'react-native';
 
-export interface ResidenceProps {
+interface ResidenceBase {
   id?: number;
-  image: ImageSourcePropType;
   location: string;
-  price: number;
   status: 'sell' | 'rent';
+  image: ImageSourcePropType;
   type?: string;
+}
+
+export interface ResidenceProps extends ResidenceBase {
+  price: number;
   description?: string;
+}
+
+export interface ResidencePropsCard extends ResidenceBase {
+  price: string;
 }

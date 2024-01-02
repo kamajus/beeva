@@ -11,6 +11,12 @@ module.exports = {
       'inter-medium': 'inter-medium',
     },
     fontWeight: {},
+    extend: {
+      colors: {
+        primary: '#8b6cef',
+        input: '#f5f5f5',
+      },
+    },
   },
   plugins: [],
 };

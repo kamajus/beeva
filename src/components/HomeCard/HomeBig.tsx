@@ -4,17 +4,11 @@ import React, { useState } from 'react';
 import { Image, Text, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
-import { ResidenceProps } from '../../assets/@types';
+import { ResidencePropsCard } from '../../assets/@types';
 import MapPin from '../../assets/images/map-pin';
 
-export default function HomeBig({ id, image, location, price, status }: ResidenceProps) {
+export default function HomeBig({ id, image, location, price, status }: ResidencePropsCard) {
   const [saved, setSaved] = useState(false);
-
-  const euro = Intl.NumberFormat('en-DE', {
-    style: 'currency',
-    currency: 'EUR',
-  });
-
   return (
     <Link href={`/residence/${id}`}>
       <View className="px-2 py-3 rounded-xl mb-2 mr-2 relative">
@@ -33,7 +27,7 @@ export default function HomeBig({ id, image, location, price, status }: Residenc
             <MapPin size={19} />
             <Text className="font-medium text-sm ml-1">{location}</Text>
           </View>
-          <Text className="text-base font-semibold">{euro.format(price)}</Text>
+          <Text className="font-semibold text-base">{price}</Text>
         </View>
 
         <Text

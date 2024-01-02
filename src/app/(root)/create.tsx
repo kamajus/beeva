@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import ExpoConstants from 'expo-constants';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
@@ -37,16 +38,10 @@ export default function Post() {
     resolver: yupResolver(schema),
   });
 
+  const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
   const router = useRouter();
-
   const [kind, setKind] = useState('sell');
   const [state, setState] = useState('sell');
-
-  const images = [
-    'https://placehold.co/600x400/png',
-    'https://placehold.co/600x400/png',
-    'https://placehold.co/600x400/png',
-  ];
 
   return (
     <View className="relative bg-white">
@@ -188,8 +183,10 @@ export default function Post() {
           </View>
 
           <View className="mb-6">
-            <TextField.Label>Galeria</TextField.Label>
-            <GaleryGrid images={images} />
+            <TextField.Label style={{ display: images.length > 0 ? 'flex' : 'none' }}>
+              Galeria
+            </TextField.Label>
+            <GaleryGrid images={images} setImages={setImages} />
           </View>
         </View>
         <StatusBar style="dark" backgroundColor="#fff" />

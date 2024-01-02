@@ -186,7 +186,7 @@ export default function SignIn() {
 
           <View className="flex justify-center items-center flex-row gap-2 w-full mt-5">
             <Text className="font-medium text-gray-700">Já tem uma conta?</Text>
-            <Link className="text-[#8b6cef] font-medium" href="/signin">
+            <Link className="text-primary font-medium" href="/signin">
               Entrar
             </Link>
           </View>

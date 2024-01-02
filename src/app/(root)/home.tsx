@@ -1,15 +1,17 @@
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
 import { View, ScrollView, FlatList, Text, Dimensions } from 'react-native';
 import { IconButton, Searchbar } from 'react-native-paper';
 
 import { RESIDENCE_DATA } from '../../assets/data';
 import Filter from '../../components/Filter';
 import HomeCard from '../../components/HomeCard';
+import Constants from '../../constants';
+import useMoneyFormat from '../../hooks/useMoneyFormat';
 
 export default function House() {
   const { width } = Dimensions.get('window');
+  const money = useMoneyFormat();
 
   return (
     <ScrollView className="bg-white">
@@ -25,7 +27,7 @@ export default function House() {
           <Searchbar
             style={{
               shadowColor: 'transparent',
-              backgroundColor: '#f5f5f5',
+              backgroundColor: Constants.colors.input,
               flex: 1,
               width: width - 32, // Total screen width minus horizontal margin
             }}
@@ -52,7 +54,7 @@ export default function House() {
                 key={item.id}
                 image={item.image}
                 location={item.location}
-                price={item.price}
+                price={money.format(item.price)}
                 status={item.status}
               />
             )}
@@ -71,7 +73,7 @@ export default function House() {
                 key={item.id}
                 image={item.image}
                 location={item.location}
-                price={item.price}
+                price={money.format(item.price)}
                 status={item.status}
               />
             )}
@@ -89,7 +91,7 @@ export default function House() {
                 key={item.id}
                 image={item.image}
                 location={item.location}
-                price={item.price}
+                price={money.format(item.price)}
                 status={item.status}
               />
             )}
@@ -107,7 +109,7 @@ export default function House() {
                 key={item.id}
                 image={item.image}
                 location={item.location}
-                price={item.price}
+                price={money.format(item.price)}
                 status={item.status}
               />
             )}
@@ -125,7 +127,7 @@ export default function House() {
                 key={item.id}
                 image={item.image}
                 location={item.location}
-                price={item.price}
+                price={money.format(item.price)}
                 status={item.status}
               />
             )}

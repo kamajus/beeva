@@ -9,6 +9,7 @@ import MapPin from '../../assets/images/map-pin';
 import Carousel from '../../components/Carousel';
 import Header from '../../components/Header';
 import HomeCard from '../../components/HomeCard';
+import useMoneyFormat from '../../hooks/useMoneyFormat';
 
 function Galery() {
   return (
@@ -35,10 +36,7 @@ function Galery() {
 
 export default function ResidenceDetail() {
   const router = useRouter();
-  const euro = Intl.NumberFormat('en-DE', {
-    style: 'currency',
-    currency: 'EUR',
-  });
+  const money = useMoneyFormat();
 
   return (
     <ScrollView className="bg-white relative w-full">
@@ -61,7 +59,7 @@ export default function ResidenceDetail() {
         </View>
 
         <View className="flex gap-1 flex-row items-center mt-4">
-          <Text className="text-2xl font-semibold">{euro.format(300)}</Text>
+          <Text className="text-2xl font-semibold">{money.format(300)}</Text>
           <Text className="text-xs font-normal text-gray-400">/mês</Text>
         </View>
 

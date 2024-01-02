@@ -6,10 +6,6 @@ import MapPin from '../../assets/images/map-pin';
 import Carousel from '../Carousel';
 
 export default function HomeSearch() {
-  const euro = Intl.NumberFormat('en-DE', {
-    style: 'currency',
-    currency: 'EUR',
-  });
   const [saved, setSaved] = useState(false);
 
   return (
@@ -20,7 +16,7 @@ export default function HomeSearch() {
           <MapPin size={19} />
           <Text className="font-medium text-sm ml-1">Angola, Luanda</Text>
         </View>
-        <Text className="text-base font-semibold">{euro.format(39593)}</Text>
+        <Text className="text-base font-semibold">{39593}</Text>
       </View>
 
       <IconButton

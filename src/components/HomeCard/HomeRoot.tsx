@@ -17,7 +17,7 @@ export default function HomeRoot({ children, title, withoutPlus, icon, iconColor
       <View className="flex flex-row justify-between mb-4">
         <View className="flex flex-row items-center gap-2">
           {icon && <Icon name={icon} color={iconColor} size={23} />}
-          <Text className="font-semibold text-lg">{title}</Text>
+          <Text className="font-bold text-lg">{title}</Text>
         </View>
         {!withoutPlus && (
           <TouchableOpacity className="flex flex-row items-center gap-2">

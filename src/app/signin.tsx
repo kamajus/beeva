@@ -45,8 +45,7 @@ export default function SignIn() {
   return (
     <ScrollView className="bg-white">
       <View className="px-7 mt-[15%] bg-white">
-        <Text className="text-xl font-semibold mb-5">Iniciar sessão</Text>
-
+        <Text className="font-semibold text-xl mb-5">Iniciar sessão</Text>
         <View className="flex flex-col gap-y-3">
           <View>
             <Controller

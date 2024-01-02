@@ -8,7 +8,6 @@ import HomeCard from '../components/HomeCard';
 
 export default function () {
   const router = useRouter();
-
   return (
     <SheetProvider>
       <View className="bg-white">

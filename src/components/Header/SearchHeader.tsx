@@ -1,11 +1,10 @@
 import Constants from 'expo-constants';
-import { useState, ReactNode } from 'react';
-import { Pressable, View } from 'react-native';
+import { useState } from 'react';
+import { View } from 'react-native';
 import { SheetManager } from 'react-native-actions-sheet';
 import { IconButton } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Feather';
 
-import Filter from '../Filter';
 import TextField from '../TextField';
 
 import '../ActionSheet';
@@ -25,7 +24,11 @@ export default function SearchHeader({ goBack }: SearchHeaderProps) {
         <TextField.Root>
           <TextField.Container disableFocus>
             <Icon name="arrow-left" color="#000" size={25} onPress={goBack} />
-            <TextField.Input placeholder="Diga a localização" />
+            <TextField.Input
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Diga a localização"
+            />
           </TextField.Container>
         </TextField.Root>
         <IconButton
