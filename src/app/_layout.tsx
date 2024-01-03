@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { PaperProvider, MD2LightTheme, configureFonts } from 'react-native-paper';
 
 import Header from '../components/Header';
+import { SupabaseProvider } from '../contexts/SupabaseProvider';
 
 export default function () {
   const fontConfig = {
@@ -31,41 +32,49 @@ export default function () {
   };
 
   return (
-    <PaperProvider theme={theme}>
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen
-          name="residence/[id]"
-          options={{
+    <SupabaseProvider>
+      <PaperProvider theme={theme}>
+        <Stack
+          screenOptions={{
             headerShown: false,
-            title: 'Propriedade',
-          }}
-        />
-        <Stack.Screen
-          name="notification"
-          options={{
-            headerShown: true,
-            header: ({ navigation }) => (
-              <Header.Normal title="Notificações" goBack={navigation.goBack} />
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="search"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="(settings)"
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack>
-    </PaperProvider>
+          }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen
+            name="residence/[id]"
+            options={{
+              headerShown: false,
+              title: 'Propriedade',
+            }}
+          />
+          <Stack.Screen
+            name="notification"
+            options={{
+              headerShown: true,
+              header: ({ navigation }) => (
+                <Header.Normal title="Notificações" goBack={navigation.goBack} />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="search"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="verification/[email]"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="(settings)"
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack>
+      </PaperProvider>
+    </SupabaseProvider>
   );
 }

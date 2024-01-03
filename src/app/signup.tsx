@@ -1,22 +1,25 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'expo-router';
+import clsx from 'clsx';
+import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { ScrollView, Text, View, StatusBar } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
+import { ScrollView, Text, View, StatusBar, Alert } from 'react-native';
+import { TextInput, Button, HelperText } from 'react-native-paper';
 import * as yup from 'yup';
 
+import { supabase } from '../config/supabase';
 import Constants from '../constants';
+import { useSupabase } from '../hooks/useSupabase';
 
 interface FormData {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  password?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
 }
 
 const schema = yup.object({
-  phone: yup.string().required(),
+  email: yup.string().required(),
   firstName: yup.string().required(),
   lastName: yup.string().required(),
   password: yup.string().required(),
@@ -30,7 +33,7 @@ export default function SignIn() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      phone: '',
+      email: '',
       password: '',
       firstName: '',
       lastName: '',
@@ -39,12 +42,33 @@ export default function SignIn() {
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const { signUp } = useSupabase();
+  const router = useRouter();
 
   function onSubmit(data: FormData) {
-    console.log('onSubmit: ', data);
+    signUp(data.email, data.password)
+      .then(async () => {
+        const { error } = await supabase
+          .from('users')
+          .upsert({ first_name: data.firstName, last_name: data.lastName });
+
+        if (error?.code && error?.code !== '42501') {
+          Alert.alert(
+            'Erro na autenticação',
+            'Algo de errado aconteceu, tente novamente mais tarde.',
+          );
+        }
+
+        if (error?.code === '42501') {
+          router.replace(`/verification/${data.email}`);
+        }
+      })
+      .catch((response) => {
+        Alert.alert('Erro na autenticação', response);
+      });
 
     reset({
-      phone: '',
+      email: '',
       password: '',
       firstName: '',
       lastName: '',
@@ -65,18 +89,29 @@ export default function SignIn() {
                 required: true,
               }}
               render={({ field: { onChange, onBlur } }) => (
-                <TextInput
-                  mode="outlined"
-                  label="Primeiro nome"
-                  style={{
-                    fontSize: 15,
-                  }}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  outlineColor="transparent"
-                  activeOutlineColor={Constants.colors.primary}
-                  error={errors.firstName?.message !== undefined}
-                />
+                <View>
+                  <TextInput
+                    mode="outlined"
+                    label="Primeiro nome"
+                    style={{
+                      fontSize: 15,
+                    }}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    outlineColor="transparent"
+                    activeOutlineColor={Constants.colors.primary}
+                    error={errors.firstName?.message !== undefined}
+                  />
+
+                  <HelperText
+                    className={clsx('p-0 m-0 mt-2', {
+                      hidden: errors.firstName?.message === undefined,
+                    })}
+                    type="error"
+                    visible={errors.firstName?.message !== undefined}>
+                    {errors.firstName?.message}
+                  </HelperText>
+                </View>
               )}
             />
           </View>
@@ -89,18 +124,28 @@ export default function SignIn() {
                 required: true,
               }}
               render={({ field: { onChange, onBlur } }) => (
-                <TextInput
-                  mode="outlined"
-                  label="Último nome"
-                  style={{
-                    fontSize: 15,
-                  }}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  outlineColor="transparent"
-                  activeOutlineColor={Constants.colors.primary}
-                  error={errors.lastName?.message !== undefined}
-                />
+                <View>
+                  <TextInput
+                    mode="outlined"
+                    label="Último nome"
+                    style={{
+                      fontSize: 15,
+                    }}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    outlineColor="transparent"
+                    activeOutlineColor={Constants.colors.primary}
+                    error={errors.lastName?.message !== undefined}
+                  />
+                  <HelperText
+                    className={clsx('p-0 m-0 mt-2', {
+                      hidden: errors.lastName?.message === undefined,
+                    })}
+                    type="error"
+                    visible={errors.lastName?.message !== undefined}>
+                    {errors.lastName?.message}
+                  </HelperText>
+                </View>
               )}
             />
           </View>
@@ -108,25 +153,36 @@ export default function SignIn() {
           <View>
             <Controller
               control={control}
-              name="phone"
+              name="email"
               rules={{
                 required: true,
               }}
               render={({ field: { onChange, onBlur } }) => (
-                <TextInput
-                  mode="outlined"
-                  label="Telefone"
-                  style={{
-                    fontSize: 15,
-                  }}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  outlineColor="transparent"
-                  inputMode="tel"
-                  activeOutlineColor={Constants.colors.primary}
-                  error={errors.phone?.message !== undefined}
-                  keyboardType="numeric"
-                />
+                <View>
+                  <TextInput
+                    mode="outlined"
+                    label="Email"
+                    style={{
+                      fontSize: 15,
+                    }}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    outlineColor="transparent"
+                    inputMode="email"
+                    activeOutlineColor={Constants.colors.primary}
+                    autoCapitalize="none"
+                    error={errors.email?.message !== undefined}
+                    keyboardType="email-address"
+                  />
+                  <HelperText
+                    className={clsx('p-0 m-0 mt-2', {
+                      hidden: errors.email?.message === undefined,
+                    })}
+                    type="error"
+                    visible={errors.email?.message !== undefined}>
+                    {errors.email?.message}
+                  </HelperText>
+                </View>
               )}
             />
           </View>
@@ -139,26 +195,37 @@ export default function SignIn() {
                 required: true,
               }}
               render={({ field: { onChange, onBlur } }) => (
-                <TextInput
-                  mode="outlined"
-                  label="Senha"
-                  style={{
-                    fontSize: 15,
-                  }}
-                  outlineColor="transparent"
-                  activeOutlineColor={Constants.colors.primary}
-                  secureTextEntry={!passwordVisible}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  error={errors.password?.message !== undefined}
-                  right={
-                    <TextInput.Icon
-                      color="#667085"
-                      onPress={() => setPasswordVisible(!passwordVisible)}
-                      icon={passwordVisible ? 'eye' : 'eye-off'}
-                    />
-                  }
-                />
+                <View>
+                  <TextInput
+                    mode="outlined"
+                    label="Senha"
+                    style={{
+                      fontSize: 15,
+                    }}
+                    outlineColor="transparent"
+                    activeOutlineColor={Constants.colors.primary}
+                    secureTextEntry={!passwordVisible}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    autoCapitalize="none"
+                    error={errors.password?.message !== undefined}
+                    right={
+                      <TextInput.Icon
+                        color="#667085"
+                        onPress={() => setPasswordVisible(!passwordVisible)}
+                        icon={passwordVisible ? 'eye' : 'eye-off'}
+                      />
+                    }
+                  />
+                  <HelperText
+                    className={clsx('p-0 m-0 mt-2', {
+                      hidden: errors.password?.message === undefined,
+                    })}
+                    type="error"
+                    visible={errors.password?.message !== undefined}>
+                    {errors.password?.message}
+                  </HelperText>
+                </View>
               )}
             />
           </View>
