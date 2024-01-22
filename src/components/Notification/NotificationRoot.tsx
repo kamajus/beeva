@@ -9,7 +9,7 @@ interface NotificationRootProps {
 export default function NotificationRoot({ title, children }: NotificationRootProps) {
   return (
     <View>
-      <Text className="px-2 py-4 font-medium text-base">{title}</Text>
+      <Text className="px-2 py-4 font-poppins-medium text-base">{title}</Text>
       {children}
     </View>
   );

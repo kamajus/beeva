@@ -1,9 +1,9 @@
 import * as React from 'react';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Path, SvgProps } from 'react-native-svg';
 
-export default function MapPin({ size }: { size: number }) {
+export default function MapPin(props: SvgProps) {
   return (
-    <Svg width={size} height={size} fill="#8b6cef" viewBox="0 0 256 256">
+    <Svg fill="#8b6cef" viewBox="0 0 256 256" {...props}>
       <Path
         d="M128 24a80 80 0 00-80 80c0 72 80 128 80 128s80-56 80-128a80 80 0 00-80-80zm0 112a32 32 0 1132-32 32 32 0 01-32 32z"
         opacity={0.2}

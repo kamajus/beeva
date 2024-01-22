@@ -1,16 +1,20 @@
+import clsx from 'clsx';
 import * as ImagePicker from 'expo-image-picker';
 import { Dispatch, SetStateAction } from 'react';
-import { FlatList, Image, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Pressable, View } from 'react-native';
 import { Button, IconButton } from 'react-native-paper';
 
 import constants from '../constants';
 
 interface GaleryProps {
   images: ImagePicker.ImagePickerAsset[];
+  cover: string | null | undefined;
+  setCover: Dispatch<React.SetStateAction<string | null | undefined>>;
   setImages: Dispatch<SetStateAction<ImagePicker.ImagePickerAsset[]>>;
+  disabled?: boolean;
 }
 
-export default function Galery({ images, setImages }: GaleryProps) {
+export default function Galery({ images, setImages, cover, setCover, disabled }: GaleryProps) {
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -21,6 +25,9 @@ export default function Galery({ images, setImages }: GaleryProps) {
     });
 
     if (!result.canceled) {
+      if (!images || images.length === 0) {
+        setCover(result.assets[0].uri);
+      }
       setImages([...images, ...result.assets]);
     }
   }
@@ -32,9 +39,17 @@ export default function Galery({ images, setImages }: GaleryProps) {
           data={images}
           horizontal
           renderItem={({ item }) => (
-            <TouchableOpacity className="relative mb-4">
+            <Pressable
+              className="relative mb-4"
+              onLongPress={() => {
+                setImages(images.filter((other) => other !== item));
+
+                if (cover === item.uri) {
+                  setCover(undefined);
+                }
+              }}>
               <Image
-                key={item.fileName}
+                key={item.uri}
                 source={{ uri: item.uri }}
                 style={{
                   height: 140,
@@ -45,16 +60,18 @@ export default function Galery({ images, setImages }: GaleryProps) {
               />
 
               <IconButton
-                icon="trash-can"
+                icon="star"
                 mode="outlined"
-                iconColor="#fd6963"
+                iconColor={cover === item.uri ? '#ffcb0c' : 'lightgray'}
                 containerColor="#fff"
-                className="absolute top-[1px] right-2"
+                className={clsx('absolute top-[1px] right-2', {
+                  hidden: disabled,
+                })}
                 onPress={() => {
-                  setImages(images.filter((other) => other !== item));
+                  setCover(item.uri);
                 }}
               />
-            </TouchableOpacity>
+            </Pressable>
           )}
         />
       )}
@@ -66,9 +83,10 @@ export default function Galery({ images, setImages }: GaleryProps) {
         style={{
           height: 56,
           backgroundColor: constants.colors.primary,
-          display: images && images.length >= 5 ? 'none' : 'flex',
         }}
-        className="flex items-center justify-center"
+        className={clsx('flex items-center justify-center', {
+          hidden: disabled || images.length >= 5,
+        })}
         icon="camera"
         mode="contained"
         onPress={pickImage}>

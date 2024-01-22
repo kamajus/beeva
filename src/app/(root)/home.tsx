@@ -9,7 +9,6 @@ import { RESIDENCE_DATA } from '../../assets/data';
 import Filter from '../../components/Filter';
 import HomeCard from '../../components/HomeCard';
 import Constants from '../../constants';
-import useMoneyFormat from '../../hooks/useMoneyFormat';
 
 export default function House() {
   const [refreshing, setRefreshing] = useState(false);
@@ -22,7 +21,6 @@ export default function House() {
   }, []);
 
   const { width } = Dimensions.get('window');
-  const money = useMoneyFormat();
 
   return (
     <ScrollView
@@ -31,7 +29,7 @@ export default function House() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <View className="px-4 mt-[7%] bg-white">
         <View className="flex flex-row justify-between items-center mb-4">
-          <Text className="font-bold text-2xl">Encontre uma acomodação perfeita</Text>
+          <Text className="font-poppins-bold text-2xl">Encontre uma acomodação perfeita</Text>
           <Link href="/notification">
             <IconButton icon="bell" iconColor="#8b6cef" />
           </Link>
@@ -63,15 +61,7 @@ export default function House() {
             showsHorizontalScrollIndicator={false}
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
-            renderItem={({ item }) => (
-              <HomeCard.Big
-                key={item.id}
-                image={item.image}
-                location={item.location}
-                price={money.format(item.price)}
-                status={item.status}
-              />
-            )}
+            renderItem={({ item }) => <HomeCard.Big {...item} />}
           />
         </HomeCard.Root>
 
@@ -82,15 +72,7 @@ export default function House() {
             showsHorizontalScrollIndicator={false}
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
-            renderItem={({ item }) => (
-              <HomeCard.Small
-                key={item.id}
-                image={item.image}
-                location={item.location}
-                price={money.format(item.price)}
-                status={item.status}
-              />
-            )}
+            renderItem={({ item }) => <HomeCard.Small {...item} />}
           />
         </HomeCard.Root>
 
@@ -100,15 +82,7 @@ export default function House() {
             showsHorizontalScrollIndicator={false}
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
-            renderItem={({ item }) => (
-              <HomeCard.Small
-                key={item.id}
-                image={item.image}
-                location={item.location}
-                price={money.format(item.price)}
-                status={item.status}
-              />
-            )}
+            renderItem={({ item }) => <HomeCard.Small {...item} />}
           />
         </HomeCard.Root>
 
@@ -118,15 +92,7 @@ export default function House() {
             showsHorizontalScrollIndicator={false}
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
-            renderItem={({ item }) => (
-              <HomeCard.Small
-                key={item.id}
-                image={item.image}
-                location={item.location}
-                price={money.format(item.price)}
-                status={item.status}
-              />
-            )}
+            renderItem={({ item }) => <HomeCard.Small {...item} />}
           />
         </HomeCard.Root>
 
@@ -136,19 +102,11 @@ export default function House() {
             showsHorizontalScrollIndicator={false}
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
-            renderItem={({ item }) => (
-              <HomeCard.Small
-                key={item.id}
-                image={item.image}
-                location={item.location}
-                price={money.format(item.price)}
-                status={item.status}
-              />
-            )}
+            renderItem={({ item }) => <HomeCard.Small {...item} />}
           />
         </HomeCard.Root>
       </View>
-      <StatusBar style="dark" backgroundColor="white" />
+      <StatusBar style="dark" backgroundColor="#fff" />
     </ScrollView>
   );
 }

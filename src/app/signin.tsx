@@ -32,20 +32,28 @@ export default function SignIn() {
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { signInWithPassword } = useSupabase();
 
-  function onSubmit(data: FormData) {
-    signInWithPassword(data.email, data.password)
+  function onSubmit({ email, password }: FormData) {
+    setLoading(true);
+    signInWithPassword(email, password)
       .then(() => {
+        router.replace('/(root)/home');
+      })
+      .catch((response) => {
         reset({
           email: '',
           password: '',
         });
 
-        router.replace('/(root)/home');
+        if (response.redirect) router.replace(response.redirect);
+        else {
+          Alert.alert('Erro na autenticação', response.message);
+        }
       })
-      .catch((response) => {
-        Alert.alert('Erro na autenticação', response);
+      .finally(() => {
+        setLoading(false);
       });
   }
 
@@ -152,6 +160,7 @@ export default function SignIn() {
             buttonColor={Constants.colors.primary}
             textColor="white"
             uppercase={false}
+            loading={loading}
             onPress={handleSubmit(onSubmit)}>
             Entrar
           </Button>

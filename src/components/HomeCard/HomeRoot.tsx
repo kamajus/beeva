@@ -17,11 +17,11 @@ export default function HomeRoot({ children, title, withoutPlus, icon, iconColor
       <View className="flex flex-row justify-between mb-4">
         <View className="flex flex-row items-center gap-2">
           {icon && <Icon name={icon} color={iconColor} size={23} />}
-          <Text className="font-bold text-lg">{title}</Text>
+          <Text className="font-poppins-bold text-lg">{title}</Text>
         </View>
         {!withoutPlus && (
           <TouchableOpacity className="flex flex-row items-center gap-2">
-            <Text className="font-medium text-[#8b6cef]">Ver mais</Text>
+            <Text className="font-poppins-medium text-[#8b6cef]">Ver mais</Text>
             <MaterialIcon name="arrow-right-alt" color="#8b6cef" size={20} />
           </TouchableOpacity>
         )}
