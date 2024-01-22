@@ -1,19 +1,28 @@
-import clsx from 'clsx';
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Text, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { ResidencePropsCard } from '../../assets/@types';
-import MapPin from '../../assets/images/map-pin';
+import { Residence } from '../../assets/@types';
+import useMoneyFormat from '../../hooks/useMoneyFormat';
 
-export default function HomeSmall({ id, image, location, price, status }: ResidencePropsCard) {
+export default function HomeSmall(props: Residence) {
   const [saved, setSaved] = useState(false);
+  const money = useMoneyFormat();
 
   return (
-    <Link href={`/residence/${id}`}>
+    <Link
+      href={{
+        pathname: '/residence/[id]',
+        params: { id: '6998358e-23cd-4c08-9276-2bec1c240030' },
+      }}>
       <View className="px-2 py-3 rounded-xl mb-2 mr-2 relative">
-        <Image source={image} alt="Home" className="w-[172px] h-[190px] rounded-xl mb-2 relative" />
+        <Image
+          source={{ uri: String(props.cover) }}
+          alt="Home"
+          className="w-[172px] h-[190px] rounded-xl mb-2 relative"
+        />
         <IconButton
           icon={saved ? 'heart' : 'cards-heart-outline'}
           mode="outlined"
@@ -25,21 +34,11 @@ export default function HomeSmall({ id, image, location, price, status }: Reside
 
         <View className="w-full gap-1">
           <View className="flex flex-row items-center">
-            <MapPin size={18} />
-            <Text className="font-poppins-medium text-xs ml-1">{location}</Text>
+            <Icon name="location-pin" color="black" size={18} />
+            <Text className="font-poppins-medium text-xs ml-1">{props.location}</Text>
           </View>
-          <Text className="font-poppins-semibold text-sm ">{price}</Text>
+          <Text className="font-poppins-semibold text-sm">{money.format(props.price)}</Text>
         </View>
-
-        <Text
-          className={clsx(
-            'font-poppins-medium text-sm text-white bg-[#6c80efb7] rounded-full px-6 py-2 absolute top-[156px] right-4',
-            {
-              hidden: status === 'sell',
-            },
-          )}>
-          /mês
-        </Text>
       </View>
     </Link>
   );

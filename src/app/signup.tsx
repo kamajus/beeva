@@ -42,29 +42,32 @@ export default function SignIn() {
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const { signUp } = useSupabase();
+  const { signUp, session } = useSupabase();
   const router = useRouter();
 
   function onSubmit(data: FormData) {
     signUp(data.email, data.password)
       .then(async () => {
+        console.log(session?.user.id);
+
         const { error } = await supabase
           .from('users')
-          .upsert({ first_name: data.firstName, last_name: data.lastName });
+          .insert([{ email: data.email, first_name: data.firstName, last_name: data.lastName }]);
 
-        if (error?.code && error?.code !== '42501') {
+        if (error) {
           Alert.alert(
             'Erro na autenticação',
             'Algo de errado aconteceu, tente novamente mais tarde.',
           );
-        }
-
-        if (error?.code === '42501') {
+        } else {
           router.replace(`/verification/${data.email}`);
         }
       })
-      .catch((response) => {
-        Alert.alert('Erro na autenticação', response);
+      .catch(() => {
+        Alert.alert(
+          'Erro na autenticação',
+          'Algo de errado aconteceu, tente novamente mais tarde.',
+        );
       });
 
     reset({

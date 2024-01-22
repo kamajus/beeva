@@ -12,21 +12,35 @@ const inputWidth = width - width * 0.16;
 export default function Confirmation() {
   const { email } = useLocalSearchParams();
   const [code, setCode] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+
   const router = useRouter();
 
   async function signInWithOtp() {
+    setLoading(true);
+    setError(false);
+
     await supabase.auth
       .verifyOtp({
         email: String(email),
         token: code,
         type: 'email',
       })
-      .then(() => {
-        router.replace('/(root)/home');
+      .then(({ error }) => {
+        setError(false);
+
+        if (!error) {
+          router.replace('/(root)/home');
+        } else {
+          setError(true);
+        }
       })
       .catch(() => {
         setError(true);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
@@ -36,18 +50,19 @@ export default function Confirmation() {
         <View>
           <Text style={styles.title}>Confirmação de email</Text>
           <Text style={styles.message}>
-            Enviamos um código de confirmação de 5 dígitos para{' '}
+            Enviamos um código de confirmação de 6 dígitos para{' '}
             <Text style={styles.highlight}>{email}</Text>.{'\n'}
           </Text>
           <Link href="/signup" className="text-primary font-poppins-medium">
             Voltar
           </Link>
           <OtpInput
-            numberOfDigits={5}
+            numberOfDigits={6}
             focusColor={Constants.colors.primary}
             theme={{
               containerStyle: styles.Ocontainer,
               pinCodeContainerStyle: styles.pinCode,
+              pinCodeTextStyle: styles.pinCodeTextStyle,
             }}
             onTextChange={(value) => setCode(value)}
             focusStickBlinkingDuration={500}
@@ -66,6 +81,7 @@ export default function Confirmation() {
             buttonColor={Constants.colors.primary}
             textColor="white"
             uppercase={false}
+            loading={loading}
             onPress={signInWithOtp}>
             Verificar
           </Button>
@@ -104,10 +120,14 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    fontFamily: 'poppins-medium',
   },
   pinCode: {
-    width: inputWidth / 5 - 10,
-    height: inputWidth / 5 - 10,
+    width: inputWidth / 6 - 10,
+    height: inputWidth / 6 - 10,
     fontFamily: 'poppins-medium',
+  },
+  pinCodeTextStyle: {
+    fontFamily: 'poppins-semibold',
   },
 });

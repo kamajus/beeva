@@ -4,7 +4,7 @@ import { View } from 'react-native';
 
 interface TextFieldContainerProps {
   children: ReactNode;
-  errors?: string | undefined;
+  error?: boolean;
   styles?: object;
   disableFocus?: boolean;
 }
@@ -15,8 +15,8 @@ export default function TextFieldContainer(props: TextFieldContainerProps) {
       className={clsx(
         'w-full px-2 flex-row items-center bg-[#f5f5f5] border-2 border-[#f5f5f5] rounded',
         {
-          'border-red-500': props.errors,
-          'focus:border-[#8b6cef]': !props.disableFocus,
+          'focus:border-[#BA1A1A]': props.error && !props.disableFocus,
+          'focus:border-primary': !props.error && !props.disableFocus,
         },
       )}
       style={props.styles}>

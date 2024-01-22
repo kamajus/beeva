@@ -2,33 +2,7 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 
-export const categories = [
-  {
-    name: 'Todos',
-    value: 'all',
-    emoji: '🌐',
-  },
-  {
-    name: 'Apartamentos',
-    value: 'apartments',
-    emoji: '🏢',
-  },
-  {
-    name: 'Vivendas',
-    value: 'houses',
-    emoji: '🏡',
-  },
-  {
-    name: 'Terrenos',
-    value: 'lands',
-    emoji: '🚧',
-  },
-  {
-    name: 'Outros',
-    value: 'others',
-    emoji: '🏪',
-  },
-];
+import Constants from '../constants';
 
 export default function Filter() {
   const [buttonActive, setButtonActive] = useState<string | undefined>('Todos');
@@ -41,7 +15,7 @@ export default function Filter() {
     <ScrollView>
       <View>
         <FlatList
-          data={categories}
+          data={Constants.categories}
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item.value}
           horizontal
@@ -49,7 +23,7 @@ export default function Filter() {
             <Pressable
               className={clsx('mr-2 py-4 px-5 border-t-transparent rounded-md bg-[#f5f5f5]', {
                 'bg-[#a78bfa9a]': buttonActive === item.name,
-                'mr-0': categories[categories.length - 1] === item,
+                'mr-0': Constants.categories[Constants.categories.length - 1] === item,
               })}
               onPress={() => onButtonActive(item.name)}>
               <Text className="font-poppins-medium text-black text-sm">

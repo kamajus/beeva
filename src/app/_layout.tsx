@@ -39,13 +39,7 @@ export default function () {
             headerShown: false,
           }}>
           <Stack.Screen name="index" />
-          <Stack.Screen
-            name="residence/[id]"
-            options={{
-              headerShown: false,
-              title: 'Propriedade',
-            }}
-          />
+
           <Stack.Screen
             name="notification"
             options={{
@@ -55,24 +49,10 @@ export default function () {
               ),
             }}
           />
-          <Stack.Screen
-            name="search"
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="verification/[email]"
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name="(settings)"
-            options={{
-              headerShown: false,
-            }}
-          />
+          <Stack.Screen name="verification/[email]" />
+          <Stack.Screen name="residence/[id]" />
+          <Stack.Screen name="(settings)" />
+          <Stack.Screen name="search" />
         </Stack>
       </PaperProvider>
     </SupabaseProvider>

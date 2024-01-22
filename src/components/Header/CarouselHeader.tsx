@@ -1,32 +1,46 @@
 import Constants from 'expo-constants';
-import { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { View, Dimensions } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import IconFeather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/Ionicons';
 
+import { useSupabase } from '../../hooks/useSupabase';
+
 interface CarouselHeaderProps {
-  goBack: () => void;
+  residence_id: string;
 }
 
-export default function CarouselHeader({ goBack }: CarouselHeaderProps) {
+export default function CarouselHeader(props: CarouselHeaderProps) {
+  const { residenceIsFavorite, handleFavorite } = useSupabase();
   const { width } = Dimensions.get('window');
   const [saved, setSaved] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    residenceIsFavorite(props.residence_id).then((data) => {
+      setSaved(data);
+    });
+  }, []);
 
   return (
     <View
       style={{ width, marginTop: Constants.statusBarHeight + 20 }}
       className="absolute flex px-4 flex-row justify-between items-center">
-      <IconFeather name="arrow-left" color="#000" size={25} onPress={goBack} />
+      <IconFeather name="arrow-left" color="#fff" size={25} onPress={() => router.back()} />
       <View className="flex gap-x-2 flex-row items-center">
         <IconButton
           icon={saved ? 'heart' : 'cards-heart-outline'}
           mode="outlined"
-          iconColor={saved ? '#fd6963' : '#000'}
+          iconColor={saved ? '#fd6963' : '#fff'}
           containerColor={saved ? '#fff' : 'transparent'}
-          onPress={() => setSaved(!saved)}
+          onPress={() => {
+            setSaved(!saved);
+            handleFavorite(props.residence_id, saved);
+          }}
         />
-        <Icon name="share-social-outline" size={24} />
+        <Icon name="share-social-outline" size={24} color="#fff" />
       </View>
     </View>
   );

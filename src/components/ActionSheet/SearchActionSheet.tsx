@@ -5,6 +5,7 @@ import { Button, IconButton, RadioButton } from 'react-native-paper';
 
 import Constants from '../../constants';
 import Filter from '../Filter';
+import TextField from '../TextField';
 
 export default function SearchActionSheet(props: SheetProps) {
   const [state, setState] = useState('sell');
@@ -14,16 +15,16 @@ export default function SearchActionSheet(props: SheetProps) {
       <View>
         <View className="flex flex-row items-center gap-x-1 px-2 py-4 border-b border-b-gray-300">
           <IconButton icon="close" size={20} onPress={() => SheetManager.hide('search-sheet')} />
-          <Text className="font-semibold text-lg">Filtros</Text>
+          <Text className="font-poppins-semibold text-lg">Filtros</Text>
         </View>
 
         <View className="p-4">
-          <Text className="font-medium text-base mb-3">Tipo de residência</Text>
+          <Text className="font-poppins-medium text-base mb-3">Tipo de residência</Text>
           <Filter />
         </View>
 
         <View className="p-4">
-          <Text className="font-medium text-base mb-3">Tipo de venda</Text>
+          <Text className="font-poppins-medium text-base mb-3">Tipo de venda</Text>
           <View className="flex flex-row justify-between items-center">
             <Text className="text-sm font-poppins-regular">Arrendamento</Text>
             <RadioButton
@@ -46,7 +47,7 @@ export default function SearchActionSheet(props: SheetProps) {
         </View>
 
         <View className="p-4">
-          <Text className="font-medium text-base mb-3">Preço minimo</Text>
+          <TextField.Label isRequired>Preço minimo</TextField.Label>
           <TextInput
             className="bg-[#f5f5f5] h-14 p-4 rounded font-poppins-medium"
             placeholder="0.0 Kz"
@@ -55,7 +56,7 @@ export default function SearchActionSheet(props: SheetProps) {
         </View>
 
         <View className="p-4">
-          <Text className="font-medium text-base mb-3">Preço máximo</Text>
+          <TextField.Label isRequired>Preço máximo</TextField.Label>
           <TextInput
             className="bg-[#f5f5f5] h-14 p-4 rounded font-poppins-medium"
             placeholder="0.0 Kz"
@@ -73,7 +74,7 @@ export default function SearchActionSheet(props: SheetProps) {
               marginTop: 10,
             }}
             mode="text"
-            buttonColor="#E54D2E"
+            buttonColor={Constants.colors.alert}
             textColor="white"
             uppercase={false}>
             Remover filtros
