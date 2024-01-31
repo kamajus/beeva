@@ -423,12 +423,10 @@ export default function Perfil() {
               />
             </View>
           </View>
-          <View style={{ height: ExpoConstants.statusBarHeight }} />
         </ScrollView>
       </KeyboardAvoidingView>
       <Header.Action
         title="Editar perfil"
-        actionTitle="Salvar"
         onPress={handleSubmit(onSubmit)}
         loading={loading}
         goBack={router.back}
