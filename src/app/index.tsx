@@ -1,4 +1,3 @@
-import 'react-native-get-random-values';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Text } from 'react-native';
