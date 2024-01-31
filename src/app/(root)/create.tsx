@@ -345,7 +345,6 @@ export default function Editor() {
 
       <Header.Action
         title="Criar postagem"
-        actionTitle="Salvar"
         loading={loading}
         goBack={router.back}
         onPress={handleSubmit(onSubmit)}

@@ -132,8 +132,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        // set this to false if you do not want the user to be automatically signed up
-        shouldCreateUser: false,
+        shouldCreateUser: true,
         emailRedirectTo: 'https://example.com/welcome',
       },
     });
@@ -181,7 +180,6 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
               schema: 'public',
             },
             async (payload) => {
-              console.log(payload);
               if (session?.user.id) {
                 getUserById(session?.user.id, true).then((data) => {
                   setUser(data);
