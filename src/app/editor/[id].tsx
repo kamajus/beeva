@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import ExpoConstants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -13,13 +13,13 @@ import CurrencyInput from 'react-native-currency-input';
 import { HelperText, RadioButton } from 'react-native-paper';
 import * as yup from 'yup';
 
-import { Residence } from '../../assets/@types';
 import GaleryGrid from '../../components/GaleryGrid';
 import Header from '../../components/Header';
 import SearchSelect from '../../components/SearchSelect';
 import TextField from '../../components/TextField';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
+import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
 
 interface FormData {
@@ -49,98 +49,197 @@ const schema = yup.object({
 });
 
 export default function Editor() {
+  const { openedResidences, setOpenedResidences, setUserResidences } = useCache();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+
+  const defaultData = openedResidences.find((residence) => residence.id === id);
+
   const {
     handleSubmit,
     control,
-    reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      description: defaultData?.description ? defaultData.description : '',
+      location: defaultData?.location ? defaultData.location : '',
+      price: defaultData?.price ? defaultData.price : 0,
+    },
   });
 
-  const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
+  const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>(
+    defaultData?.photos
+      ? defaultData.photos.map((uri) => ({
+          uri,
+          width: 300,
+          height: 300,
+          assetId: uri,
+        }))
+      : [],
+  );
 
-  const [cover, setCover] = useState<string | null>();
-  const [price, setPrice] = useState<number | null>(0);
-  const [kind, setKind] = useState('apartment');
-  const [state, setState] = useState('rent');
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+
+  const [cover, setCover] = useState<string | null | undefined>(
+    defaultData?.cover ? String(defaultData.cover) : undefined,
+  );
+  const [price, setPrice] = useState<number | null>(defaultData?.price ? defaultData.price : 0);
+  const [kind, setKind] = useState(defaultData?.kind ? defaultData.kind : 'apartment');
+  const [state, setState] = useState(defaultData?.state ? defaultData.state : 'rent');
   const { user } = useSupabase();
-
   const [loading, setLoading] = useState(false);
 
-  async function onSubmit(formData: FormData) {
-    const photos: string[] = [];
+  const [isPhotoChaged, setPhotoChanged] = useState(false);
 
-    if (images.length !== 0 && cover) {
-      setLoading(true);
-
-      const { data, error } = await supabase
-        .from('residences')
-        .insert([
-          {
-            price,
-            location: formData.location,
-            description: formData.description,
-            state,
-            kind,
-          },
-        ])
-        .select('*')
-        .single<Residence>();
-
-      if (!error) {
-        for (const [index, image] of images.entries()) {
+  async function uploadImages() {
+    const imagesToAppend = openedResidences.find((r) => r.id === id)?.photos || [];
+    for (const image of images) {
+      // Checking if the image has already been posted or is stored locally
+      if (!image.uri.includes(`https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co`)) {
+        try {
+          // Read image as base64
           const base64 = await FileSystem.readAsStringAsync(image.uri, { encoding: 'base64' });
-          const filePath = `${user?.id}/${data?.id}/${new Date().getTime()}`;
 
+          // Define the file path based on user ID, residence ID, and timestamp
+          const filePath = `${user?.id}/${id}/${new Date().getTime()}`;
+
+          // Upload the image to Supabase storage
           const { data: photo, error: uploadError } = await supabase.storage
             .from('residences')
             .upload(filePath, decode(base64), { contentType: 'image/png' });
 
-          photos.push(
+          imagesToAppend.push(
             `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`,
           );
 
-          if (image.uri === cover) {
-            await supabase
-              .from('residences')
-              .update({ cover: photos[index] })
-              .eq('id', data?.id);
+          // Check if the uploaded image is the cover image
+          if (image.uri === cover && !uploadError) {
+            const coverURL = `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`;
+            await supabase.from('residences').update({ cover: coverURL }).eq('id', id);
           }
 
           if (uploadError) {
             Alert.alert(
-              'Erro a realizar postagem',
-              'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
+              'Erro ao Carregar Imagens',
+              'Houve um problema ao tentar carregar as imagens que você forneceu.',
             );
           }
+        } catch (error) {
+          console.error('Erro durante o envio da imagem:', error);
+          Alert.alert('Erro', 'Ocorreu um erro inesperado durante o envio da imagem.');
         }
-
-        await supabase
-          .from('residences')
-          .update({ photos })
-          .eq('id', data?.id);
-
-        setImages([]);
-        reset({});
-        setLoading(false);
-        router.replace(`/(root)/home`);
-      } else {
-        Alert.alert(
-          'Erro a realizar postagem',
-          'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
-        );
       }
+    }
+
+    await supabase.from('residences').update({ photos: imagesToAppend }).eq('id', id);
+    const residences = openedResidences.map((residence) => {
+      if (residence.id === id && residence.photos) {
+        return { ...residence, photos: imagesToAppend };
+      }
+      return residence;
+    });
+
+    setOpenedResidences(residences);
+    setUserResidences(residences);
+  }
+
+  async function onSubmit(formData: FormData) {
+    const hasSelectedImages = images.length > 0;
+    const isCoverChanged = defaultData?.cover !== cover && cover;
+    const isDataDirty = isDirty || isCoverChanged;
+    const isStateDifferent = defaultData?.state !== state;
+    const isKindDifferent = defaultData?.kind !== kind;
+    const hasDeletedImages = imagesToDelete.length > 0;
+
+    if (
+      hasSelectedImages &&
+      (isCoverChanged ||
+        isDirty ||
+        isKindDifferent ||
+        isStateDifferent ||
+        hasDeletedImages ||
+        isPhotoChaged)
+    ) {
+      setLoading(true);
+
+      if (isDataDirty || defaultData?.cover !== cover) {
+        await updateResidenceData(formData);
+      }
+
+      // Delete selected images
+      if (hasDeletedImages) {
+        await removeDeletedImages();
+      }
+
+      // Add new images
+      if (isPhotoChaged) {
+        await uploadImages();
+      }
+
+      setLoading(false);
     } else {
-      if (images.length === 0) {
+      if (!hasSelectedImages) {
         Alert.alert('Erro a realizar postagem', 'Não selecionaste nenhuma foto da residência.');
-      } else {
+      }
+
+      if (!cover) {
         Alert.alert(
           'Erro a realizar postagem',
           'Escolha uma fotografia para ser a foto de capa da sua residência.',
         );
       }
     }
+  }
+
+  async function updateResidenceData(formData: FormData) {
+    const { error } = await supabase
+      .from('residences')
+      .update({
+        price,
+        location: formData.location,
+        description: formData.description,
+        cover,
+        state,
+        kind,
+      })
+      .eq('id', id);
+
+    if (error) {
+      Alert.alert(
+        'Erro a realizar postagem',
+        'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
+      );
+    }
+  }
+
+  async function removeDeletedImages() {
+    const filesToRemove = imagesToDelete.map((image) =>
+      image.replace(
+        `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
+        '',
+      ),
+    );
+
+    await supabase.storage.from('residences').remove(filesToRemove);
+
+    // Remove all delete images from cache
+    const residences = openedResidences.map((residence) => {
+      if (residence.id === id && residence.photos) {
+        const updatedPhotos = residence.photos.filter((image) => !imagesToDelete.includes(image));
+        return { ...residence, photos: updatedPhotos };
+      }
+      return residence;
+    });
+
+    setOpenedResidences(residences);
+    setUserResidences(residences);
+
+    await supabase
+      .from('residences')
+      .update({ photos: residences.find((r) => r.id === id)?.photos })
+      .eq('id', id);
+
+    setImagesToDelete([]);
   }
 
   return (
@@ -197,13 +296,14 @@ export default function Editor() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, onBlur } }) => (
+              render={({ field: { onChange, onBlur, value } }) => (
                 <View>
                   <View>
                     <SearchSelect
                       onBlur={onBlur}
                       onChange={onChange}
                       editable={!loading}
+                      value={value}
                       placeholder="Onde está localizada?"
                       error={errors.location?.message !== undefined}
                     />
@@ -337,6 +437,9 @@ export default function Editor() {
               setCover={setCover}
               setImages={setImages}
               disabled={loading}
+              setImagesToDelete={setImagesToDelete}
+              imagesToDelete={imagesToDelete}
+              setPhotoChanged={setPhotoChanged}
             />
           </View>
         </View>
@@ -344,8 +447,8 @@ export default function Editor() {
       </ScrollView>
 
       <Header.Action
-        title="Criar postagem"
-        actionTitle="Salvar"
+        title="Editar postagem"
+        actionTitle="Editar"
         loading={loading}
         goBack={router.back}
         onPress={handleSubmit(onSubmit)}

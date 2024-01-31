@@ -16,8 +16,12 @@ interface FormData {
 }
 
 const schema = yup.object({
-  email: yup.string().email().required(),
-  password: yup.string().required(),
+  email: yup.string().email('Endereço de e-mail inválido').required('O e-mail é obrigatório'),
+  password: yup
+    .string()
+    .required('A senha é obrigatória')
+    .min(8, 'A senha deve ter pelo menos 8 caracteres')
+    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número'),
 });
 
 export default function SignIn() {
@@ -42,14 +46,13 @@ export default function SignIn() {
         router.replace('/(root)/home');
       })
       .catch((response) => {
-        reset({
-          email: '',
-          password: '',
-        });
-
         if (response.redirect) router.replace(response.redirect);
         else {
           Alert.alert('Erro na autenticação', response.message);
+          reset({
+            email: '',
+            password: '',
+          });
         }
       })
       .finally(() => {

@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { PaperProvider, MD2LightTheme, configureFonts } from 'react-native-paper';
 
 import Header from '../components/Header';
+import CacheProvider from '../contexts/CacheProvider';
 import { SupabaseProvider } from '../contexts/SupabaseProvider';
 
 export default function () {
@@ -32,29 +33,31 @@ export default function () {
   };
 
   return (
-    <SupabaseProvider>
-      <PaperProvider theme={theme}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <Stack.Screen name="index" />
+    <CacheProvider>
+      <SupabaseProvider>
+        <PaperProvider theme={theme}>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <Stack.Screen name="index" />
 
-          <Stack.Screen
-            name="notification"
-            options={{
-              headerShown: true,
-              header: ({ navigation }) => (
-                <Header.Normal title="Notificações" goBack={navigation.goBack} />
-              ),
-            }}
-          />
-          <Stack.Screen name="verification/[email]" />
-          <Stack.Screen name="residence/[id]" />
-          <Stack.Screen name="(settings)" />
-          <Stack.Screen name="search" />
-        </Stack>
-      </PaperProvider>
-    </SupabaseProvider>
+            <Stack.Screen
+              name="notification"
+              options={{
+                headerShown: true,
+                header: ({ navigation }) => (
+                  <Header.Normal title="Notificações" goBack={navigation.goBack} />
+                ),
+              }}
+            />
+            <Stack.Screen name="verification/[email]" />
+            <Stack.Screen name="residence/[id]" />
+            <Stack.Screen name="(settings)" />
+            <Stack.Screen name="search" />
+          </Stack>
+        </PaperProvider>
+      </SupabaseProvider>
+    </CacheProvider>
   );
 }

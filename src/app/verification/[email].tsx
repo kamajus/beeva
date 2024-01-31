@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams, useRouter } from 'expo-router';
+import { Link, useLocalSearchParams, router } from 'expo-router';
 import { useState } from 'react';
 import { Text, ScrollView, StyleSheet, StatusBar, Dimensions, View } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
@@ -14,8 +14,6 @@ export default function Confirmation() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-
-  const router = useRouter();
 
   async function signInWithOtp() {
     setLoading(true);

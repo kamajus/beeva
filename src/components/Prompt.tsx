@@ -1,6 +1,5 @@
-import { useRouter } from 'expo-router';
 import { useState, cloneElement, ReactElement } from 'react';
-import { Alert, View } from 'react-native';
+import { View } from 'react-native';
 import { Button, Dialog, Portal, Text } from 'react-native-paper';
 
 import Constants from '../constants';
@@ -17,30 +16,12 @@ export default function Prompt(props: PromptProps) {
 
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
-  const router = useRouter();
 
   function handleClick() {
-    setVisible(true);
-    setDisabled(false);
+    setVisible(false);
+    setDisabled(true);
 
-    props
-      .onPress()
-      .then(() => {
-        setVisible(false);
-        setDisabled(true);
-
-        Alert.alert('Alerta', 'A residência foi eliminada com sucesso, clique em continuar.');
-        router.replace('/home');
-      })
-      .catch(() => {
-        Alert.alert(
-          'Erro na postagem',
-          'Não foi possível realizar a postagem da casa, tente mais tarde.',
-        );
-      })
-      .finally(() => {
-        setDisabled(true);
-      });
+    props.onPress();
   }
 
   return (

@@ -6,6 +6,7 @@ import { placeApi } from '../../config/axios';
 import TextField from '../TextField';
 
 interface SearchSelectProps {
+  value?: string;
   placeholder: string;
   onBlur: () => void;
   onChange: (...event: any[]) => void;
@@ -16,7 +17,7 @@ interface SearchSelectProps {
 export default function SearchSelect(props: SearchSelectProps) {
   const [dataSource, setDataSource] = useState<string[]>([]);
   const [searching, setSearching] = useState(false);
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(props.value ? `${props.value}` : '');
 
   const onSearch = (text: string) => {
     if (text) {
@@ -54,7 +55,7 @@ export default function SearchSelect(props: SearchSelectProps) {
               onChangeText={onSearch}
               onBlur={props.onBlur}
               editable={props.editable}
-              defaultValue={value}
+              value={value}
             />
           </TextField.Container>
           {searching && (

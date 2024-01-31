@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import { Text, View, Dimensions, Pressable } from 'react-native';
+import { Text, View, Pressable } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -20,12 +20,10 @@ export default function ActionHeader({
   onPress,
   loading,
 }: ActionHeaderProps) {
-  const { width } = Dimensions.get('screen');
-
   return (
     <View
-      style={{ top: Constants.statusBarHeight, width }}
-      className="absolute top-8 py-4 px-4 flex gap-x-4 flex-row items-center justify-between bg-white border-b-[.5px] border-b-gray-300">
+      style={{ top: Constants.statusBarHeight }}
+      className="w-full absolute top-8 py-4 px-4 flex gap-x-4 flex-row items-center justify-between bg-white border-b-[.5px] border-b-gray-300">
       <Icon name="arrow-left" color="#000" size={25} onPress={goBack} />
       <Text className="font-poppins-medium text-base">{title}</Text>
       {!loading ? (

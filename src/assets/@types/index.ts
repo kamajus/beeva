@@ -5,6 +5,7 @@ import { Database } from './supabase';
 export type ResidenceTypes = 'apartment' | 'land' | 'others' | 'villa' | 'all';
 export type Residence = Database['public']['Tables']['residences']['Row'];
 export type User = Database['public']['Tables']['users']['Row'];
+export type Notification = Database['public']['Tables']['notifications']['Row'];
 
 type WithoutPrice<T> = {
   [K in Exclude<keyof T, 'price'>]: T[K];

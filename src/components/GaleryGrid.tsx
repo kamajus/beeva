@@ -4,17 +4,27 @@ import { Dispatch, SetStateAction } from 'react';
 import { FlatList, Image, Pressable, View } from 'react-native';
 import { Button, IconButton } from 'react-native-paper';
 
-import constants from '../constants';
-
 interface GaleryProps {
   images: ImagePicker.ImagePickerAsset[];
   cover: string | null | undefined;
   setCover: Dispatch<React.SetStateAction<string | null | undefined>>;
   setImages: Dispatch<SetStateAction<ImagePicker.ImagePickerAsset[]>>;
+  setImagesToDelete?: Dispatch<React.SetStateAction<string[]>>;
+  imagesToDelete?: string[];
   disabled?: boolean;
+  setPhotoChanged?: Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function Galery({ images, setImages, cover, setCover, disabled }: GaleryProps) {
+export default function Galery({
+  images,
+  setImages,
+  cover,
+  setCover,
+  disabled,
+  setImagesToDelete,
+  imagesToDelete,
+  setPhotoChanged,
+}: GaleryProps) {
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -29,6 +39,10 @@ export default function Galery({ images, setImages, cover, setCover, disabled }:
         setCover(result.assets[0].uri);
       }
       setImages([...images, ...result.assets]);
+
+      if (setPhotoChanged) {
+        setPhotoChanged(true);
+      }
     }
   }
 
@@ -43,6 +57,16 @@ export default function Galery({ images, setImages, cover, setCover, disabled }:
               className="relative mb-4"
               onLongPress={() => {
                 setImages(images.filter((other) => other !== item));
+
+                if (imagesToDelete && setImagesToDelete) {
+                  if (
+                    item.uri.includes(
+                      `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
+                    )
+                  ) {
+                    setImagesToDelete([...imagesToDelete, item.uri]);
+                  }
+                }
 
                 if (cover === item.uri) {
                   setCover(undefined);
@@ -82,7 +106,7 @@ export default function Galery({ images, setImages, cover, setCover, disabled }:
         }}
         style={{
           height: 56,
-          backgroundColor: constants.colors.primary,
+          backgroundColor: '#212121',
         }}
         className={clsx('flex items-center justify-center', {
           hidden: disabled || images.length >= 5,

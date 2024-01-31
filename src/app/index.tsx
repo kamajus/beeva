@@ -1,5 +1,7 @@
 import 'react-native-get-random-values';
 import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import { Text } from 'react-native';
 
 import SignIn from './signin';
 import useLoadFonts from '../hooks/useLoadFonts';
@@ -10,13 +12,21 @@ export default function App() {
   const { session, initialized } = useSupabase();
   const { replace } = useRouter();
 
+  useEffect(() => {
+    const handleRedirect = () => {
+      if (initialized) {
+        if (session) {
+          replace('/(root)/home');
+        }
+      }
+    };
+
+    handleRedirect();
+  }, [session, initialized, replace]);
+
   if ((!fontsLoaded && !fontError) || !initialized) {
-    return;
+    return <Text>Carregando</Text>;
+  } else {
+    return <SignIn />;
   }
-
-  if (session) {
-    replace('/(root)/home');
-  }
-
-  return <SignIn />;
 }

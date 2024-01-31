@@ -1,18 +1,19 @@
-import { Session, User } from '@supabase/supabase-js';
+import { Session, User as UserSB } from '@supabase/supabase-js';
 import { createContext, useEffect, useState } from 'react';
 
-import { User as UserDB } from '../assets/@types';
+import { User } from '../assets/@types';
 import { supabase } from '../config/supabase';
+import { useCache } from '../hooks/useCache';
 
 type SupabaseContextProps = {
   user: User | null;
   session: Session | null;
   initialized?: boolean;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<UserSB | null | void>;
   signInWithPassword: (email: string, password: string) => Promise<void>;
   sendOtpCode: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
-  getUserById: (id?: string) => Promise<UserDB | void>;
+  getUserById: (id?: string, upsert?: boolean) => Promise<User | void>;
   handleFavorite: (id: string, saved: boolean) => Promise<void>;
   residenceIsFavorite: (id: string) => Promise<boolean>;
 };
@@ -38,18 +39,18 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
+  const { setNotifications, notifications } = useCache();
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
-    if (error) {
-      let message;
-      if (error.status) {
-        message = 'Algo de errado aconteceu, tente novamente mais tarde.';
-      }
-      throw message;
+
+    if (data.user) {
+      return data.user;
+    } else {
+      throw error;
     }
   };
 
@@ -72,29 +73,30 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 
   const handleFavorite = async (id: string, saved: boolean) => {
     if (!saved) {
-      const { error } = await supabase.from('favorites').insert({
+      await supabase.from('favorites').insert({
         residence_id: id,
       });
-      console.log(`Error ${error?.message}`);
     } else {
-      const { error } = await supabase
+      await supabase
         .from('favorites')
         .delete()
         .eq('user_id', user?.id)
         .eq('residence_id', id);
-      console.log(`Error ${error?.message}`);
     }
   };
 
-  async function getUserById(id?: string) {
+  async function getUserById(id?: string, upsert?: boolean) {
+    if (!upsert && user && user?.id === id) {
+      return user;
+    }
+
     const { data, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', !id ? user?.id : id)
-      .single<UserDB>();
+      .single<User>();
 
     if (error) {
-      console.error('Error fetching user:', error.message);
       throw error;
     }
 
@@ -149,10 +151,65 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
   };
 
   useEffect(() => {
-    // Listen for changes to authentication state
-    const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
       setSession(session);
-      setUser(session ? session.user : null);
+
+      if (session) {
+        await getUserById(session?.user.id, true)
+          .then((data) => {
+            setUser(data);
+          })
+          .catch((e) => {
+            console.error(e);
+          });
+
+        const { data: notificationsData } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', session?.user.id);
+
+        if (notificationsData) {
+          setNotifications(notificationsData);
+        }
+
+        supabase
+          .channel('users')
+          .on(
+            'postgres_changes',
+            {
+              event: 'UPDATE',
+              schema: 'public',
+            },
+            async (payload) => {
+              console.log(payload);
+              if (session?.user.id) {
+                getUserById(session?.user.id, true).then((data) => {
+                  setUser(data);
+                });
+              }
+            },
+          )
+          .subscribe();
+
+        supabase
+          .channel('notifications')
+          .on(
+            'postgres_changes',
+            {
+              event: 'INSERT',
+              schema: 'public',
+            },
+            async (payload) => {
+              if (payload['new']) {
+                setNotifications([...notifications, payload['new']]);
+              }
+            },
+          )
+          .subscribe();
+      } else {
+        setUser(null);
+      }
+
       setInitialized(true);
     });
     return () => {
