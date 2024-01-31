@@ -19,10 +19,22 @@ interface FormData {
 }
 
 const schema = yup.object({
-  email: yup.string().required(),
-  firstName: yup.string().required(),
-  lastName: yup.string().required(),
-  password: yup.string().required(),
+  email: yup.string().email('Endereço de e-mail inválido').required('O e-mail é obrigatório'),
+  firstName: yup
+    .string()
+    .required('O campo de nome é obrigatório')
+    .min(2, 'O nome deve ter pelo menos 2 caracteres')
+    .max(50, 'O nome deve ter no máximo 50 caracteres'),
+  lastName: yup
+    .string()
+    .required('O campo de sobrenome é obrigatório')
+    .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
+    .max(50, 'O sobrenome deve ter no máximo 50 caracteres'),
+  password: yup
+    .string()
+    .required('A senha é obrigatória')
+    .min(8, 'A senha deve ter pelo menos 8 caracteres')
+    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número'),
 });
 
 export default function SignIn() {
@@ -42,25 +54,35 @@ export default function SignIn() {
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const { signUp, session } = useSupabase();
+  const { signUp } = useSupabase();
   const router = useRouter();
 
   function onSubmit(data: FormData) {
     signUp(data.email, data.password)
-      .then(async () => {
-        console.log(session?.user.id);
+      .then(async (userData) => {
+        if (userData) {
+          const { error } = await supabase.from('users').insert([
+            {
+              id: userData?.id,
+              email: data.email,
+              first_name: data.firstName,
+              last_name: data.lastName,
+            },
+          ]);
 
-        const { error } = await supabase
-          .from('users')
-          .insert([{ email: data.email, first_name: data.firstName, last_name: data.lastName }]);
-
-        if (error) {
+          if (error) {
+            Alert.alert(
+              'Erro na autenticação',
+              'Algo de errado aconteceu, tente novamente mais tarde.',
+            );
+          } else {
+            router.replace(`/verification/${data.email}`);
+          }
+        } else {
           Alert.alert(
             'Erro na autenticação',
             'Algo de errado aconteceu, tente novamente mais tarde.',
           );
-        } else {
-          router.replace(`/verification/${data.email}`);
         }
       })
       .catch(() => {
@@ -68,14 +90,14 @@ export default function SignIn() {
           'Erro na autenticação',
           'Algo de errado aconteceu, tente novamente mais tarde.',
         );
-      });
 
-    reset({
-      email: '',
-      password: '',
-      firstName: '',
-      lastName: '',
-    });
+        reset({
+          email: '',
+          password: '',
+          firstName: '',
+          lastName: '',
+        });
+      });
   }
 
   return (

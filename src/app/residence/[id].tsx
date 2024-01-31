@@ -1,23 +1,24 @@
 import clsx from 'clsx';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, Link, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
-import { View, Text, ScrollView, RefreshControl, Pressable, Linking } from 'react-native';
+import { View, Text, ScrollView, RefreshControl, Pressable, Linking, Alert } from 'react-native';
 import { Avatar, IconButton } from 'react-native-paper';
 
-import { NewFileObject, Residence, User } from '../../assets/@types';
+import { Residence, User } from '../../assets/@types';
 import Carousel from '../../components/Carousel';
 import Header from '../../components/Header';
 import Prompt from '../../components/Prompt';
 import PublishedSince from '../../components/PublishedSince';
-import { mapApi } from '../../config/axios';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
+import { useCache } from '../../hooks/useCache';
 import useMoneyFormat from '../../hooks/useMoneyFormat';
 import { useSupabase } from '../../hooks/useSupabase';
 
 export default function ResidenceDetail() {
   const [refreshing, setRefreshing] = useState(false);
+  const { setOpenedResidences, openedResidences, setUserResidences } = useCache();
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -28,27 +29,21 @@ export default function ResidenceDetail() {
   }, []);
 
   const { id } = useLocalSearchParams<{ id: string }>();
-
   const money = useMoneyFormat();
 
   const { session, getUserById } = useSupabase();
-  const [residence, setResidence] = useState<Residence | undefined>();
-  const [user, setUser] = useState<User | undefined>();
-
-  const [galery, setGalery] = useState<NewFileObject[] | undefined>();
-  const [kindLabel, setKindLabel] = useState('');
+  const [residence, setResidence] = useState<Residence>();
+  const [user, setUser] = useState<User>();
 
   const [showDescription, setShowDescription] = useState(false);
 
-  const [region, setRegion] = useState({
+  const [region] = useState({
     latitude: 112027,
     longitude: 178739,
   });
 
   async function getResidence() {
-    setResidence(undefined);
-    setGalery(undefined);
-    setUser(undefined);
+    setResidence(openedResidences.find((r) => r.id === id));
 
     const { data: residenceData } = await supabase
       .from('residences')
@@ -59,52 +54,53 @@ export default function ResidenceDetail() {
     if (residenceData) {
       setResidence(residenceData);
 
-      Constants.categories.map((categorie) => {
-        if (categorie.value === residenceData.kind) {
-          setKindLabel(`${categorie.emoji} ${categorie.name}`);
-        }
-      });
-
-      getUserById(residenceData.owner_id).then(async (userData) => {
+      await getUserById(residenceData.owner_id).then(async (userData) => {
         if (userData) {
           setUser(userData);
-
-          const { data } = await supabase.storage
-            .from('residences')
-            .list(`${residenceData.owner_id}/${residenceData.id}`);
-
-          data?.forEach((file) => {
-            const { publicUrl } = supabase.storage
-              .from('residences')
-              .getPublicUrl(`${residenceData.owner_id}/${residenceData.id}/${file.name}`).data;
-
-            if (publicUrl) {
-              const image = {
-                public_url: publicUrl,
-                ...file,
-              };
-
-              setGalery((prevGalery) => [...(prevGalery || []), image]);
-            }
-          });
         }
       });
 
-      mapApi.get(`/?q=${residenceData?.location}&limit=1`).then(({ data }) => {
-        const [latitude, longitude] = data.features[0].geometry.coordinates;
-        setRegion({
-          latitude,
-          longitude,
-        });
-      });
+      const newResidence = openedResidences.findIndex((r) => r.id === id);
+
+      setOpenedResidences((prevResidences) => [
+        ...prevResidences.slice(0, newResidence),
+        residenceData,
+        ...prevResidences.slice(newResidence + 1),
+      ]);
     }
   }
 
   async function deleteResidence() {
-    return await supabase
-      .from('residences')
-      .delete()
-      .eq('id', residence?.id);
+    if (residence?.photos) {
+      const residenceIndex = openedResidences.findIndex((r) => r.id === id);
+
+      const { error } = await supabase.from('residences').delete().eq('id', id);
+
+      const filesToRemove = residence?.photos.map((image) => `${user?.id}/${id}/${image}`);
+
+      if (filesToRemove) {
+        await supabase.storage.from('residences').remove(filesToRemove);
+      }
+
+      if (!error) {
+        Alert.alert('Alerta', 'A residência foi eliminada com sucesso, clique em continuar.');
+
+        setOpenedResidences((prevResidences) =>
+          prevResidences.filter((_, index) => index !== residenceIndex),
+        );
+
+        setUserResidences((prevResidences) =>
+          prevResidences.filter((_, index) => index !== residenceIndex),
+        );
+
+        router.replace('/home');
+      } else {
+        Alert.alert(
+          'Erro na postagem',
+          'Não foi possível eliminar a residência, tente mais tarde.',
+        );
+      }
+    }
   }
 
   useEffect(() => {
@@ -115,8 +111,7 @@ export default function ResidenceDetail() {
     <ScrollView
       className="flex-1 bg-white relative w-full"
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-      <Carousel galery={galery} style={{ height: 460 }} />
-
+      <Carousel photos={residence?.photos} style={{ height: 460 }} />
       <View className="px-4 bg-white flex mt-7">
         <View className="flex flex-row items-center justify-between">
           <View className="flex gap-x-3 flex-row">
@@ -129,7 +124,7 @@ export default function ResidenceDetail() {
             </>
             <View className="">
               <Text className="font-poppins-medium text-base">
-                {user?.first_name ? user?.first_name + user?.last_name : '...'}
+                {user ? `${user?.first_name} ${user?.last_name}` : '...'}
               </Text>
               <Text className="font-poppins-regular text-sm text-gray-400">
                 {user?.email ? (user?.email === session?.user.email ? 'Eu (:' : 'Dono') : '...'}
@@ -137,13 +132,17 @@ export default function ResidenceDetail() {
             </View>
           </View>
 
-          <View className="flex flex-row">
+          <View className="flex flex-row items-center">
             {user?.email === session?.user.email ? (
               <>
                 <Prompt content="Você deseja eliminar essa postagem?" onPress={deleteResidence}>
                   <IconButton icon="delete" mode="outlined" iconColor="#000" />
                 </Prompt>
-                <IconButton icon="pencil-outline" mode="outlined" iconColor="#000" />
+                {residence && (
+                  <Link href={`/editor/${residence.id}`}>
+                    <IconButton icon="pencil-outline" mode="outlined" iconColor="#000" />
+                  </Link>
+                )}
               </>
             ) : (
               <>
@@ -168,7 +167,14 @@ export default function ResidenceDetail() {
 
         <View className="mt-7">
           <Text className="font-poppins-regular text-xs text-gray-400">Tipo</Text>
-          <Text className="font-poppins-medium">{kindLabel ? kindLabel : '....'}</Text>
+          <Text className="font-poppins-medium">
+            {residence &&
+              Constants.categories.map((categorie) => {
+                if (categorie.value === residence.kind) {
+                  return `${categorie.emoji} ${categorie.name}`;
+                }
+              })}
+          </Text>
         </View>
 
         <View className="mt-7">

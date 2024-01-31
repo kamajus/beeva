@@ -36,28 +36,32 @@ export interface Database {
         Row: {
           created_at: string;
           description: string;
-          description_type: string;
           id: number;
+          type: string;
           user_id: string;
+          was_readed: boolean;
         };
         Insert: {
           created_at?: string;
           description: string;
-          description_type: string;
           id?: number;
+          type: string;
           user_id?: string;
+          was_readed?: boolean;
         };
         Update: {
           created_at?: string;
           description?: string;
-          description_type?: string;
           id?: number;
+          type?: string;
           user_id?: string;
+          was_readed?: boolean;
         };
         Relationships: [];
       };
       residences: {
         Row: {
+          approval_status: boolean;
           cover: string | null;
           created_at: string;
           description: string | null;
@@ -65,10 +69,12 @@ export interface Database {
           kind: Database['public']['Enums']['residence_kind'];
           location: string;
           owner_id: string;
+          photos: string[] | null;
           price: number;
           state: Database['public']['Enums']['residence_state'];
         };
         Insert: {
+          approval_status?: boolean;
           cover?: string | null;
           created_at?: string;
           description?: string | null;
@@ -76,10 +82,12 @@ export interface Database {
           kind: Database['public']['Enums']['residence_kind'];
           location: string;
           owner_id?: string;
+          photos?: string[] | null;
           price: number;
           state: Database['public']['Enums']['residence_state'];
         };
         Update: {
+          approval_status?: boolean;
           cover?: string | null;
           created_at?: string;
           description?: string | null;
@@ -87,6 +95,7 @@ export interface Database {
           kind?: Database['public']['Enums']['residence_kind'];
           location?: string;
           owner_id?: string;
+          photos?: string[] | null;
           price?: number;
           state?: Database['public']['Enums']['residence_state'];
         };

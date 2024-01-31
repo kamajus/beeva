@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { ScrollView, Text, TextInput, View } from 'react-native';
 import ActionSheet, { SheetProps, SheetManager } from 'react-native-actions-sheet';
 import { Button, IconButton, RadioButton } from 'react-native-paper';
 
@@ -12,7 +12,7 @@ export default function SearchActionSheet(props: SheetProps) {
 
   return (
     <ActionSheet id={props.sheetId}>
-      <View>
+      <ScrollView>
         <View className="flex flex-row items-center gap-x-1 px-2 py-4 border-b border-b-gray-300">
           <IconButton icon="close" size={20} onPress={() => SheetManager.hide('search-sheet')} />
           <Text className="font-poppins-semibold text-lg">Filtros</Text>
@@ -93,7 +93,7 @@ export default function SearchActionSheet(props: SheetProps) {
             Aplicar
           </Button>
         </View>
-      </View>
+      </ScrollView>
     </ActionSheet>
   );
 }
