@@ -15,7 +15,7 @@ import * as yup from 'yup';
 
 import GaleryGrid from '../../components/GaleryGrid';
 import Header from '../../components/Header';
-import SearchSelect from '../../components/SearchSelect';
+import SearchPlace from '../../components/SearchPlace';
 import TextField from '../../components/TextField';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
@@ -299,7 +299,7 @@ export default function Editor() {
               render={({ field: { onChange, onBlur, value } }) => (
                 <View>
                   <View>
-                    <SearchSelect
+                    <SearchPlace
                       onBlur={onBlur}
                       onChange={onChange}
                       editable={!loading}
