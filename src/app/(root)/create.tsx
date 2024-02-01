@@ -16,7 +16,7 @@ import * as yup from 'yup';
 import { Residence } from '../../assets/@types';
 import GaleryGrid from '../../components/GaleryGrid';
 import Header from '../../components/Header';
-import SearchSelect from '../../components/SearchSelect';
+import SearchPlace from '../../components/SearchPlace';
 import TextField from '../../components/TextField';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
@@ -197,13 +197,14 @@ export default function Editor() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, onBlur } }) => (
+              render={({ field: { onChange, onBlur, value } }) => (
                 <View>
                   <View>
-                    <SearchSelect
+                    <SearchPlace
                       onBlur={onBlur}
                       onChange={onChange}
                       editable={!loading}
+                      value={value}
                       placeholder="Onde está localizada?"
                       error={errors.location?.message !== undefined}
                     />
