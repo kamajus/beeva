@@ -1,19 +1,33 @@
-import { useState } from 'react';
+import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { Residence } from '../../assets/@types';
+import { useCache } from '../../hooks/useCache';
 import useMoneyFormat from '../../hooks/useMoneyFormat';
+import { useSupabase } from '../../hooks/useSupabase';
 import Carousel from '../Carousel';
 
 export default function HomeSearch(props: Residence) {
-  const [saved, setSaved] = useState(false);
+  const { setFavoritesResidences, openedResidences, favoritesResidences } = useCache();
+  const { residenceIsFavorite, handleFavorite } = useSupabase();
+  const [favorite, setFavorite] = useState(favoritesResidences.some((r) => r.id === props.id));
   const money = useMoneyFormat();
 
+  useEffect(() => {
+    residenceIsFavorite(props.id).then((data) => {
+      setFavorite(data);
+    });
+  }, []);
+
   return (
-    <Pressable style={{ position: 'relative', paddingHorizontal: 16, marginBottom: 30 }}>
-      <Carousel style={{ height: 350, borderRadius: 8 }} />
+    <View className="mt-5">
+      <Pressable onPress={() => router.push(`/residence/${props.id}`)}>
+        <Carousel photos={props.photos} style={{ height: 350, borderRadius: 8 }} />
+      </Pressable>
+
       <View className="w-full gap-1 mt-2">
         <View className="flex flex-row items-center">
           <Icon name="location-pin" color="black" size={19} />
@@ -23,13 +37,17 @@ export default function HomeSearch(props: Residence) {
       </View>
 
       <IconButton
-        icon={saved ? 'heart' : 'cards-heart-outline'}
+        icon={favorite ? 'heart' : 'cards-heart-outline'}
         mode="outlined"
-        iconColor={saved ? '#fd6963' : '#000'}
+        iconColor={favorite ? '#fd6963' : '#000'}
         containerColor="#fff"
         className="absolute top-2 right-6"
-        onPress={() => setSaved(!saved)}
+        onPress={() => {
+          setFavorite(!favorite);
+          setFavoritesResidences(openedResidences.filter((r) => r.id === props.id && !favorite));
+          handleFavorite(props.id, favorite);
+        }}
       />
-    </Pressable>
+    </View>
   );
 }
