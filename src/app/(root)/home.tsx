@@ -44,7 +44,7 @@ export default function House() {
           </View>
         </View>
 
-        <Link href="/search">
+        <Link href="/location">
           <Searchbar
             style={{
               shadowColor: 'transparent',
