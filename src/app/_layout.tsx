@@ -54,6 +54,7 @@ export default function () {
             <Stack.Screen name="verification/[email]" />
             <Stack.Screen name="residence/[id]" />
             <Stack.Screen name="(settings)" />
+            <Stack.Screen name="location" />
             <Stack.Screen name="search" />
           </Stack>
         </PaperProvider>

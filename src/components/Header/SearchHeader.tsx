@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import { useState } from 'react';
+import { router } from 'expo-router';
 import { View } from 'react-native';
 import { SheetManager } from 'react-native-actions-sheet';
 import { IconButton } from 'react-native-paper';
@@ -11,11 +11,10 @@ import '../ActionSheet';
 
 interface SearchHeaderProps {
   goBack: () => void;
+  value: string;
 }
 
-export default function SearchHeader({ goBack }: SearchHeaderProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-
+export default function SearchHeader({ goBack, value }: SearchHeaderProps) {
   return (
     <View className="border-b-[.5px] border-b-gray-300">
       <View
@@ -25,8 +24,8 @@ export default function SearchHeader({ goBack }: SearchHeaderProps) {
           <TextField.Container disableFocus>
             <Icon name="arrow-left" color="#000" size={25} onPress={goBack} />
             <TextField.Input
-              value={searchQuery}
-              onChangeText={setSearchQuery}
+              value={value}
+              onFocus={() => router.push('/location')}
               placeholder="Diga a localização"
             />
           </TextField.Container>
