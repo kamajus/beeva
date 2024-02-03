@@ -74,7 +74,7 @@ export default function House() {
           />
         </HomeCard.Root>
 
-        <HomeCard.Root title="Recomendações">
+        <HomeCard.Root title="Talvez você goste">
           <Filter />
           <FlatList
             horizontal
@@ -95,17 +95,7 @@ export default function House() {
           />
         </HomeCard.Root>
 
-        <HomeCard.Root title="Mais baratas hoje">
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={RESIDENCE_DATA}
-            className="w-full flex flex-row"
-            renderItem={({ item }) => <HomeCard.Small {...item} />}
-          />
-        </HomeCard.Root>
-
-        <HomeCard.Root title="Talvez você goste">
+        <HomeCard.Root title="Mais visualizadas hoje">
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
