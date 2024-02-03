@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import ExpoConstants from 'expo-constants';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -36,8 +37,17 @@ export default function House() {
             <Link href="/notification">
               <IconButton icon="bell" iconColor={Constants.colors.primary} />
             </Link>
-            <View className="absolute bottom-6 left-6 bg-[#e83f5b] rounded-full flex justify-center items-center w-5 h-5">
-              <Text className="font-poppins-semibold text-[10px] text-center text-white">
+            <View
+              className={clsx(
+                'absolute bottom-6 left-6 bg-[#e83f5b] rounded-full flex justify-center items-center w-5 h-5',
+                {
+                  hidden: notifications.filter((item) => !item.was_readed).length === 0,
+                },
+              )}>
+              <Text
+                className={clsx('font-poppins-semibold text-[10px] text-center text-white', {
+                  hidden: notifications.filter((item) => !item.was_readed).length > 10,
+                })}>
                 {notifications.filter((item) => !item.was_readed).length}
               </Text>
             </View>
