@@ -43,7 +43,7 @@ const schema = yup.object({
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
     .max(50, 'O sobrenome deve ter no máximo 50 caracteres'),
   email: yup.string().email('Endereço de e-mail inválido').required('O e-mail é obrigatório'),
-  phone: yup.number().required('O telefone é obrigatório'),
+  phone: yup.number(),
 });
 
 export default function Perfil() {
@@ -60,7 +60,7 @@ export default function Perfil() {
       firstName: user?.first_name ? user?.first_name : '',
       lastName: user?.last_name ? user?.last_name : '',
       email: user?.email ? user?.email : '',
-      phone: user?.phone ? Number(user?.phone) : 0,
+      phone: user?.phone ? Number(user?.phone) : undefined,
     },
   });
 
@@ -122,7 +122,7 @@ export default function Perfil() {
       firstName: data.first_name || '',
       lastName: data.last_name || '',
       email: data.email || '',
-      phone: data.phone ? Number(data.phone) : 0,
+      phone: data.phone ? Number(data.phone) : undefined,
     });
   }
 
