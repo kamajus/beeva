@@ -37,7 +37,7 @@ export default function HomeSearch(props: Residence) {
       </View>
 
       <IconButton
-        icon={favorite ? 'heart' : 'cards-heart-outline'}
+        icon={favorite ? 'bookmark' : 'bookmark-outline'}
         mode="outlined"
         iconColor={favorite ? '#fd6963' : '#000'}
         containerColor="#fff"

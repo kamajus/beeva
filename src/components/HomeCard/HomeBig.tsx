@@ -19,7 +19,7 @@ export default function HomeBig(props: Residence) {
           className="w-[272px] h-[220px] rounded-xl mb-2 relative"
         />
         <IconButton
-          icon={saved ? 'heart' : 'cards-heart-outline'}
+          icon={saved ? 'bookmark' : 'bookmark-outline'}
           mode="outlined"
           iconColor={saved ? '#fd6963' : '#000'}
           containerColor="#fff"
