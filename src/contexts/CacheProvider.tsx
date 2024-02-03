@@ -11,6 +11,7 @@ type CacheContextType = {
   setOpenedResidences: Dispatch<SetStateAction<Residence[]>>;
   notifications: Notification[];
   setNotifications: Dispatch<SetStateAction<Notification[] | any>>;
+  resetCache(): void;
   filter: {
     kind?: ResidenceTypes;
     state?: 'sell' | 'rent';
@@ -48,6 +49,13 @@ export default function CacheProvider(props: CacheProviderProps) {
     kind: 'all',
   });
 
+  function resetCache() {
+    setUserResidences([]);
+    setFavoritesResidences([]);
+    setOpenedResidences([]);
+    setNotifications([]);
+  }
+
   return (
     <CacheContext.Provider
       value={{
@@ -61,6 +69,7 @@ export default function CacheProvider(props: CacheProviderProps) {
         setNotifications,
         filter,
         setFilter,
+        resetCache,
       }}>
       {props.children}
     </CacheContext.Provider>
