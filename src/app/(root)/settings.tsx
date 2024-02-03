@@ -5,11 +5,13 @@ import { ScrollView, Text, View, Dimensions, Pressable } from 'react-native';
 import { Avatar, Icon } from 'react-native-paper';
 
 import Header from '../../components/Header';
+import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
 
 export default function Settings() {
   const { width } = Dimensions.get('screen');
   const { signOut, session, user } = useSupabase();
+  const { resetCache } = useCache();
   const router = useRouter();
 
   return (
@@ -58,6 +60,7 @@ export default function Settings() {
         <Pressable
           onPress={() => {
             signOut().then(() => {
+              resetCache();
               router.replace('/signin');
             });
           }}
