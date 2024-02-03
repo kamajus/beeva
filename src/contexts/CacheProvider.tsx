@@ -1,6 +1,6 @@
 import React, { Dispatch, ReactNode, SetStateAction, createContext, useState } from 'react';
 
-import { Residence, Notification } from '../assets/@types';
+import { Residence, ResidenceTypes, Notification } from '../assets/@types';
 
 type CacheContextType = {
   userResidences: Residence[];
@@ -11,6 +11,20 @@ type CacheContextType = {
   setOpenedResidences: Dispatch<SetStateAction<Residence[]>>;
   notifications: Notification[];
   setNotifications: Dispatch<SetStateAction<Notification[] | any>>;
+  filter: {
+    kind?: ResidenceTypes;
+    state?: 'sell' | 'rent';
+    minPrice?: number;
+    maxPrice?: number;
+  };
+  setFilter: Dispatch<
+    SetStateAction<{
+      kind?: ResidenceTypes | undefined;
+      state?: 'sell' | 'rent' | undefined;
+      minPrice?: number | undefined;
+      maxPrice?: number | undefined;
+    }>
+  >;
 };
 
 export const CacheContext = createContext({} as CacheContextType);
@@ -25,6 +39,15 @@ export default function CacheProvider(props: CacheProviderProps) {
   const [openedResidences, setOpenedResidences] = useState<Residence[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  const [filter, setFilter] = useState<{
+    kind?: ResidenceTypes;
+    state?: 'sell' | 'rent';
+    minPrice?: number;
+    maxPrice?: number;
+  }>({
+    kind: 'all',
+  });
+
   return (
     <CacheContext.Provider
       value={{
@@ -36,6 +59,8 @@ export default function CacheProvider(props: CacheProviderProps) {
         setOpenedResidences,
         notifications,
         setNotifications,
+        filter,
+        setFilter,
       }}>
       {props.children}
     </CacheContext.Provider>
