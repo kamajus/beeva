@@ -6,10 +6,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { Residence } from '../../assets/@types';
 import useMoneyFormat from '../../hooks/useMoneyFormat';
+import { useSupabase } from '../../hooks/useSupabase';
 
 export default function HomeSmall(props: Residence) {
   const [saved, setSaved] = useState(false);
   const money = useMoneyFormat();
+  const { user } = useSupabase();
 
   return (
     <Link
@@ -28,6 +30,7 @@ export default function HomeSmall(props: Residence) {
           mode="outlined"
           iconColor={saved ? '#fd6963' : '#000'}
           containerColor="#fff"
+          disabled={props.owner_id === user?.id}
           className="absolute top-3 right-2"
           onPress={() => setSaved(!saved)}
         />

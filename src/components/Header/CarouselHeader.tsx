@@ -10,12 +10,13 @@ import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
 
 interface CarouselHeaderProps {
+  owner_id: string;
   residence_id: string;
 }
 
 export default function CarouselHeader(props: CarouselHeaderProps) {
   const { setFavoritesResidences, openedResidences, favoritesResidences } = useCache();
-  const { residenceIsFavorite, handleFavorite } = useSupabase();
+  const { residenceIsFavorite, handleFavorite, user } = useSupabase();
   const { width } = Dimensions.get('window');
   const [favorite, setFavorite] = useState(
     favoritesResidences.some((r) => r.id === props.residence_id),
@@ -40,6 +41,7 @@ export default function CarouselHeader(props: CarouselHeaderProps) {
           mode="outlined"
           iconColor={favorite ? '#fd6963' : '#fff'}
           containerColor={favorite ? '#fff' : 'transparent'}
+          disabled={props.owner_id === user?.id}
           onPress={() => {
             setFavorite(!favorite);
             setFavoritesResidences(

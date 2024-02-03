@@ -218,7 +218,12 @@ export default function ResidenceDetail() {
         </Pressable>
       </View>
 
-      {residence?.id && <Header.Carousel residence_id={String(residence?.id)} />}
+      {residence?.id && (
+        <Header.Carousel
+          owner_id={String(residence?.owner_id)}
+          residence_id={String(residence?.id)}
+        />
+      )}
 
       <StatusBar style="light" backgroundColor="black" />
     </ScrollView>
