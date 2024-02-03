@@ -54,10 +54,12 @@ export default function SignIn() {
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { signUp } = useSupabase();
   const router = useRouter();
 
   function onSubmit(data: FormData) {
+    setLoading(true);
     signUp(data.email, data.password)
       .then(async (userData) => {
         if (userData) {
@@ -97,6 +99,9 @@ export default function SignIn() {
           firstName: '',
           lastName: '',
         });
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
@@ -273,6 +278,7 @@ export default function SignIn() {
             buttonColor={Constants.colors.primary}
             textColor="white"
             uppercase={false}
+            loading={loading}
             onPress={handleSubmit(onSubmit)}>
             Continuar
           </Button>

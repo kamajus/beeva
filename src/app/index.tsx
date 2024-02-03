@@ -1,8 +1,8 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { Text } from 'react-native';
 
 import SignIn from './signin';
+import LoadScreen from '../components/LoadScreen';
 import useLoadFonts from '../hooks/useLoadFonts';
 import { useSupabase } from '../hooks/useSupabase';
 
@@ -24,7 +24,7 @@ export default function App() {
   }, [session, initialized, replace]);
 
   if ((!fontsLoaded && !fontError) || !initialized) {
-    return <Text>Carregando</Text>;
+    return <LoadScreen />;
   } else {
     return <SignIn />;
   }

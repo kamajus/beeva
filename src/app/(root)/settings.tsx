@@ -31,7 +31,7 @@ export default function Settings() {
               </>
               <View>
                 <Text className="font-poppins-medium text-base">{`${user?.first_name} ${user?.last_name}`}</Text>
-                <Text className="font-poppins-regular text-sm text-gray-400">{user?.email}</Text>
+                <Text className="font-poppins-medium text-sm text-gray-400">{user?.email}</Text>
               </View>
             </View>
             <Icon source="chevron-right" size={30} />
