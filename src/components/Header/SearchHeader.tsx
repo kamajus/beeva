@@ -30,6 +30,7 @@ export default function SearchHeader({ goBack, value }: SearchHeaderProps) {
             />
           </TextField.Container>
         </TextField.Root>
+
         <IconButton
           onPress={() => SheetManager.show('search-sheet')}
           icon="tune"

@@ -1,14 +1,26 @@
 import { useState } from 'react';
-import { ScrollView, Text, TextInput, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import ActionSheet, { SheetProps, SheetManager } from 'react-native-actions-sheet';
+import CurrencyInput from 'react-native-currency-input';
 import { Button, IconButton, RadioButton } from 'react-native-paper';
 
+import { ResidenceTypes } from '../../assets/@types';
 import Constants from '../../constants';
+import { useCache } from '../../hooks/useCache';
 import Filter from '../Filter';
 import TextField from '../TextField';
 
 export default function SearchActionSheet(props: SheetProps) {
-  const [state, setState] = useState('sell');
+  const { filter, setFilter } = useCache();
+
+  const [kind, setKind] = useState<ResidenceTypes>(filter.kind ? filter.kind : 'all');
+  const [state, setState] = useState<'sell' | 'rent' | undefined>(filter.state);
+  const [minPrice, setMinPrice] = useState<number | undefined>(
+    filter.minPrice ? filter.minPrice : undefined,
+  );
+  const [maxPrice, setMaxPrice] = useState<number | undefined>(
+    filter.maxPrice ? filter.maxPrice : undefined,
+  );
 
   return (
     <ActionSheet id={props.sheetId}>
@@ -20,7 +32,7 @@ export default function SearchActionSheet(props: SheetProps) {
 
         <View className="p-4">
           <Text className="font-poppins-medium text-base mb-3">Tipo de residência</Text>
-          <Filter />
+          <Filter kind={kind} setKind={setKind} />
         </View>
 
         <View className="p-4">
@@ -47,20 +59,36 @@ export default function SearchActionSheet(props: SheetProps) {
         </View>
 
         <View className="p-4">
-          <TextField.Label isRequired>Preço minimo</TextField.Label>
-          <TextInput
+          <TextField.Label>Preço minimo</TextField.Label>
+          <CurrencyInput
+            value={Number(minPrice) ? Number(minPrice) : null}
+            onChangeValue={(value) => {
+              setMinPrice(value ? value : undefined);
+            }}
+            delimiter="."
+            separator=","
+            precision={2}
+            minValue={0}
+            cursorColor="#a78bfa"
+            placeholder="0.00 kz"
             className="bg-[#f5f5f5] h-14 p-4 rounded font-poppins-medium"
-            placeholder="0.0 Kz"
-            keyboardType="number-pad"
           />
         </View>
 
         <View className="p-4">
-          <TextField.Label isRequired>Preço máximo</TextField.Label>
-          <TextInput
+          <TextField.Label>Preço máximo</TextField.Label>
+          <CurrencyInput
+            value={Number(maxPrice) ? Number(maxPrice) : null}
+            onChangeValue={(value) => {
+              setMaxPrice(value ? value : undefined);
+            }}
+            delimiter="."
+            separator=","
+            precision={2}
+            minValue={0}
+            cursorColor="#a78bfa"
+            placeholder="0.00 kz"
             className="bg-[#f5f5f5] h-14 p-4 rounded font-poppins-medium"
-            placeholder="0.0 Kz"
-            keyboardType="number-pad"
           />
         </View>
 
@@ -76,6 +104,18 @@ export default function SearchActionSheet(props: SheetProps) {
             mode="text"
             buttonColor={Constants.colors.alert}
             textColor="white"
+            onPress={() => {
+              setFilter({
+                kind: 'all',
+              });
+
+              // Reset
+              setMaxPrice(undefined);
+              setMinPrice(undefined);
+              setState(undefined);
+              setKind('all');
+              SheetManager.hide('search-sheet');
+            }}
             uppercase={false}>
             Remover filtros
           </Button>
@@ -89,6 +129,15 @@ export default function SearchActionSheet(props: SheetProps) {
             mode="contained"
             buttonColor={Constants.colors.primary}
             textColor="white"
+            onPress={() => {
+              setFilter({
+                kind,
+                maxPrice,
+                minPrice,
+                state,
+              });
+              SheetManager.hide('search-sheet');
+            }}
             uppercase={false}>
             Aplicar
           </Button>
