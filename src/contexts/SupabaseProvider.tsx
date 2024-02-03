@@ -114,7 +114,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 
       if (error.status) {
         if (error.message === 'Email not confirmed') {
-          sendOtpCode(email);
+          supabase.auth.resend({ email, type: 'signup' });
           redirect = `/verification/${email}`;
         }
         message = 'As credências de acesso a conta estão incorrectas.';

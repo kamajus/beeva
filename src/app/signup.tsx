@@ -63,22 +63,29 @@ export default function SignIn() {
     signUp(data.email, data.password)
       .then(async (userData) => {
         if (userData) {
-          const { error } = await supabase.from('users').insert([
-            {
-              id: userData?.id,
-              email: data.email,
-              first_name: data.firstName,
-              last_name: data.lastName,
-            },
-          ]);
-
-          if (error) {
+          if (userData && userData.identities && userData.identities.length === 0) {
             Alert.alert(
               'Erro na autenticação',
-              'Algo de errado aconteceu, tente novamente mais tarde.',
+              'O usuário que você está tentando criar já existe!!!',
             );
           } else {
-            router.replace(`/verification/${data.email}`);
+            const { error } = await supabase.from('users').insert([
+              {
+                id: userData?.id,
+                email: data.email,
+                first_name: data.firstName,
+                last_name: data.lastName,
+              },
+            ]);
+
+            if (error) {
+              Alert.alert(
+                'Erro na autenticação',
+                'Algo de errado aconteceu, tente novamente mais tarde.',
+              );
+            } else {
+              router.replace(`/verification/${data.email}`);
+            }
           }
         } else {
           Alert.alert(
