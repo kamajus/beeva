@@ -41,7 +41,6 @@ export default function Search() {
         }
 
         // Save the updated array back to AsyncStorage
-        console.log(historyArray);
         await AsyncStorage.setItem('history', JSON.stringify(historyArray));
       } else {
         // If the item already exists, move it to the first position

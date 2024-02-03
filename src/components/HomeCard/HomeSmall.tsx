@@ -24,7 +24,7 @@ export default function HomeSmall(props: Residence) {
           className="w-[172px] h-[190px] rounded-xl mb-2 relative"
         />
         <IconButton
-          icon={saved ? 'heart' : 'cards-heart-outline'}
+          icon={saved ? 'bookmark' : 'bookmark-outline'}
           mode="outlined"
           iconColor={saved ? '#fd6963' : '#000'}
           containerColor="#fff"

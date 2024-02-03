@@ -105,7 +105,7 @@ export default function Favorites() {
             </View>
           )}
         </View>
-        <Text className="mt-4 text-[#212121] text-lg font-poppins-semibold">Minhas favoritas</Text>
+        <Text className="mt-4 text-[#212121] text-lg font-poppins-semibold">Guardados por mim</Text>
         <View className={clsx('mt-2 flex-1 flex-row flex-wrap')}>
           {favoritesResidences && favoritesResidences?.length > 0 ? (
             favoritesResidences.map(({ id, cover }) => (
@@ -117,7 +117,7 @@ export default function Favorites() {
             <View className="w-full flex justify-center items-center">
               <NoFavorite />
               <Text className="font-poppins-medium text-gray-400 text-center">
-                Você não tem nehuma favorita.
+                Você não tem nehuma guardada.
               </Text>
             </View>
           )}

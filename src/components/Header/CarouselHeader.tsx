@@ -36,7 +36,7 @@ export default function CarouselHeader(props: CarouselHeaderProps) {
       <IconFeather name="arrow-left" color="#fff" size={25} onPress={() => router.back()} />
       <View className="flex gap-x-2 flex-row items-center">
         <IconButton
-          icon={favorite ? 'heart' : 'cards-heart-outline'}
+          icon={favorite ? 'bookmark' : 'bookmark-outline'}
           mode="outlined"
           iconColor={favorite ? '#fd6963' : '#fff'}
           containerColor={favorite ? '#fff' : 'transparent'}
