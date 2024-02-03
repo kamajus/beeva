@@ -12,7 +12,7 @@ import Carousel from '../Carousel';
 
 export default function HomeSearch(props: Residence) {
   const { setFavoritesResidences, openedResidences, favoritesResidences } = useCache();
-  const { residenceIsFavorite, handleFavorite } = useSupabase();
+  const { residenceIsFavorite, handleFavorite, user } = useSupabase();
   const [favorite, setFavorite] = useState(favoritesResidences.some((r) => r.id === props.id));
   const money = useMoneyFormat();
 
@@ -40,6 +40,7 @@ export default function HomeSearch(props: Residence) {
         icon={favorite ? 'bookmark' : 'bookmark-outline'}
         mode="outlined"
         iconColor={favorite ? '#fd6963' : '#000'}
+        disabled={props.owner_id === user?.id}
         containerColor="#fff"
         className="absolute top-2 right-6"
         onPress={() => {
