@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { decode } from 'base64-arraybuffer';
 import clsx from 'clsx';
-import ExpoConstants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter, useNavigation } from 'expo-router';
@@ -22,6 +21,7 @@ import * as yup from 'yup';
 import Header from '../../components/Header';
 import TextField from '../../components/TextField';
 import { supabase } from '../../config/supabase';
+import Constants from '../../constants';
 import { useSupabase } from '../../hooks/useSupabase';
 
 interface FormData {
@@ -201,7 +201,7 @@ export default function Perfil() {
     <View style={{ height }} className="bg-white">
       <KeyboardAvoidingView behavior="padding">
         <ScrollView
-          style={{ marginTop: ExpoConstants.statusBarHeight * 2 }}
+          style={{ marginTop: Constants.customHeaderDistance }}
           className="flex gap-y-9 px-4 mt-[2%] bg-white">
           <View className="m-auto flex items-center justify-center">
             {user?.photo_url || photo.length > 0 ? (

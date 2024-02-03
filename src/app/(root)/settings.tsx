@@ -24,13 +24,13 @@ export default function Settings() {
         <Link href="/(settings)/perfil">
           <View style={{ width }} className="px-4 py-6 mb-20 flex-row justify-between items-center">
             <View className="flex gap-x-3 flex-row">
-              <>
+              <View>
                 {user?.photo_url ? (
                   <Avatar.Image size={50} source={{ uri: user.photo_url }} />
                 ) : (
                   <Avatar.Text size={50} label={String(user?.first_name[0])} />
                 )}
-              </>
+              </View>
               <View>
                 <Text className="font-poppins-medium text-base">{`${user?.first_name} ${user?.last_name}`}</Text>
                 <Text className="font-poppins-medium text-sm text-gray-400">{user?.email}</Text>
@@ -54,7 +54,7 @@ export default function Settings() {
         <View className="bg-white w-full px-4 py-6 mb-4 flex-row justify-between items-center">
           <Text className="text-base font-poppins-medium">Termos e privacidade</Text>
 
-          <Icon source="chevron-right" size={30} />
+          <Icon source="open-in-new" size={30} />
         </View>
 
         <Pressable
