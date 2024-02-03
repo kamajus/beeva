@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import { decode } from 'base64-arraybuffer';
 import clsx from 'clsx';
-import ExpoConstants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -244,7 +243,7 @@ export default function Editor() {
 
   return (
     <View className="relative bg-white">
-      <ScrollView style={{ marginTop: ExpoConstants.statusBarHeight * 2 }} className="bg-white">
+      <ScrollView style={{ marginTop: Constants.customHeaderDistance }} className="bg-white">
         <View className="flex gap-y-9 px-4 mt-[2%] bg-white">
           <View>
             <Controller
