@@ -25,10 +25,19 @@ export default function Confirmation() {
         token: code,
         type: 'email',
       })
-      .then(({ error }) => {
+      .then(async ({ error, data }) => {
         setError(false);
 
         if (!error) {
+          const welcome = {
+            user_id: data.user?.id,
+            description:
+              'Bem-vindo à plataforma onde seus sonhos de casa se tornam realidade! 🏡✨',
+            type: 'congratulation',
+          };
+
+          await supabase.from('notifications').insert([welcome]).select();
+
           router.replace('/(root)/home');
         } else {
           setError(true);
