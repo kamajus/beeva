@@ -5,7 +5,6 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
-    "backgroundColor": "#8b6cef",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
     "splash": {

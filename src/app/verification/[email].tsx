@@ -1,19 +1,36 @@
+import clsx from 'clsx';
 import { Link, useLocalSearchParams, router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Text, ScrollView, StyleSheet, StatusBar, Dimensions, View } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 import { Button, HelperText } from 'react-native-paper';
 
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
+
 const { width } = Dimensions.get('window');
 const inputWidth = width - width * 0.16;
+const MAX_COUNT = 180; // 3 minutes
 
 export default function Confirmation() {
   const { email } = useLocalSearchParams();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+
+  const [counter, setCounter] = useState(180);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (counter < MAX_COUNT) {
+        setCounter(counter + 1);
+      } else {
+        clearInterval(intervalId);
+      }
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [counter]);
 
   async function signInWithOtp() {
     setLoading(true);
@@ -51,6 +68,9 @@ export default function Confirmation() {
       });
   }
 
+  const minutes = Math.floor(counter / 60);
+  const seconds = counter % 60;
+
   return (
     <View className="bg-white h-full">
       <ScrollView style={styles.container}>
@@ -74,9 +94,27 @@ export default function Confirmation() {
             onTextChange={(value) => setCode(value)}
             focusStickBlinkingDuration={500}
           />
+          <Text
+            className={clsx('font-poppins-medium text-gray-300', {
+              'text-primary': counter === MAX_COUNT,
+            })}
+            onPress={() => {
+              if (counter === MAX_COUNT) {
+                supabase.auth.resend({ email: String(email), type: 'signup' });
+                setCounter(0);
+              }
+            }}>
+            {counter !== MAX_COUNT
+              ? `Reenviar código: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
+                  2,
+                  '0',
+                )}`
+              : 'Reenviar código'}
+          </Text>
           <HelperText className="p-0 m-0" type="error" visible={error !== false}>
             O código está incorrecto.
           </HelperText>
+
           <Button
             style={{
               height: 58,
