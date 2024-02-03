@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View, Image } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -8,7 +8,6 @@ import { Residence } from '../../assets/@types';
 import { useCache } from '../../hooks/useCache';
 import useMoneyFormat from '../../hooks/useMoneyFormat';
 import { useSupabase } from '../../hooks/useSupabase';
-import Carousel from '../Carousel';
 
 export default function HomeSearch(props: Residence) {
   const { setFavoritesResidences, openedResidences, favoritesResidences } = useCache();
@@ -25,7 +24,11 @@ export default function HomeSearch(props: Residence) {
   return (
     <View className="mt-5">
       <Pressable onPress={() => router.push(`/residence/${props.id}`)}>
-        <Carousel photos={props.photos} style={{ height: 350, borderRadius: 8 }} />
+        <Image
+          source={{ uri: String(props.cover) }}
+          alt="Home"
+          className="w-full h-[300px] rounded-xl mb-2 relative"
+        />
       </Pressable>
 
       <View className="w-full gap-1 mt-2">
@@ -42,7 +45,7 @@ export default function HomeSearch(props: Residence) {
         iconColor={favorite ? '#fd6963' : '#000'}
         disabled={props.owner_id === user?.id}
         containerColor="#fff"
-        className="absolute top-2 right-6"
+        className="absolute top-2 right-2"
         onPress={() => {
           setFavorite(!favorite);
           setFavoritesResidences(openedResidences.filter((r) => r.id === props.id && !favorite));
