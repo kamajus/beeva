@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import ExpoConstants from 'expo-constants';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
@@ -10,7 +9,9 @@ import NoData from '../../assets/images/no-data';
 import NoFavorite from '../../assets/images/no-favorite';
 import GaleryItem from '../../components/GaleryItem';
 import Header from '../../components/Header';
+import LoadScreen from '../../components/LoadScreen';
 import { supabase } from '../../config/supabase';
+import Constants from '../../constants';
 import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
 
@@ -27,7 +28,11 @@ export default function Favorites() {
   const { height } = Dimensions.get('screen');
   const [refreshing, setRefreshing] = useState(false);
 
+  const [loadingResidences, setLoadingResidences] = useState(false);
+  const [loadingFavorites, setLoadingFavorites] = useState(false);
+
   async function getResidences() {
+    setLoadingResidences(true);
     const { data: residencesData } = await supabase
       .from('residences')
       .select('*')
@@ -41,10 +46,13 @@ export default function Favorites() {
 
       setUserResidences([...userResidences, ...newResidences]);
       setOpenedResidences([...userResidences, ...newResidences]);
+      setLoadingResidences(false);
     }
   }
 
   function getFavorites() {
+    setLoadingFavorites(true);
+
     supabase
       .from('favorites')
       .select('*')
@@ -65,6 +73,7 @@ export default function Favorites() {
           );
 
           setFavoritesResidences(favoriteResidences);
+          setLoadingFavorites(false);
         }
       });
   }
@@ -85,46 +94,53 @@ export default function Favorites() {
 
   return (
     <View style={{ height }} className="relative bg-white">
-      <ScrollView
-        style={{ padding: 16, marginTop: ExpoConstants.statusBarHeight * 2 + 25 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-        <Text className="text-black text-lg font-poppins-semibold">Postadas por mim</Text>
-        <View className="mt-2 flex-1 flex-row flex-wrap">
-          {userResidences && userResidences?.length > 0 ? (
-            userResidences.map(({ id, cover }) => (
-              <View key={id} className="mr-3 mt-3">
-                <GaleryItem image={cover} id={id} key={id} activeted={false} />
+      {!loadingFavorites || !loadingResidences ? (
+        <ScrollView
+          style={{ padding: 16, marginTop: Constants.customHeaderDistance }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+          <Text className="text-black text-lg font-poppins-semibold">Postadas por mim</Text>
+          <View className="mt-2 flex-1 flex-row flex-wrap">
+            {userResidences && userResidences?.length > 0 ? (
+              userResidences.map(({ id, cover }) => (
+                <View key={id} className="mr-3 mt-3">
+                  <GaleryItem image={cover} id={id} key={id} activeted={false} />
+                </View>
+              ))
+            ) : (
+              <View className="w-full flex justify-center items-center">
+                <NoData />
+                <Text className="font-poppins-medium text-gray-400 text-center">
+                  Você não tem nehuma residência!
+                </Text>
               </View>
-            ))
-          ) : (
-            <View className="w-full flex justify-center items-center">
-              <NoData />
-              <Text className="font-poppins-medium text-gray-400 text-center">
-                Você não tem nehuma residência!
-              </Text>
-            </View>
-          )}
-        </View>
-        <Text className="mt-4 text-[#212121] text-lg font-poppins-semibold">Guardados por mim</Text>
-        <View className={clsx('mt-2 flex-1 flex-row flex-wrap')}>
-          {favoritesResidences && favoritesResidences?.length > 0 ? (
-            favoritesResidences.map(({ id, cover }) => (
-              <View key={id} className="mr-3 mt-3">
-                <GaleryItem image={cover} id={id} key={id} activeted={false} />
+            )}
+          </View>
+          <Text className="mt-4 text-[#212121] text-lg font-poppins-semibold">
+            Guardados por mim
+          </Text>
+          <View className={clsx('mt-2 flex-1 flex-row flex-wrap')}>
+            {favoritesResidences && favoritesResidences?.length > 0 ? (
+              favoritesResidences.map(({ id, cover }) => (
+                <View key={id} className="mr-3 mt-3">
+                  <GaleryItem image={cover} id={id} key={id} activeted={false} />
+                </View>
+              ))
+            ) : (
+              <View className="w-full flex justify-center items-center">
+                <NoFavorite />
+                <Text className="font-poppins-medium text-gray-400 text-center">
+                  Você não tem nehuma guardada.
+                </Text>
               </View>
-            ))
-          ) : (
-            <View className="w-full flex justify-center items-center">
-              <NoFavorite />
-              <Text className="font-poppins-medium text-gray-400 text-center">
-                Você não tem nehuma guardada.
-              </Text>
-            </View>
-          )}
-        </View>
+            )}
+          </View>
 
-        <StatusBar style="dark" backgroundColor="#fff" />
-      </ScrollView>
+          <StatusBar style="dark" backgroundColor="#fff" />
+        </ScrollView>
+      ) : (
+        <LoadScreen />
+      )}
+
       <View className="absolute">
         <Header.Normal title="Minhas residências" goBack={router.back} />
       </View>

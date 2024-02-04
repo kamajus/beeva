@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useNavigation, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View, ActivityIndicator } from 'react-native';
 import { SheetProvider } from 'react-native-actions-sheet';
 
 import { Residence, ResidenceTypes } from '../assets/@types';
@@ -10,6 +10,7 @@ import NoData from '../assets/images/no-data';
 import Header from '../components/Header';
 import HomeCard from '../components/HomeCard';
 import { supabase } from '../config/supabase';
+import Constants from '../constants';
 import { useCache } from '../hooks/useCache';
 
 export default function Search() {
@@ -17,6 +18,7 @@ export default function Search() {
   const navigation = useNavigation();
   const { location } = useLocalSearchParams<{ location: string }>();
   const [residences, setResidences] = useState<Residence[]>();
+  const [loading, setLoading] = useState(false);
   const { filter } = useCache();
 
   const addItemToHistory = async (newItem: string) => {
@@ -62,6 +64,7 @@ export default function Search() {
     });
 
     async function fetchData() {
+      setLoading(true);
       const { data, error } = await supabase.rpc('get_residences_by_location', {
         place: location,
       });
@@ -71,6 +74,7 @@ export default function Search() {
       } else {
         console.log(error);
       }
+      setLoading(false);
     }
 
     fetchData();
@@ -105,26 +109,36 @@ export default function Search() {
       <View className="w-full h-full bg-white">
         <Header.Search goBack={back} value={location} />
 
-        {residences && residences.length > 0 ? (
-          <ScrollView className="bg-white flex flex-col p-4">
-            <Text className="font-poppins-semibold text-lg">
-              {residences?.length} resultado(s) encontrado(s)
-            </Text>
-            <>
-              {residences?.map((residence) => (
-                <HomeCard.Search key={residence.id} {...residence} />
-              ))}
-            </>
-            <View className="mt-8" />
-          </ScrollView>
-        ) : (
-          <View className="w-full h-2/4 flex justify-center items-center">
-            <NoData />
-            <Text className="font-poppins-medium text-gray-400 text-center">
-              Nenhum resultado encontrado!
-            </Text>
-          </View>
-        )}
+        <View>
+          {!loading ? (
+            <View>
+              {residences && residences.length > 0 ? (
+                <ScrollView className="bg-white flex flex-col p-4">
+                  <Text className="font-poppins-semibold text-lg">
+                    {residences?.length} resultado(s) encontrado(s)
+                  </Text>
+                  <>
+                    {residences?.map((residence) => (
+                      <HomeCard.Search key={residence.id} {...residence} />
+                    ))}
+                  </>
+                  <View className="mt-8" />
+                </ScrollView>
+              ) : (
+                <View className="w-full h-2/4 flex justify-center items-center">
+                  <NoData />
+                  <Text className="font-poppins-medium text-gray-400 text-center">
+                    Nenhum resultado encontrado!
+                  </Text>
+                </View>
+              )}
+            </View>
+          ) : (
+            <View className="h-2/3 flex items-center justify-center">
+              <ActivityIndicator animating color={Constants.colors.primary} size={40} />
+            </View>
+          )}
+        </View>
 
         <StatusBar style="dark" backgroundColor="white" />
       </View>

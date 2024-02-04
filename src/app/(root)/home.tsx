@@ -68,7 +68,7 @@ export default function House() {
               alignSelf: 'stretch',
               fontFamily: 'poppins-medium',
             }}
-            placeholder="Procurar por ..."
+            placeholder="Procurar por casas..."
             value=""
             editable={false}
           />
