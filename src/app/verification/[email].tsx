@@ -7,6 +7,7 @@ import { Button, HelperText } from 'react-native-paper';
 
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
+import { useCache } from '../../hooks/useCache';
 
 const { width } = Dimensions.get('window');
 const inputWidth = width - width * 0.16;
@@ -17,6 +18,7 @@ export default function Confirmation() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const { setNotifications, notifications } = useCache();
 
   const [counter, setCounter] = useState(180);
 
@@ -54,6 +56,7 @@ export default function Confirmation() {
           };
 
           await supabase.from('notifications').insert([welcome]).select();
+          setNotifications([...notifications, welcome]);
 
           router.replace('/(root)/home');
         } else {

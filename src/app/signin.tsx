@@ -3,11 +3,12 @@ import clsx from 'clsx';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { ScrollView, Text, View, StatusBar, Alert } from 'react-native';
+import { ScrollView, Text, View, StatusBar } from 'react-native';
 import { TextInput, Button, HelperText } from 'react-native-paper';
 import * as yup from 'yup';
 
 import Constants from '../constants';
+import { useAlert } from '../hooks/useAlert';
 import { useSupabase } from '../hooks/useSupabase';
 
 interface FormData {
@@ -38,6 +39,7 @@ export default function SignIn() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signInWithPassword } = useSupabase();
+  const alert = useAlert();
 
   function onSubmit({ email, password }: FormData) {
     setLoading(true);
@@ -48,7 +50,7 @@ export default function SignIn() {
       .catch((response) => {
         if (response.redirect) router.replace(response.redirect);
         else {
-          Alert.alert('Erro na autenticação', response.message);
+          alert.showAlert('Erro na autenticação', response.message, 'Ok', () => {});
           reset({
             email: '',
             password: '',

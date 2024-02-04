@@ -1,10 +1,12 @@
 import ExpoContants from 'expo-constants';
 import { Link, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, Text, View, Dimensions, Pressable } from 'react-native';
+import { useState } from 'react';
+import { ScrollView, Text, View, Dimensions, Pressable, ActivityIndicator } from 'react-native';
 import { Avatar, Icon } from 'react-native-paper';
 
 import Header from '../../components/Header';
+import Constants from '../../constants';
 import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
 
@@ -13,6 +15,7 @@ export default function Settings() {
   const { signOut, session, user } = useSupabase();
   const { resetCache } = useCache();
   const router = useRouter();
+  const [exiting, setExiting] = useState(false);
 
   return (
     <View className="relative bg-white">
@@ -51,6 +54,17 @@ export default function Settings() {
           </Link>
         </View>
 
+        <View className="mb-4">
+          <Link href="/(settings)/(safety)">
+            <View
+              style={{ width }}
+              className="bg-white px-4 py-6 flex-row justify-between items-center">
+              <Text className="text-base font-poppins-medium">Segurança</Text>
+              <Icon source="chevron-right" size={30} />
+            </View>
+          </Link>
+        </View>
+
         <View className="bg-white w-full px-4 py-6 mb-4 flex-row justify-between items-center">
           <Text className="text-base font-poppins-medium">Termos e privacidade</Text>
 
@@ -59,6 +73,7 @@ export default function Settings() {
 
         <Pressable
           onPress={() => {
+            setExiting(true);
             signOut().then(() => {
               resetCache();
               router.replace('/signin');
@@ -68,7 +83,11 @@ export default function Settings() {
           className="bg-white w-full px-4 py-6 mb-4 flex-row justify-between items-center">
           <Text className="text-base font-poppins-medium">Terminar sessão</Text>
 
-          <Icon source="logout" color="#E54D2E" size={30} />
+          {!exiting ? (
+            <Icon source="logout" color="#E54D2E" size={30} />
+          ) : (
+            <ActivityIndicator animating color={Constants.colors.primary} size={30} />
+          )}
         </Pressable>
 
         <View className="w-full p-4 pb-8 flex-row gap-x-2 items-center">
