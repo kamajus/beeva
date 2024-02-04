@@ -7,7 +7,7 @@ type Categories = { name: string; value: ResidenceTypes; emoji: string }[];
 const colors = {
   primary: '#8b6cef',
   input: '#f5f5f5',
-  alert: '#E54D2E',
+  alert: '#EF4444',
 };
 
 // Calculates the distance between the custom navigation header and screen

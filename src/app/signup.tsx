@@ -3,12 +3,13 @@ import clsx from 'clsx';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { ScrollView, Text, View, StatusBar, Alert } from 'react-native';
+import { ScrollView, Text, View, StatusBar } from 'react-native';
 import { TextInput, Button, HelperText } from 'react-native-paper';
 import * as yup from 'yup';
 
 import { supabase } from '../config/supabase';
 import Constants from '../constants';
+import { useAlert } from '../hooks/useAlert';
 import { useSupabase } from '../hooks/useSupabase';
 
 interface FormData {
@@ -57,6 +58,7 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const { signUp } = useSupabase();
   const router = useRouter();
+  const alert = useAlert();
 
   function onSubmit(data: FormData) {
     setLoading(true);
@@ -64,9 +66,11 @@ export default function SignIn() {
       .then(async (userData) => {
         if (userData) {
           if (userData && userData.identities && userData.identities.length === 0) {
-            Alert.alert(
+            alert.showAlert(
               'Erro na autenticação',
               'O usuário que você está tentando criar já existe!!!',
+              'Ok',
+              () => {},
             );
           } else {
             const { error } = await supabase.from('users').insert([
@@ -79,25 +83,31 @@ export default function SignIn() {
             ]);
 
             if (error) {
-              Alert.alert(
+              alert.showAlert(
                 'Erro na autenticação',
                 'Algo de errado aconteceu, tente novamente mais tarde.',
+                'Ok',
+                () => {},
               );
             } else {
               router.replace(`/verification/${data.email}`);
             }
           }
         } else {
-          Alert.alert(
+          alert.showAlert(
             'Erro na autenticação',
             'Algo de errado aconteceu, tente novamente mais tarde.',
+            'Ok',
+            () => {},
           );
         }
       })
       .catch(() => {
-        Alert.alert(
+        alert.showAlert(
           'Erro na autenticação',
           'Algo de errado aconteceu, tente novamente mais tarde.',
+          'Ok',
+          () => {},
         );
 
         reset({
