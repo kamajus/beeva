@@ -108,7 +108,7 @@ export default function SignIn() {
             />
           </View>
 
-          <View>
+          <View className="mb-4">
             <Controller
               control={control}
               name="password"
@@ -152,7 +152,9 @@ export default function SignIn() {
             />
           </View>
 
-          <Text className="text-[#8b6cef] font-poppins-medium">Algo deu errado?</Text>
+          <Link href="/forgotPassword" className="text-[#8b6cef] font-poppins-medium mb-4">
+            Esqueceu a sua senha?
+          </Link>
 
           <Button
             style={{
