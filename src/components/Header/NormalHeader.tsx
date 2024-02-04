@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/Feather';
 
 interface NormalHeaderProps {
   title: string;
-  goBack: () => void;
+  goBack?: () => void;
   styles?: string;
 }
 
