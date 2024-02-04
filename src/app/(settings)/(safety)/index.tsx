@@ -1,10 +1,11 @@
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, Text, View, Dimensions, Pressable } from 'react-native';
+import { ScrollView, Text, View, Dimensions } from 'react-native';
 import { SheetManager, SheetProvider } from 'react-native-actions-sheet';
 import { Icon } from 'react-native-paper';
 
 import Header from '../../../components/Header';
+import TouchableBrightness from '../../../components/TouchableBrightness';
 import { supabase } from '../../../config/supabase';
 import { useAlert } from '../../../hooks/useAlert';
 import { useSupabase } from '../../../hooks/useSupabase';
@@ -44,8 +45,7 @@ export default function Settings() {
         </View>
 
         <ScrollView className="bg-white h-full">
-          <Pressable
-            className="mb-4"
+          <TouchableBrightness
             onPress={() => {
               alert.showAlert(
                 'Alerta',
@@ -58,26 +58,21 @@ export default function Settings() {
                 () => {},
               );
             }}>
-            <View
-              style={{ width }}
-              className="bg-white px-4 py-6 flex-row justify-between items-center">
+            <View style={{ width }} className="px-4 py-6 flex-row justify-between items-center">
               <Text className="text-base font-poppins-medium">Alterar a sua palavra-passe</Text>
               <Icon source="key-change" size={30} />
             </View>
-          </Pressable>
+          </TouchableBrightness>
 
-          <Pressable
-            className="mb-4"
+          <TouchableBrightness
             onPress={() => {
               SheetManager.show('account-delete-sheet');
             }}>
-            <View
-              style={{ width }}
-              className="bg-white px-4 py-6 flex-row justify-between items-center">
+            <View style={{ width }} className="px-4 py-6 flex-row justify-between items-center">
               <Text className="text-base font-poppins-medium">Eliminar sua conta</Text>
               <Icon source="close" size={30} color="#E54D2E" />
             </View>
-          </Pressable>
+          </TouchableBrightness>
 
           <StatusBar style="dark" backgroundColor="#fff" />
         </ScrollView>
