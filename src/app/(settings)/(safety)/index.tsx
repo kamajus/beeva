@@ -49,7 +49,7 @@ export default function Settings() {
             onPress={() => {
               alert.showAlert(
                 'Alerta',
-                'Você deseja que nós enviemos para você um email de alteração de senha?',
+                'Você quer enviemos para você um email de alteração de senha?',
                 'Sim',
                 () => {
                   sendRecoveryEmail(`${user?.email}`);
@@ -62,7 +62,7 @@ export default function Settings() {
               style={{ width }}
               className="bg-white px-4 py-6 flex-row justify-between items-center">
               <Text className="text-base font-poppins-medium">Alterar a sua palavra-passe</Text>
-              <Icon source="chevron-right" size={30} />
+              <Icon source="key-change" size={30} />
             </View>
           </Pressable>
 
