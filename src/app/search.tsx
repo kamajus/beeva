@@ -106,23 +106,24 @@ export default function Search() {
 
   return (
     <SheetProvider>
-      <View className="w-full h-full bg-white">
+      <View className="w-full h-full bg-white ">
         <Header.Search goBack={back} value={location} />
 
         <View>
           {!loading ? (
             <View>
               {residences && residences.length > 0 ? (
-                <ScrollView className="bg-white flex flex-col p-4">
+                <ScrollView className="bg-white flex flex-col px-4 pt-4">
                   <Text className="font-poppins-semibold text-lg">
                     {residences?.length} resultado(s) encontrado(s)
                   </Text>
-                  <>
+                  <View>
                     {residences?.map((residence) => (
                       <HomeCard.Search key={residence.id} {...residence} />
                     ))}
-                  </>
-                  <View className="mt-8" />
+                  </View>
+
+                  <View style={{ marginBottom: 190 }} />
                 </ScrollView>
               ) : (
                 <View className="w-full h-2/4 flex justify-center items-center">
