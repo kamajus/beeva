@@ -36,8 +36,9 @@ export default function CustomAlert(props: CustomAlertProps) {
             textColor={Constants.colors.primary}
             uppercase={false}
             onPress={() => {
-              if (props?.setAlertVisible) {
+              if (props?.setAlertVisible && props?.functionOption2) {
                 props?.setAlertVisible(false);
+                props?.functionOption2();
               }
             }}>
             {props.valueOption2}
@@ -48,8 +49,9 @@ export default function CustomAlert(props: CustomAlertProps) {
             textColor={Constants.colors.primary}
             uppercase={false}
             onPress={() => {
-              if (props?.setAlertVisible) {
+              if (props?.setAlertVisible && props?.functionOption1) {
                 props?.setAlertVisible(false);
+                props?.functionOption1();
               }
             }}>
             {props.valueOption1}
