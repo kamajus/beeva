@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import * as Notifications from 'expo-notifications';
 import { Link, useLocalSearchParams, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, ScrollView, StyleSheet, StatusBar, Dimensions, View } from 'react-native';
@@ -45,18 +46,33 @@ export default function Confirmation() {
         type: 'email',
       })
       .then(async ({ error, data }) => {
+        const welcome = {
+          user_id: data.user?.id,
+          description: 'Bem-vindo à plataforma onde seus sonhos de casa se tornam realidade! 🏡✨',
+          type: 'congratulation',
+        };
+
         setError(false);
 
         if (!error) {
-          const welcome = {
-            user_id: data.user?.id,
-            description:
-              'Bem-vindo à plataforma onde seus sonhos de casa se tornam realidade! 🏡✨',
-            type: 'congratulation',
-          };
+          Notifications.setNotificationHandler({
+            handleNotification: async () => ({
+              shouldShowAlert: true,
+              shouldPlaySound: true,
+              shouldSetBadge: false,
+            }),
+          });
 
-          await supabase.from('notifications').insert([welcome]).select();
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title: 'Seje bem vindo!',
+              body: welcome.description,
+            },
+            trigger: null,
+          });
+
           setNotifications([...notifications, welcome]);
+          await supabase.from('notifications').insert([welcome]).select();
 
           router.replace('/(root)/home');
         } else {
