@@ -1,11 +1,12 @@
 import ExpoContants from 'expo-constants';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { ScrollView, Text, View, Dimensions, Pressable, ActivityIndicator } from 'react-native';
 import { Avatar, Icon } from 'react-native-paper';
 
 import Header from '../../components/Header';
+import TouchableBrightness from '../../components/TouchableBrightness';
 import Constants from '../../constants';
 import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
@@ -24,8 +25,8 @@ export default function Settings() {
       </View>
 
       <ScrollView className="bg-white h-full">
-        <Link href="/(settings)/perfil">
-          <View style={{ width }} className="px-4 py-6 mb-20 flex-row justify-between items-center">
+        <TouchableBrightness href="/(settings)/perfil">
+          <View style={{ width }} className="px-4 py-6 flex-row justify-between items-center">
             <View className="flex gap-x-3 flex-row">
               <View>
                 {user?.photo_url ? (
@@ -41,35 +42,28 @@ export default function Settings() {
             </View>
             <Icon source="chevron-right" size={30} />
           </View>
-        </Link>
+        </TouchableBrightness>
 
-        <View className="mb-4">
-          <Link href="/(settings)/residences">
-            <View
-              style={{ width }}
-              className="bg-white px-4 py-6 flex-row justify-between items-center">
-              <Text className="text-base font-poppins-medium">Residências</Text>
-              <Icon source="chevron-right" size={30} />
-            </View>
-          </Link>
-        </View>
+        <TouchableBrightness href="/residences">
+          <View style={{ width }} className="px-4 py-6 flex-row justify-between items-center">
+            <Text className="text-base font-poppins-medium">Residências</Text>
+            <Icon source="chevron-right" size={30} />
+          </View>
+        </TouchableBrightness>
 
-        <View className="mb-4">
-          <Link href="/(settings)/(safety)">
-            <View
-              style={{ width }}
-              className="bg-white px-4 py-6 flex-row justify-between items-center">
-              <Text className="text-base font-poppins-medium">Segurança</Text>
-              <Icon source="chevron-right" size={30} />
-            </View>
-          </Link>
-        </View>
+        <TouchableBrightness href="/(settings)/(safety)">
+          <View style={{ width }} className="px-4 py-6 flex-row justify-between items-center">
+            <Text className="text-base font-poppins-medium">Segurança</Text>
+            <Icon source="chevron-right" size={30} />
+          </View>
+        </TouchableBrightness>
 
-        <View className="bg-white w-full px-4 py-6 mb-4 flex-row justify-between items-center">
-          <Text className="text-base font-poppins-medium">Termos e privacidade</Text>
-
-          <Icon source="open-in-new" size={30} />
-        </View>
+        <TouchableBrightness>
+          <View className="w-full px-4 py-6 mb-4 flex-row justify-between items-center">
+            <Text className="text-base font-poppins-medium">Termos e privacidade</Text>
+            <Icon source="open-in-new" size={30} />
+          </View>
+        </TouchableBrightness>
 
         <Pressable
           onPress={() => {

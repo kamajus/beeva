@@ -126,7 +126,7 @@ export default function Favorites() {
         <StatusBar style="dark" backgroundColor="#fff" />
       </ScrollView>
       <View className="absolute">
-        <Header.Normal title="Minhas listas" goBack={router.back} />
+        <Header.Normal title="Minhas residências" goBack={router.back} />
       </View>
     </View>
   );
