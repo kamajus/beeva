@@ -151,9 +151,8 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
-      setSession(session);
-
       if (session) {
+        setSession(session);
         await getUserById(session?.user.id, true)
           .then((data) => {
             setUser(data);

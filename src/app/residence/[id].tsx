@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 import { useLocalSearchParams, Link, router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, Pressable, Linking, Alert } from 'react-native';
 import { Avatar, IconButton } from 'react-native-paper';
@@ -224,8 +223,6 @@ export default function ResidenceDetail() {
           residence_id={String(residence?.id)}
         />
       )}
-
-      <StatusBar style="light" backgroundColor="black" />
     </ScrollView>
   );
 }

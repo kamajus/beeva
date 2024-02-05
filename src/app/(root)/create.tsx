@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Alert, ScrollView, Text, View } from 'react-native';
@@ -340,7 +339,6 @@ export default function Editor() {
             />
           </View>
         </View>
-        <StatusBar style="dark" backgroundColor="#fff" />
       </ScrollView>
 
       <Header.Action

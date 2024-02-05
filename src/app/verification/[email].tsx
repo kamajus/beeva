@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import * as Notifications from 'expo-notifications';
 import { Link, useLocalSearchParams, router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Text, ScrollView, StyleSheet, StatusBar, Dimensions, View } from 'react-native';
+import { Text, ScrollView, StyleSheet, Dimensions, View } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 import { Button, HelperText } from 'react-native-paper';
 
@@ -149,7 +149,6 @@ export default function Confirmation() {
             onPress={signInWithOtp}>
             Verificar
           </Button>
-          <StatusBar backgroundColor="white" barStyle="dark-content" />
         </View>
       </ScrollView>
     </View>

@@ -1,6 +1,5 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import clsx from 'clsx';
-import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState } from 'react';
 import { RefreshControl, ScrollView, View, Text } from 'react-native';
 
@@ -59,7 +58,6 @@ export default function () {
             </Text>
           </View>
         )}
-        <StatusBar style="dark" backgroundColor="white" />
       </View>
     </ActionSheetProvider>
   );

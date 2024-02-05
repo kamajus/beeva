@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { ScrollView, Text, View, StatusBar } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { TextInput, Button, HelperText } from 'react-native-paper';
 import * as yup from 'yup';
 
@@ -180,8 +180,6 @@ export default function SignIn() {
           </Link>
         </View>
       </View>
-
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
     </ScrollView>
   );
 }
