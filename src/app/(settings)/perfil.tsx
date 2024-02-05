@@ -6,15 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter, useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import {
-  Dimensions,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-  Alert,
-  KeyboardAvoidingView,
-} from 'react-native';
+import { Dimensions, Pressable, ScrollView, Text, View, KeyboardAvoidingView } from 'react-native';
 import { Avatar, Button, HelperText } from 'react-native-paper';
 import * as yup from 'yup';
 
@@ -22,6 +14,7 @@ import Header from '../../components/Header';
 import TextField from '../../components/TextField';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
+import { useAlert } from '../../hooks/useAlert';
 import { useSupabase } from '../../hooks/useSupabase';
 
 interface FormData {
@@ -73,6 +66,8 @@ export default function Perfil() {
   const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset[]>([]);
   const [isPhotoChaged, setPhotoChanged] = useState(false);
 
+  const alert = useAlert();
+
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -99,9 +94,11 @@ export default function Perfil() {
       .eq('id', user?.id);
 
     if (user?.email !== data.email) {
-      Alert.alert(
+      alert.showAlert(
         'Alerta',
         'Por favor, confirme o e-mail que foi enviado para você. Após a confirmação, seu endereço de e-mail será atualizado.',
+        'Ok',
+        () => {},
       );
 
       supabase.auth.updateUser({
@@ -110,9 +107,11 @@ export default function Perfil() {
     }
 
     if (error) {
-      Alert.alert(
+      alert.showAlert(
         'Erro a atualizar informações',
         'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
+        'Ok',
+        () => {},
       );
     }
 
@@ -151,9 +150,11 @@ export default function Perfil() {
             });
           })
           .catch(() => {
-            Alert.alert(
+            alert.showAlert(
               'Erro a atualizar informações',
               'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
+              'Ok',
+              () => {},
             );
           });
       } else {
@@ -179,19 +180,13 @@ export default function Perfil() {
         e.preventDefault();
 
         // Prompt the user before leaving the screen
-        Alert.alert(
+        alert.showAlert(
           'Descartar alterações?',
           'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',
-          [
-            { text: 'Não sair', style: 'cancel', onPress: () => {} },
-            {
-              text: 'Descartar',
-              style: 'destructive',
-              // Se o usuário confirmar, então despachamos a ação que bloqueamos anteriormente
-              // Isso continuará a ação que havia acionado a remoção da tela
-              onPress: () => navigation.dispatch(e.data.action),
-            },
-          ],
+          'Descartar',
+          () => navigation.dispatch(e.data.action),
+          'Não sair',
+          () => {},
         );
       }),
     [navigation, isDirty, isPhotoChaged],
@@ -384,12 +379,12 @@ export default function Perfil() {
                 control={control}
                 name="phone"
                 rules={{
-                  required: true,
+                  required: false,
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View>
                     <TextField.Root>
-                      <TextField.Label isRequired>Telefone</TextField.Label>
+                      <TextField.Label>Telefone</TextField.Label>
                       <TextField.Container error={errors.phone?.message !== undefined}>
                         <TextField.Input
                           placeholder="Degite o número de telefone"

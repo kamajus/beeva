@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 import { router } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useState } from 'react';
 import { Dimensions, RefreshControl, ScrollView, Text, View } from 'react-native';
 
@@ -134,8 +133,6 @@ export default function Favorites() {
               </View>
             )}
           </View>
-
-          <StatusBar style="dark" backgroundColor="#fff" />
         </ScrollView>
       ) : (
         <LoadScreen />

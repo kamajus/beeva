@@ -73,7 +73,7 @@ export default function DeleteActionSheet(props: SheetProps) {
   return (
     <ActionSheet id={props.sheetId}>
       <ScrollView>
-        <View className="px-2 py-4 flex flex-col gap-y-2">
+        <View className="px-7 py-4 flex flex-col gap-y-2">
           <Text className="font-poppins-semibold text-xl">Apagar conta</Text>
           <Text className="font-poppins-regular text-sm">
             Si você <Text className="font-poppins-medium text-red-500">apagar a sua conta</Text> não

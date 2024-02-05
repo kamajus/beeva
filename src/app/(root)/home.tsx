@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import ExpoConstants from 'expo-constants';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState } from 'react';
@@ -28,9 +27,10 @@ export default function House() {
   return (
     <ScrollView
       className="bg-white"
-      style={{ marginTop: ExpoConstants.statusBarHeight }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-      <View className="px-4 mt-[7%] bg-white">
+      <View
+        style={{ marginTop: Constants.customHeaderDistance / 2 }}
+        className="px-4 mt-[7%] bg-white">
         <View className="flex flex-row justify-between items-center mb-4">
           <Text className="font-poppins-bold text-2xl">Encontre uma acomodação perfeita</Text>
           <View className="relative">
@@ -115,7 +115,7 @@ export default function House() {
           />
         </HomeCard.Root>
       </View>
-      <StatusBar style="light" backgroundColor="#000" />
+      <StatusBar backgroundColor="#fff" style="dark" />
     </ScrollView>
   );
 }

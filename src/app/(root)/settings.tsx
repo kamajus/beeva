@@ -1,6 +1,5 @@
 import ExpoContants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { ScrollView, Text, View, Dimensions, Pressable, ActivityIndicator } from 'react-native';
 import { Avatar, Icon } from 'react-native-paper';
@@ -90,8 +89,6 @@ export default function Settings() {
             {ExpoContants.expoConfig?.version}
           </Text>
         </View>
-
-        <StatusBar style="dark" backgroundColor="#fff" />
       </ScrollView>
     </View>
   );

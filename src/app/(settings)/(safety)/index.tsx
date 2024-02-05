@@ -1,5 +1,4 @@
 import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { ScrollView, Text, View, Dimensions } from 'react-native';
 import { SheetManager, SheetProvider } from 'react-native-actions-sheet';
 import { Icon } from 'react-native-paper';
@@ -73,8 +72,6 @@ export default function Settings() {
               <Icon source="close" size={30} color="#E54D2E" />
             </View>
           </TouchableBrightness>
-
-          <StatusBar style="dark" backgroundColor="#fff" />
         </ScrollView>
       </View>
     </SheetProvider>

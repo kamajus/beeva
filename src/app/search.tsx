@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useNavigation, useLocalSearchParams } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native';
 import { SheetProvider } from 'react-native-actions-sheet';
@@ -19,7 +18,7 @@ export default function Search() {
   const { location } = useLocalSearchParams<{ location: string }>();
   const [residences, setResidences] = useState<Residence[]>();
   const [loading, setLoading] = useState(false);
-  const { filter } = useCache();
+  const { filter, setFilter } = useCache();
 
   const addItemToHistory = async (newItem: string) => {
     try {
@@ -60,6 +59,10 @@ export default function Search() {
   useEffect(() => {
     navigation.addListener('beforeRemove', (e) => {
       e.preventDefault();
+      setFilter({
+        kind: 'all',
+      });
+
       navigation.navigate('home'); // Error in argument but still working (under review)
     });
 
@@ -140,8 +143,6 @@ export default function Search() {
             </View>
           )}
         </View>
-
-        <StatusBar style="dark" backgroundColor="white" />
       </View>
     </SheetProvider>
   );

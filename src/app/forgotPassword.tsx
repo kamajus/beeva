@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { ScrollView, StatusBar, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Button, HelperText, TextInput } from 'react-native-paper';
 import * as yup from 'yup';
 
@@ -116,7 +116,6 @@ export default function Confirmation() {
             onPress={handleSubmit(onSubmit)}>
             Continuar
           </Button>
-          <StatusBar backgroundColor="white" barStyle="dark-content" />
         </View>
       </ScrollView>
     </View>
