@@ -1,7 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
-import SignIn from './signin';
 import LoadScreen from '../components/LoadScreen';
 import useLoadFonts from '../hooks/useLoadFonts';
 import { useSupabase } from '../hooks/useSupabase';
@@ -13,19 +12,17 @@ export default function App() {
 
   useEffect(() => {
     const handleRedirect = () => {
-      if (initialized) {
+      if (fontsLoaded && !fontError && initialized) {
         if (session) {
           replace('/(root)/home');
+        } else {
+          replace('/signin');
         }
       }
     };
 
     handleRedirect();
-  }, [session, initialized, replace]);
+  }, [session, initialized, replace, fontsLoaded, fontError]);
 
-  if ((!fontsLoaded && !fontError) || !initialized) {
-    return <LoadScreen />;
-  } else {
-    return <SignIn />;
-  }
+  return <LoadScreen />;
 }
