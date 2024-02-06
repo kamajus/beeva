@@ -40,7 +40,7 @@ const schema = yup.object({
 });
 
 export default function Perfil() {
-  const { user, session } = useSupabase();
+  const { user, getProfile, session } = useSupabase();
 
   const {
     handleSubmit,
@@ -113,6 +113,8 @@ export default function Perfil() {
         'Ok',
         () => {},
       );
+    } else {
+      getProfile();
     }
 
     setLoading(false);
