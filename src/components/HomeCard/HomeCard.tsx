@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, Text, View, Image } from 'react-native';
@@ -9,7 +10,11 @@ import { useCache } from '../../hooks/useCache';
 import useMoneyFormat from '../../hooks/useMoneyFormat';
 import { useSupabase } from '../../hooks/useSupabase';
 
-export default function HomeSearch(props: Residence) {
+interface HomeCardProps extends Residence {
+  cardType: 'search' | 'big' | 'small';
+}
+
+export default function HomeCard(props: HomeCardProps) {
   const { setFavoritesResidences, openedResidences, favoritesResidences } = useCache();
   const { residenceIsFavorite, handleFavorite, user } = useSupabase();
   const [favorite, setFavorite] = useState(favoritesResidences.some((r) => r.id === props.id));
@@ -22,12 +27,15 @@ export default function HomeSearch(props: Residence) {
   }, []);
 
   return (
-    <View className="mt-5">
+    <View className=" mb-2">
       <Pressable onPress={() => router.push(`/residence/${props.id}`)}>
         <Image
           source={{ uri: String(props.cover) }}
           alt="Home"
-          className="w-full h-[300px] rounded-xl mb-2 relative"
+          className={clsx('mt-5 w-full h-[300px] rounded-xl mb-2 relative', {
+            'mt-0 w-[272px] h-[220px] mr-2': props.cardType === 'big',
+            'mt-0 w-[172px] h-[190px] mr-2': props.cardType === 'small',
+          })}
         />
       </Pressable>
 

@@ -80,7 +80,7 @@ export default function House() {
             showsHorizontalScrollIndicator={false}
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
-            renderItem={({ item }) => <HomeCard.Big {...item} />}
+            renderItem={({ item }) => <HomeCard.Card {...item} cardType="big" />}
           />
         </HomeCard.Root>
 
@@ -90,8 +90,8 @@ export default function House() {
             horizontal
             showsHorizontalScrollIndicator={false}
             data={RESIDENCE_DATA}
-            className="w-full flex flex-row"
-            renderItem={({ item }) => <HomeCard.Small {...item} />}
+            className="mt-5 w-full flex flex-row"
+            renderItem={({ item }) => <HomeCard.Card {...item} cardType="small" />}
           />
         </HomeCard.Root>
 
@@ -101,7 +101,7 @@ export default function House() {
             showsHorizontalScrollIndicator={false}
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
-            renderItem={({ item }) => <HomeCard.Small {...item} />}
+            renderItem={({ item }) => <HomeCard.Card {...item} cardType="small" />}
           />
         </HomeCard.Root>
 
@@ -111,7 +111,7 @@ export default function House() {
             showsHorizontalScrollIndicator={false}
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
-            renderItem={({ item }) => <HomeCard.Small {...item} />}
+            renderItem={({ item }) => <HomeCard.Card {...item} cardType="small" />}
           />
         </HomeCard.Root>
       </View>
