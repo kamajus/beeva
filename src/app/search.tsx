@@ -122,7 +122,7 @@ export default function Search() {
                   </Text>
                   <View>
                     {residences?.map((residence) => (
-                      <HomeCard.Search key={residence.id} {...residence} />
+                      <HomeCard.Card key={residence.id} {...residence} cardType="search" />
                     ))}
                   </View>
 

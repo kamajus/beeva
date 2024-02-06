@@ -1,11 +1,7 @@
-import HomeBig from './HomeBig';
+import HomeCard from './HomeCard';
 import HomeRoot from './HomeRoot';
-import HomeSearch from './HomeSearch';
-import HomeSmall from './HomeSmall';
 
 export default {
   Root: HomeRoot,
-  Big: HomeBig,
-  Small: HomeSmall,
-  Search: HomeSearch,
+  Card: HomeCard,
 };
