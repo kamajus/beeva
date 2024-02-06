@@ -14,6 +14,7 @@ type SupabaseContextProps = {
   sendOtpCode: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
   getUserById: (id?: string, upsert?: boolean) => Promise<User | void>;
+  getProfile: () => Promise<void>;
   handleFavorite: (id: string, saved: boolean) => Promise<void>;
   residenceIsFavorite: (id: string) => Promise<boolean>;
 };
@@ -31,6 +32,7 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
   sendOtpCode: async () => {},
   signOut: async () => {},
   getUserById: async () => {},
+  getProfile: async () => {},
   handleFavorite: async () => {},
   residenceIsFavorite: async () => false,
 });
@@ -103,6 +105,16 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     return data;
   }
 
+  async function getProfile() {
+    await getUserById(session?.user.id, true)
+      .then((data) => {
+        setUser(data);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }
+
   const signInWithPassword = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -153,13 +165,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
       if (session) {
         setSession(session);
-        await getUserById(session?.user.id, true)
-          .then((data) => {
-            setUser(data);
-          })
-          .catch((e) => {
-            console.error(e);
-          });
+        await getProfile();
 
         const { data: notificationsData } = await supabase
           .from('notifications')
@@ -180,9 +186,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
             },
             async (payload) => {
               if (session?.user.id) {
-                getUserById(session?.user.id, true).then((data) => {
-                  setUser(data);
-                });
+                await getProfile();
               }
             },
           )
@@ -218,6 +222,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     <SupabaseContext.Provider
       value={{
         getUserById,
+        getProfile,
         user,
         session,
         initialized,
