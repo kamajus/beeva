@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 import { HelperText, RadioButton } from 'react-native-paper';
 import * as yup from 'yup';
@@ -17,6 +17,7 @@ import SearchPlace from '../../components/SearchPlace';
 import TextField from '../../components/TextField';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
+import { useAlert } from '../../hooks/useAlert';
 import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
 
@@ -88,6 +89,7 @@ export default function Editor() {
   const [loading, setLoading] = useState(false);
 
   const [isPhotoChaged, setPhotoChanged] = useState(false);
+  const alert = useAlert();
 
   async function uploadImages() {
     const imagesToAppend = openedResidences.find((r) => r.id === id)?.photos || [];
@@ -117,14 +119,20 @@ export default function Editor() {
           }
 
           if (uploadError) {
-            Alert.alert(
-              'Erro ao Carregar Imagens',
+            alert.showAlert(
+              'Erro a realizar postagem',
               'Houve um problema ao tentar carregar as imagens que você forneceu.',
+              'Ok',
+              () => {},
             );
           }
-        } catch (error) {
-          console.error('Erro durante o envio da imagem:', error);
-          Alert.alert('Erro', 'Ocorreu um erro inesperado durante o envio da imagem.');
+        } catch {
+          alert.showAlert(
+            'Erro a realizar postagem',
+            'Houve um problema ao tentar carregar as imagens que você forneceu.',
+            'Ok',
+            () => {},
+          );
         }
       }
     }
@@ -177,13 +185,20 @@ export default function Editor() {
       setLoading(false);
     } else {
       if (!hasSelectedImages) {
-        Alert.alert('Erro a realizar postagem', 'Não selecionaste nenhuma foto da residência.');
+        alert.showAlert(
+          'Erro a realizar postagem',
+          'Não selecionaste nenhuma foto da residência.',
+          'Ok',
+          () => {},
+        );
       }
 
       if (!cover) {
-        Alert.alert(
+        alert.showAlert(
           'Erro a realizar postagem',
           'Escolha uma fotografia para ser a foto de capa da sua residência.',
+          'Ok',
+          () => {},
         );
       }
     }
@@ -203,9 +218,11 @@ export default function Editor() {
       .eq('id', id);
 
     if (error) {
-      Alert.alert(
+      alert.showAlert(
         'Erro a realizar postagem',
         'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
+        'Ok',
+        () => {},
       );
     }
   }
@@ -242,7 +259,10 @@ export default function Editor() {
 
   return (
     <View className="relative bg-white">
-      <ScrollView style={{ marginTop: Constants.customHeaderDistance }} className="bg-white">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ marginTop: Constants.customHeaderDistance }}
+        className="bg-white">
         <View className="flex gap-y-9 px-4 mt-[2%] bg-white">
           <View>
             <Controller

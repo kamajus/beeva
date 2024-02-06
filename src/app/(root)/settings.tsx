@@ -22,7 +22,7 @@ export default function Settings() {
   return (
     <View className="relative bg-white">
       <View>
-        <Header.Normal title="Perfil & Configurações" goBack={router.back} />
+        <Header.Normal title="Perfil & Configurações" />
       </View>
 
       <ScrollView className="bg-white h-full">

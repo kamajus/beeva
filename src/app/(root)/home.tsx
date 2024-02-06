@@ -27,6 +27,7 @@ export default function House() {
   return (
     <ScrollView
       className="bg-white"
+      showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <View style={{ marginTop: Constants.customHeaderDistance / 2 }} className="mt-[7%] bg-white">
         <View className="p-4">

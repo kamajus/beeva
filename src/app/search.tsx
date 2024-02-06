@@ -116,7 +116,9 @@ export default function Search() {
           {!loading ? (
             <View>
               {residences && residences.length > 0 ? (
-                <ScrollView className="bg-white flex flex-col px-4 pt-4">
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  className="bg-white flex flex-col px-4 pt-4">
                   <Text className="font-poppins-semibold text-lg">
                     {residences?.length} resultado(s) encontrado(s)
                   </Text>
@@ -129,7 +131,7 @@ export default function Search() {
                   <View style={{ marginBottom: 190 }} />
                 </ScrollView>
               ) : (
-                <View className="w-full h-2/4 flex justify-center items-center">
+                <View className="w-full h-3/4 flex justify-center items-center">
                   <NoData />
                   <Text className="font-poppins-medium text-gray-400 text-center">
                     Nenhum resultado encontrado!

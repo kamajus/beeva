@@ -40,7 +40,7 @@ const schema = yup.object({
 });
 
 export default function Perfil() {
-  const { user, getProfile, session } = useSupabase();
+  const { user, setUser, session } = useSupabase();
 
   const {
     handleSubmit,
@@ -114,17 +114,23 @@ export default function Perfil() {
         () => {},
       );
     } else {
-      getProfile();
+      if (setUser && user) {
+        setUser({
+          ...user,
+          email: data.email ? `${data.email}` : user.email,
+          phone: data.phone ? Number(data.phone) : user.phone,
+        });
+      }
     }
 
-    setLoading(false);
-
     reset({
-      firstName: data.first_name || '',
-      lastName: data.last_name || '',
-      email: data.email || '',
-      phone: data.phone ? Number(data.phone) : undefined,
+      firstName: data.first_name ? data.first_name : user?.first_name,
+      lastName: data.last_name ? data.last_name : user?.last_name,
+      email: data.email ? `${data.email}` : user?.email,
+      phone: data.phone,
     });
+
+    router.back();
   }
 
   const onSubmit = async (data: FormData) => {
@@ -173,7 +179,7 @@ export default function Perfil() {
   useEffect(
     () =>
       navigation.addListener('beforeRemove', (e) => {
-        if (!isDirty && !isPhotoChaged) {
+        if ((!isDirty && !isPhotoChaged) || loading) {
           // If we don't have unsaved changes, then we don't need to do anything
           return;
         }
@@ -217,7 +223,7 @@ export default function Perfil() {
                     height: 56,
                     display: 'flex',
                     justifyContent: 'center',
-                    backgroundColor: '#212121',
+                    backgroundColor: Constants.colors.primary,
                     borderRadius: 28,
                     marginTop: 10,
                   }}
@@ -363,8 +369,18 @@ export default function Perfil() {
                       hidden: session?.user.email === user?.email,
                     })}
                     type="error">
-                    <Text className="text-primary font-poppins-medium">
-                      Confirme o seu endereço de Email.
+                    <Text
+                      className="text-primary font-poppins-medium"
+                      onPress={async () => {
+                        await supabase.auth.resend({
+                          type: 'email_change',
+                          email: `${user?.email}`,
+                          options: {
+                            emailRedirectTo: 'https://example.com/welcome',
+                          },
+                        });
+                      }}>
+                      Enviar código para cofirmar email
                     </Text>
                   </HelperText>
                 </View>

@@ -24,7 +24,7 @@ export default function SearchActionSheet(props: SheetProps) {
 
   return (
     <ActionSheet id={props.sheetId}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View className="flex flex-row items-center gap-x-1 px-2 py-4 border-b border-b-gray-300">
           <IconButton icon="close" size={20} onPress={() => SheetManager.hide('search-sheet')} />
           <Text className="font-poppins-semibold text-lg">Filtros</Text>

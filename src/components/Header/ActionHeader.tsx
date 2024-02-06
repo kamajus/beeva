@@ -19,11 +19,13 @@ export default function ActionHeader({ title, goBack, onPress, loading }: Action
       className="w-screen absolute top-8 py-4 px-4 flex gap-x-4 flex-row items-center justify-between bg-white border-b-[.5px] border-b-gray-300">
       <Icon name="arrow-left" color="#000" size={25} onPress={goBack} />
       <Text className="font-poppins-medium text-base">{title}</Text>
-      {!loading ? (
-        <IconButton mode="outlined" icon="check" iconColor="#000" size={20} onPress={onPress} />
-      ) : (
-        <ActivityIndicator animating color={Constants.colors.primary} size={20} />
-      )}
+      <View className="h-14 flex items-center justify-center">
+        {!loading ? (
+          <IconButton mode="outlined" icon="check" iconColor="#000" size={20} onPress={onPress} />
+        ) : (
+          <ActivityIndicator animating color={Constants.colors.primary} size={20} />
+        )}
+      </View>
     </View>
   );
 }

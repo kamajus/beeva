@@ -15,7 +15,7 @@ export default function GaleryItem({ activeted, id, image }: GaleryItemProps) {
         params: { id },
       }}>
       <View key={id} className="relative h-28 w-28">
-        <Image source={{ uri: String(image) }} className="h-full w-full" />
+        <Image source={{ uri: String(image) }} className="h-full w-full rounded-lg" />
       </View>
     </Link>
   );

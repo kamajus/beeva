@@ -1,16 +1,16 @@
 import clsx from 'clsx';
 import { useLocalSearchParams, Link, router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { View, Text, ScrollView, RefreshControl, Pressable, Linking, Alert } from 'react-native';
+import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native';
 import { Avatar, IconButton } from 'react-native-paper';
 
 import { Residence, User } from '../../assets/@types';
 import Carousel from '../../components/Carousel';
 import Header from '../../components/Header';
-import Prompt from '../../components/Prompt';
 import PublishedSince from '../../components/PublishedSince';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
+import { useAlert } from '../../hooks/useAlert';
 import { useCache } from '../../hooks/useCache';
 import useMoneyFormat from '../../hooks/useMoneyFormat';
 import { useSupabase } from '../../hooks/useSupabase';
@@ -32,14 +32,10 @@ export default function ResidenceDetail() {
 
   const { session, getUserById } = useSupabase();
   const [residence, setResidence] = useState<Residence>();
+  const alert = useAlert();
   const [user, setUser] = useState<User>();
 
   const [showDescription, setShowDescription] = useState(false);
-
-  const [region] = useState({
-    latitude: 112027,
-    longitude: 178739,
-  });
 
   async function getResidence() {
     setResidence(openedResidences.find((r) => r.id === id));
@@ -82,8 +78,6 @@ export default function ResidenceDetail() {
       }
 
       if (!error) {
-        Alert.alert('Alerta', 'A residência foi eliminada com sucesso, clique em continuar.');
-
         setOpenedResidences((prevResidences) =>
           prevResidences.filter((_, index) => index !== residenceIndex),
         );
@@ -93,10 +87,13 @@ export default function ResidenceDetail() {
         );
 
         router.replace('/home');
+        alert.showAlert('Alerta', 'A residência foi eliminada com sucesso', 'Ok', () => {});
       } else {
-        Alert.alert(
+        alert.showAlert(
           'Erro na postagem',
           'Não foi possível eliminar a residência, tente mais tarde.',
+          'Ok',
+          () => {},
         );
       }
     }
@@ -109,6 +106,7 @@ export default function ResidenceDetail() {
   return (
     <ScrollView
       className="flex-1 bg-white relative w-full"
+      showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <Carousel photos={residence?.photos} style={{ height: 460 }} />
       <View className="px-4 bg-white flex mt-7">
@@ -126,17 +124,29 @@ export default function ResidenceDetail() {
                 {user ? `${user?.first_name} ${user?.last_name}` : '...'}
               </Text>
               <Text className="font-poppins-regular text-sm text-gray-400">
-                {user?.email ? (user?.email === session?.user.email ? 'Eu (:' : 'Dono') : '...'}
+                {user?.id ? (user?.id === session?.user.id ? 'Eu (:' : 'Dono') : '...'}
               </Text>
             </View>
           </View>
 
           <View className="flex flex-row items-center">
-            {user?.email === session?.user.email ? (
+            {user?.id === session?.user.id ? (
               <>
-                <Prompt content="Você deseja eliminar essa postagem?" onPress={deleteResidence}>
-                  <IconButton icon="delete" mode="outlined" iconColor="#000" />
-                </Prompt>
+                <IconButton
+                  icon="delete"
+                  mode="outlined"
+                  iconColor="#000"
+                  onPress={() => {
+                    alert.showAlert(
+                      'Alerta',
+                      'Você tem ceteza que quer apagar essa residência?',
+                      'Sim',
+                      () => deleteResidence(),
+                      'Cancelar',
+                      () => {},
+                    );
+                  }}
+                />
                 {residence && (
                   <Link href={`/editor/${residence.id}`}>
                     <IconButton icon="pencil-outline" mode="outlined" iconColor="#000" />
@@ -184,14 +194,8 @@ export default function ResidenceDetail() {
         <View className="mt-7">
           <Text className="font-poppins-regular text-xs text-gray-400">Localização</Text>
 
-          <Text
-            onPress={() =>
-              Linking.openURL(
-                `https://www.google.com/maps/search/?api=1&query=${region.latitude},${region.longitude}`,
-              )
-            }
-            className="font-poppins-medium text-gray-600 mt-2 mb-2">
-            {residence?.location ? '📍' + residence?.location : '...'}
+          <Text className="font-poppins-medium text-gray-600 mt-2 mb-2">
+            {residence?.location ? residence?.location : '...'}
           </Text>
         </View>
 
