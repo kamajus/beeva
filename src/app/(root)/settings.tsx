@@ -7,15 +7,17 @@ import { Avatar, Icon } from 'react-native-paper';
 import Header from '../../components/Header';
 import TouchableBrightness from '../../components/TouchableBrightness';
 import Constants from '../../constants';
+import { useAlert } from '../../hooks/useAlert';
 import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
 
 export default function Settings() {
   const { width } = Dimensions.get('screen');
   const { signOut, session, user } = useSupabase();
+  const [exiting, setExiting] = useState(false);
   const { resetCache } = useCache();
   const router = useRouter();
-  const [exiting, setExiting] = useState(false);
+  const alert = useAlert();
 
   return (
     <View className="relative bg-white">
@@ -66,11 +68,20 @@ export default function Settings() {
 
         <Pressable
           onPress={() => {
-            setExiting(true);
-            signOut().then(() => {
-              resetCache();
-              router.replace('/signin');
-            });
+            alert.showAlert(
+              'Alerta',
+              'Você tem certeza que deseja terminar sessão?',
+              'Sim',
+              () => {
+                setExiting(true);
+                signOut().then(() => {
+                  resetCache();
+                  router.replace('/signin');
+                });
+              },
+              'Cancelar',
+              () => {},
+            );
           }}
           style={{ display: session ? 'flex' : 'none' }}
           className="bg-white w-full px-4 py-6 mb-4 flex-row justify-between items-center">
