@@ -14,7 +14,7 @@ interface HomeRootProps {
 export default function HomeRoot({ children, title, withoutPlus, icon, iconColor }: HomeRootProps) {
   return (
     <View className="mt-4">
-      <View className="flex flex-row justify-between mb-4">
+      <View className="px-4 flex flex-row justify-between mb-4">
         <View className="flex flex-row items-center gap-2">
           {icon && <Icon name={icon} color={iconColor} size={23} />}
           <Text className="font-poppins-bold text-lg">{title}</Text>

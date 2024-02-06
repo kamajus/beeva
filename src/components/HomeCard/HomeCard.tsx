@@ -32,7 +32,7 @@ export default function HomeCard(props: HomeCardProps) {
         <Image
           source={{ uri: String(props.cover) }}
           alt="Home"
-          className={clsx('mt-5 w-full h-[300px] rounded-xl mb-2 relative', {
+          className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
             'mt-0 w-[272px] h-[220px] mr-2': props.cardType === 'big',
             'mt-0 w-[172px] h-[190px] mr-2': props.cardType === 'small',
           })}
@@ -53,7 +53,9 @@ export default function HomeCard(props: HomeCardProps) {
         iconColor={favorite ? '#fd6963' : '#000'}
         disabled={props.owner_id === user?.id}
         containerColor="#fff"
-        className="absolute top-2 right-2"
+        className={clsx('absolute top-0.5 right-2.5', {
+          'absolute top-6 right-1': props.cardType === 'search',
+        })}
         onPress={() => {
           setFavorite(!favorite);
           setFavoritesResidences(openedResidences.filter((r) => r.id === props.id && !favorite));

@@ -30,9 +30,9 @@ export default function SearchActionSheet(props: SheetProps) {
           <Text className="font-poppins-semibold text-lg">Filtros</Text>
         </View>
 
-        <View className="p-4">
-          <Text className="font-poppins-medium text-base mb-3">Tipo de residência</Text>
-          <Filter kind={kind} setKind={setKind} />
+        <View>
+          <Text className="font-poppins-medium text-base mb-3 pt-4 pl-4">Tipo de residência</Text>
+          <Filter paddingHorizontal={16} kind={kind} setKind={setKind} />
         </View>
 
         <View className="p-4">
