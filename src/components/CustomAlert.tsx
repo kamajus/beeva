@@ -33,8 +33,10 @@ export default function CustomAlert(props: CustomAlertProps) {
         <Dialog.Actions>
           <Button
             style={{ display: !props?.functionOption2 && !props.valueOption2 ? 'none' : 'flex' }}
-            textColor={Constants.colors.primary}
-            uppercase={false}
+            textColor={Constants.colors.alert}
+            labelStyle={{
+              textTransform: 'capitalize',
+            }}
             onPress={() => {
               if (props?.setAlertVisible && props?.functionOption2) {
                 props?.setAlertVisible(false);
@@ -47,7 +49,9 @@ export default function CustomAlert(props: CustomAlertProps) {
           <Button
             style={{ display: !props?.functionOption1 && !props.valueOption1 ? 'none' : 'flex' }}
             textColor={Constants.colors.primary}
-            uppercase={false}
+            labelStyle={{
+              textTransform: 'capitalize',
+            }}
             onPress={() => {
               if (props?.setAlertVisible && props?.functionOption1) {
                 props?.setAlertVisible(false);

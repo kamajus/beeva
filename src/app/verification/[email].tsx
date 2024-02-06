@@ -12,7 +12,7 @@ import { useCache } from '../../hooks/useCache';
 
 const { width } = Dimensions.get('window');
 const inputWidth = width - width * 0.16;
-const MAX_COUNT = 180; // 3 minutes
+const MAX_COUNT = 600; // 10 minutes
 
 export default function Confirmation() {
   const { email } = useLocalSearchParams();
@@ -22,6 +22,10 @@ export default function Confirmation() {
   const { setNotifications, notifications } = useCache();
 
   const [counter, setCounter] = useState(180);
+
+  useEffect(() => {
+    setCounter(0);
+  }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -49,7 +53,7 @@ export default function Confirmation() {
         const welcome = {
           user_id: data.user?.id,
           description: 'Bem-vindo à plataforma onde seus sonhos de casa se tornam realidade! 🏡✨',
-          type: 'congratulation',
+          type: 'congratulations',
         };
 
         setError(false);

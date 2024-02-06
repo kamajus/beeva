@@ -75,7 +75,7 @@ export default function LocationSearch() {
       <Header.Location setSearchQuery={setSearchQuery} searchQuery={searchQuery} />
 
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss}>
-        <ScrollView className="p-1">
+        <ScrollView showsVerticalScrollIndicator={false} className="p-1">
           {dataSource.map((item, index) => (
             <View className="flex flex-row items-center gap-2 p-4" key={index}>
               <Icon

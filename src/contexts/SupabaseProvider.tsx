@@ -1,4 +1,5 @@
 import { Session, User as UserSB } from '@supabase/supabase-js';
+import { router } from 'expo-router';
 import { createContext, useEffect, useState } from 'react';
 
 import { User } from '../assets/@types';
@@ -7,6 +8,7 @@ import { useCache } from '../hooks/useCache';
 
 type SupabaseContextProps = {
   user: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>> | null;
   session: Session | null;
   initialized?: boolean;
   signUp: (email: string, password: string) => Promise<UserSB | null | void>;
@@ -14,7 +16,6 @@ type SupabaseContextProps = {
   sendOtpCode: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
   getUserById: (id?: string, upsert?: boolean) => Promise<User | void>;
-  getProfile: () => Promise<void>;
   handleFavorite: (id: string, saved: boolean) => Promise<void>;
   residenceIsFavorite: (id: string) => Promise<boolean>;
 };
@@ -25,6 +26,7 @@ type SupabaseProviderProps = {
 
 export const SupabaseContext = createContext<SupabaseContextProps>({
   user: null,
+  setUser: () => {},
   session: null,
   initialized: false,
   signUp: async () => {},
@@ -32,7 +34,6 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
   sendOtpCode: async () => {},
   signOut: async () => {},
   getUserById: async () => {},
-  getProfile: async () => {},
   handleFavorite: async () => {},
   residenceIsFavorite: async () => false,
 });
@@ -105,16 +106,6 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     return data;
   }
 
-  async function getProfile() {
-    await getUserById(session?.user.id, true)
-      .then((data) => {
-        setUser(data);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  }
-
   const signInWithPassword = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -163,9 +154,16 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
+      setSession(session);
       if (session) {
-        setSession(session);
-        await getProfile();
+        await getUserById(session?.user.id, true)
+          .then((data) => {
+            setUser(data);
+          })
+          .catch(async () => {
+            await supabase.auth.signOut();
+            router.replace('/signin');
+          });
 
         const { data: notificationsData } = await supabase
           .from('notifications')
@@ -186,8 +184,29 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
             },
             async (payload) => {
               if (session?.user.id) {
-                await getProfile();
+                await getUserById(session?.user.id, true)
+                  .then((data) => {
+                    setUser(data);
+                  })
+                  .catch((e) => {
+                    console.error(e);
+                  });
               }
+            },
+          )
+          .subscribe();
+
+        supabase
+          .channel('residences')
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+            },
+            async (payload) => {
+              // Update Or Delete Residences && Favorites Cache
+              console.log(payload); // WIP -> Work In Progress
             },
           )
           .subscribe();
@@ -222,8 +241,8 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     <SupabaseContext.Provider
       value={{
         getUserById,
-        getProfile,
         user,
+        setUser,
         session,
         initialized,
         signUp,

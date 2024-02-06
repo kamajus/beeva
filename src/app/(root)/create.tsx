@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
 import { HelperText, RadioButton } from 'react-native-paper';
 import * as yup from 'yup';
@@ -18,6 +18,7 @@ import SearchPlace from '../../components/SearchPlace';
 import TextField from '../../components/TextField';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
+import { useAlert } from '../../hooks/useAlert';
 import { useSupabase } from '../../hooks/useSupabase';
 
 interface FormData {
@@ -63,8 +64,8 @@ export default function Editor() {
   const [kind, setKind] = useState('apartment');
   const [state, setState] = useState('rent');
   const { user } = useSupabase();
-
   const [loading, setLoading] = useState(false);
+  const alert = useAlert();
 
   async function onSubmit(formData: FormData) {
     const photos: string[] = [];
@@ -107,9 +108,11 @@ export default function Editor() {
           }
 
           if (uploadError) {
-            Alert.alert(
+            alert.showAlert(
               'Erro a realizar postagem',
-              'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
+              'Houve um problema ao tentar carregar as imagens que você forneceu.',
+              'Ok',
+              () => {},
             );
           }
         }
@@ -124,18 +127,27 @@ export default function Editor() {
         setLoading(false);
         router.replace(`/(root)/home`);
       } else {
-        Alert.alert(
+        alert.showAlert(
           'Erro a realizar postagem',
           'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
+          'Ok',
+          () => {},
         );
       }
     } else {
       if (images.length === 0) {
-        Alert.alert('Erro a realizar postagem', 'Não selecionaste nenhuma foto da residência.');
+        alert.showAlert(
+          'Erro a realizar postagem',
+          'Não selecionaste nenhuma foto da residência.',
+          'Ok',
+          () => {},
+        );
       } else {
-        Alert.alert(
+        alert.showAlert(
           'Erro a realizar postagem',
           'Escolha uma fotografia para ser a foto de capa da sua residência.',
+          'Ok',
+          () => {},
         );
       }
     }
@@ -143,7 +155,10 @@ export default function Editor() {
 
   return (
     <View className="relative bg-white">
-      <ScrollView style={{ marginTop: Constants.customHeaderDistance }} className="bg-white">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ marginTop: Constants.customHeaderDistance }}
+        className="bg-white">
         <View className="flex gap-y-9 px-4 mt-[2%] bg-white">
           <View>
             <Controller
