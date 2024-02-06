@@ -7,6 +7,7 @@ import Constants from '../constants';
 interface FilterProps {
   kind?: ResidenceTypes;
   setKind?: React.Dispatch<React.SetStateAction<ResidenceTypes>>;
+  paddingHorizontal: number;
 }
 
 export default function Filter(props: FilterProps) {
@@ -23,6 +24,7 @@ export default function Filter(props: FilterProps) {
           data={Constants.categories}
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item.value}
+          contentContainerStyle={{ paddingHorizontal: props.paddingHorizontal }}
           horizontal
           renderItem={({ item }) => (
             <Pressable
