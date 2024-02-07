@@ -168,6 +168,10 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
       throw error;
     }
 
+    if (data.photo_url) {
+      data.photo_url = data.photo_url + '?timestamp=' + new Date().getTime();
+    }
+
     return data;
   }
 

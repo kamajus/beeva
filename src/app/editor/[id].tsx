@@ -92,7 +92,6 @@ export default function Editor() {
   async function onSubmit(formData: FormData) {
     const hasSelectedImages = images.length > 0;
     const isCoverChanged = defaultData?.cover !== cover;
-    const isDataDirty = isDirty || isCoverChanged;
     const isStateDifferent = defaultData?.state !== state;
     const isKindDifferent = defaultData?.kind !== kind;
     const hasDeletedImages = imagesToDelete.length > 0;
@@ -109,7 +108,7 @@ export default function Editor() {
     ) {
       setLoading(true);
 
-      if (isDataDirty || defaultData?.cover !== cover) {
+      if (isDirty || isKindDifferent || isStateDifferent || isCoverChanged) {
         await updateResidenceData(formData);
       }
 
@@ -176,7 +175,6 @@ export default function Editor() {
       ),
     );
 
-    // Remove all delete images from cache
     setImages(images.filter((image) => !imagesToDelete.includes(image.uri)));
     const residences = openedResidences.map((residence) => {
       if (residence.id === id && residence?.photos) {

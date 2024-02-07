@@ -1,6 +1,6 @@
 import clsx from 'clsx';
-import { useLocalSearchParams, Link, router } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useLocalSearchParams, useFocusEffect, Link, router } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native';
 import { Avatar, IconButton } from 'react-native-paper';
 
@@ -32,6 +32,7 @@ export default function ResidenceDetail() {
 
   const { session, getUserById } = useSupabase();
   const [residence, setResidence] = useState<Residence>();
+
   const alert = useAlert();
   const [user, setUser] = useState<User>();
 
@@ -99,9 +100,9 @@ export default function ResidenceDetail() {
     }
   }
 
-  useEffect(() => {
+  useFocusEffect(() => {
     getResidence();
-  }, [openedResidences]);
+  });
 
   return (
     <ScrollView
@@ -114,10 +115,7 @@ export default function ResidenceDetail() {
           <View className="flex gap-x-3 flex-row">
             <>
               {user?.photo_url ? (
-                <Avatar.Image
-                  size={50}
-                  source={{ uri: user.photo_url + '?timestamp=' + new Date().getTime() }}
-                />
+                <Avatar.Image size={50} source={{ uri: user.photo_url }} />
               ) : (
                 <Avatar.Text size={50} label={String(user?.first_name[0])} />
               )}
