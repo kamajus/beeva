@@ -58,29 +58,26 @@ export default function CacheProvider(props: CacheProviderProps) {
   }
 
   function updateResidenceCache(residence: Residence) {
-    console.log(residence);
-    console.log(userResidences);
+    if (openedResidences.find((r) => r.id === residence.id)) {
+      setOpenedResidences((residences) => [
+        ...residences.filter((r) => r.id !== residence.id),
+        residence,
+      ]);
+    }
 
-    // if (openedResidences.find((r) => r.id === residence.id)) {
-    //   setOpenedResidences((residences) => [
-    //     ...residences.filter((r) => r.id !== residence.id),
-    //     residence,
-    //   ]);
-    // }
+    if (userResidences.find((r) => r.id === residence.id)) {
+      setUserResidences((residences) => [
+        ...residences.filter((r) => r.id !== residence.id),
+        residence,
+      ]);
+    }
 
-    // if (userResidences.find((r) => r.id === residence.id)) {
-    //   setUserResidences((residences) => [
-    //     ...residences.filter((r) => r.id !== residence.id),
-    //     residence,
-    //   ]);
-    // }
-
-    // if (favoritesResidences.find((r) => r.id === residence.id)) {
-    //   setFavoritesResidences((residences) => [
-    //     ...residences.filter((r) => r.id !== residence.id),
-    //     residence,
-    //   ]);
-    // }
+    if (favoritesResidences.find((r) => r.id === residence.id)) {
+      setFavoritesResidences((residences) => [
+        ...residences.filter((r) => r.id !== residence.id),
+        residence,
+      ]);
+    }
   }
 
   return (
