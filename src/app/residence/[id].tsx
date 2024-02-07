@@ -114,7 +114,10 @@ export default function ResidenceDetail() {
           <View className="flex gap-x-3 flex-row">
             <>
               {user?.photo_url ? (
-                <Avatar.Image size={50} source={{ uri: user.photo_url }} />
+                <Avatar.Image
+                  size={50}
+                  source={{ uri: user.photo_url + '?timestamp=' + new Date().getTime() }}
+                />
               ) : (
                 <Avatar.Text size={50} label={String(user?.first_name[0])} />
               )}
