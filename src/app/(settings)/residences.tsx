@@ -18,6 +18,7 @@ export default function Favorites() {
     setFavoritesResidences,
     setUserResidences,
     userResidences,
+    openedResidences,
     favoritesResidences,
     setOpenedResidences,
   } = useCache();
@@ -42,7 +43,7 @@ export default function Favorites() {
       );
 
       setUserResidences([...userResidences, ...newResidences]);
-      setOpenedResidences([...userResidences, ...newResidences]);
+      setOpenedResidences([...openedResidences, ...newResidences]);
     }
   }
 

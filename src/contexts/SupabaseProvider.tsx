@@ -53,7 +53,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
-  const { setNotifications, notifications, setOpenedResidences, openedResidences } = useCache();
+  const { setNotifications, notifications, updateResidenceCache } = useCache();
 
   const signUp = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({
@@ -252,14 +252,8 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
               schema: 'public',
             },
             async (payload) => {
-              if (session?.user.id) {
-                await getUserById(session?.user.id, true)
-                  .then((data) => {
-                    setUser(data);
-                  })
-                  .catch((e) => {
-                    console.error(e);
-                  });
+              if (payload['new'].id === session.user.id) {
+                setUser(payload['new']);
               }
             },
           )
@@ -274,15 +268,9 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
               schema: 'public',
             },
             async (payload) => {
-              const residences = openedResidences.map((residence) => {
-                if (residence.id === payload['new'].id) {
-                  return payload['new'];
-                }
-
-                return residence;
-              });
-
-              setOpenedResidences(residences);
+              if (payload['new']) {
+                updateResidenceCache(payload['new']);
+              }
             },
           )
           .subscribe();
