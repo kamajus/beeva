@@ -1,7 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { decode } from 'base64-arraybuffer';
 import clsx from 'clsx';
-import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
@@ -48,7 +46,7 @@ const schema = yup.object({
 });
 
 export default function Editor() {
-  const { openedResidences, setOpenedResidences, setUserResidences } = useCache();
+  const { openedResidences, resetCache } = useCache();
   const { id } = useLocalSearchParams<{ id?: string }>();
 
   const defaultData = openedResidences.find((residence) => residence.id === id);
@@ -85,73 +83,15 @@ export default function Editor() {
   const [price, setPrice] = useState<number | null>(defaultData?.price ? defaultData.price : 0);
   const [kind, setKind] = useState(defaultData?.kind ? defaultData.kind : 'apartment');
   const [state, setState] = useState(defaultData?.state ? defaultData.state : 'rent');
-  const { user } = useSupabase();
+  const { uploadResidencesImage } = useSupabase();
   const [loading, setLoading] = useState(false);
 
   const [isPhotoChaged, setPhotoChanged] = useState(false);
   const alert = useAlert();
 
-  async function uploadImages() {
-    const imagesToAppend = openedResidences.find((r) => r.id === id)?.photos || [];
-    for (const image of images) {
-      // Checking if the image has already been posted or is stored locally
-      if (!image.uri.includes(`https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co`)) {
-        try {
-          // Read image as base64
-          const base64 = await FileSystem.readAsStringAsync(image.uri, { encoding: 'base64' });
-
-          // Define the file path based on user ID, residence ID, and timestamp
-          const filePath = `${user?.id}/${id}/${new Date().getTime()}`;
-
-          // Upload the image to Supabase storage
-          const { data: photo, error: uploadError } = await supabase.storage
-            .from('residences')
-            .upload(filePath, decode(base64), { contentType: 'image/png' });
-
-          imagesToAppend.push(
-            `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`,
-          );
-
-          // Check if the uploaded image is the cover image
-          if (image.uri === cover && !uploadError) {
-            const coverURL = `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`;
-            await supabase.from('residences').update({ cover: coverURL }).eq('id', id);
-          }
-
-          if (uploadError) {
-            alert.showAlert(
-              'Erro a realizar postagem',
-              'Houve um problema ao tentar carregar as imagens que você forneceu.',
-              'Ok',
-              () => {},
-            );
-          }
-        } catch {
-          alert.showAlert(
-            'Erro a realizar postagem',
-            'Houve um problema ao tentar carregar as imagens que você forneceu.',
-            'Ok',
-            () => {},
-          );
-        }
-      }
-    }
-
-    await supabase.from('residences').update({ photos: imagesToAppend }).eq('id', id);
-    const residences = openedResidences.map((residence) => {
-      if (residence.id === id && residence.photos) {
-        return { ...residence, photos: imagesToAppend };
-      }
-      return residence;
-    });
-
-    setOpenedResidences(residences);
-    setUserResidences(residences);
-  }
-
   async function onSubmit(formData: FormData) {
     const hasSelectedImages = images.length > 0;
-    const isCoverChanged = defaultData?.cover !== cover && cover;
+    const isCoverChanged = defaultData?.cover !== cover;
     const isDataDirty = isDirty || isCoverChanged;
     const isStateDifferent = defaultData?.state !== state;
     const isKindDifferent = defaultData?.kind !== kind;
@@ -159,6 +99,7 @@ export default function Editor() {
 
     if (
       hasSelectedImages &&
+      cover !== undefined &&
       (isCoverChanged ||
         isDirty ||
         isKindDifferent ||
@@ -179,10 +120,12 @@ export default function Editor() {
 
       // Add new images
       if (isPhotoChaged) {
-        await uploadImages();
+        await uploadResidencesImage(`${id}`, `${cover}`, images);
       }
 
       setLoading(false);
+      resetCache();
+      router.back();
     } else {
       if (!hasSelectedImages) {
         alert.showAlert(
@@ -191,9 +134,7 @@ export default function Editor() {
           'Ok',
           () => {},
         );
-      }
-
-      if (!cover) {
+      } else if (!cover) {
         alert.showAlert(
           'Erro a realizar postagem',
           'Escolha uma fotografia para ser a foto de capa da sua residência.',
@@ -235,25 +176,24 @@ export default function Editor() {
       ),
     );
 
-    await supabase.storage.from('residences').remove(filesToRemove);
-
     // Remove all delete images from cache
+    setImages(images.filter((image) => !imagesToDelete.includes(image.uri)));
     const residences = openedResidences.map((residence) => {
-      if (residence.id === id && residence.photos) {
-        const updatedPhotos = residence.photos.filter((image) => !imagesToDelete.includes(image));
-        return { ...residence, photos: updatedPhotos };
+      if (residence.id === id && residence?.photos) {
+        const photos = residence?.photos.filter((image) => !imagesToDelete.includes(image));
+        return { ...residence, photos };
       }
       return residence;
     });
 
-    setOpenedResidences(residences);
-    setUserResidences(residences);
+    await supabase.storage.from('residences').remove(filesToRemove);
 
     await supabase
       .from('residences')
       .update({ photos: residences.find((r) => r.id === id)?.photos })
       .eq('id', id);
 
+    resetCache();
     setImagesToDelete([]);
   }
 
@@ -463,12 +403,7 @@ export default function Editor() {
         </View>
       </ScrollView>
 
-      <Header.Action
-        title="Editar postagem"
-        loading={loading}
-        goBack={router.back}
-        onPress={handleSubmit(onSubmit)}
-      />
+      <Header.Action title="Editar postagem" loading={loading} onPress={handleSubmit(onSubmit)} />
     </View>
   );
 }

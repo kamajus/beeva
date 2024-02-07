@@ -278,10 +278,10 @@ export default function Perfil() {
               render={({ field: { onChange, onBlur, value } }) => (
                 <View>
                   <TextField.Root>
-                    <TextField.Label isRequired>Primeiro nome</TextField.Label>
+                    <TextField.Label isRequired>Nome</TextField.Label>
                     <TextField.Container error={errors.firstName?.message !== undefined}>
                       <TextField.Input
-                        placeholder="Degite o teu primeiro nome"
+                        placeholder="Degite o teu nome"
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
@@ -311,10 +311,10 @@ export default function Perfil() {
               render={({ field: { onChange, onBlur, value } }) => (
                 <View>
                   <TextField.Root>
-                    <TextField.Label isRequired>Último nome</TextField.Label>
+                    <TextField.Label isRequired>Sobrenome</TextField.Label>
                     <TextField.Container error={errors.lastName?.message !== undefined}>
                       <TextField.Input
-                        placeholder="Degite o teu último nome"
+                        placeholder="Degite o teu sobrenome"
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}

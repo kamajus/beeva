@@ -139,7 +139,7 @@ export default function SignIn() {
                 <View>
                   <TextInput
                     mode="outlined"
-                    label="Primeiro nome"
+                    label="Nome"
                     style={{
                       fontSize: 15,
                     }}
@@ -174,7 +174,7 @@ export default function SignIn() {
                 <View>
                   <TextInput
                     mode="outlined"
-                    label="Último nome"
+                    label="Sobrenome"
                     style={{
                       fontSize: 15,
                     }}
@@ -245,7 +245,7 @@ export default function SignIn() {
                 <View>
                   <TextInput
                     mode="outlined"
-                    label="Senha"
+                    label="Palavra-passe"
                     style={{
                       fontSize: 15,
                     }}

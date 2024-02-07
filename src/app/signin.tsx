@@ -119,7 +119,7 @@ export default function SignIn() {
                 <View>
                   <TextInput
                     mode="outlined"
-                    label="Senha"
+                    label="Palavra-passe"
                     style={{
                       fontSize: 15,
                     }}
@@ -153,7 +153,7 @@ export default function SignIn() {
           </View>
 
           <Link href="/forgotPassword" className="text-[#8b6cef] font-poppins-medium mb-4">
-            Esqueceu a sua senha?
+            Queres recuperar a conta?
           </Link>
 
           <Button

@@ -1,6 +1,6 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       favorites: {
@@ -36,24 +36,24 @@ export interface Database {
         Row: {
           created_at: string;
           description: string;
-          id: number;
-          type: string;
+          id: string;
+          type: Database['public']['Enums']['notification_type'];
           user_id: string;
           was_readed: boolean;
         };
         Insert: {
           created_at?: string;
           description: string;
-          id?: number;
-          type: string;
+          id?: string;
+          type: Database['public']['Enums']['notification_type'];
           user_id?: string;
           was_readed?: boolean;
         };
         Update: {
           created_at?: string;
           description?: string;
-          id?: number;
-          type?: string;
+          id?: string;
+          type?: Database['public']['Enums']['notification_type'];
           user_id?: string;
           was_readed?: boolean;
         };
@@ -136,9 +136,37 @@ export interface Database {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      deleteUser: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
+      get_residences_by_location: {
+        Args: {
+          place: string;
+        };
+        Returns: {
+          approval_status: boolean;
+          cover: string | null;
+          created_at: string;
+          description: string | null;
+          id: string;
+          kind: Database['public']['Enums']['residence_kind'];
+          location: string;
+          owner_id: string;
+          photos: string[] | null;
+          price: number;
+          state: Database['public']['Enums']['residence_state'];
+        }[];
+      };
+      verify_user_password: {
+        Args: {
+          password: string;
+        };
+        Returns: boolean;
+      };
     };
     Enums: {
+      notification_type: 'congratulations';
       residence_kind: 'apartment' | 'villa' | 'land' | 'others';
       residence_state: 'sell' | 'rent';
     };
@@ -146,7 +174,7 @@ export interface Database {
       [_ in never]: never;
     };
   };
-}
+};
 
 export type Tables<
   PublicTableNameOrOptions extends

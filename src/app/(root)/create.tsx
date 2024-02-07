@@ -1,7 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import { decode } from 'base64-arraybuffer';
 import clsx from 'clsx';
-import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -63,13 +61,11 @@ export default function Editor() {
   const [price, setPrice] = useState<number | null>(0);
   const [kind, setKind] = useState('apartment');
   const [state, setState] = useState('rent');
-  const { user } = useSupabase();
+  const { uploadResidencesImage } = useSupabase();
   const [loading, setLoading] = useState(false);
   const alert = useAlert();
 
   async function onSubmit(formData: FormData) {
-    const photos: string[] = [];
-
     if (images.length !== 0 && cover) {
       setLoading(true);
 
@@ -88,43 +84,14 @@ export default function Editor() {
         .single<Residence>();
 
       if (!error) {
-        for (const [index, image] of images.entries()) {
-          const base64 = await FileSystem.readAsStringAsync(image.uri, { encoding: 'base64' });
-          const filePath = `${user?.id}/${data?.id}/${new Date().getTime()}`;
-
-          const { data: photo, error: uploadError } = await supabase.storage
-            .from('residences')
-            .upload(filePath, decode(base64), { contentType: 'image/png' });
-
-          photos.push(
-            `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`,
-          );
-
-          if (image.uri === cover) {
-            await supabase
-              .from('residences')
-              .update({ cover: photos[index] })
-              .eq('id', data?.id);
-          }
-
-          if (uploadError) {
-            alert.showAlert(
-              'Erro a realizar postagem',
-              'Houve um problema ao tentar carregar as imagens que você forneceu.',
-              'Ok',
-              () => {},
-            );
-          }
-        }
-
-        await supabase
-          .from('residences')
-          .update({ photos })
-          .eq('id', data?.id);
+        await uploadResidencesImage(data.id, `${cover}`, images);
 
         setImages([]);
-        reset({});
-        setLoading(false);
+        reset({
+          description: '',
+          location: '',
+          price: 0,
+        });
         router.replace(`/(root)/home`);
       } else {
         alert.showAlert(
@@ -134,6 +101,7 @@ export default function Editor() {
           () => {},
         );
       }
+      setLoading(false);
     } else {
       if (images.length === 0) {
         alert.showAlert(
@@ -356,12 +324,7 @@ export default function Editor() {
         </View>
       </ScrollView>
 
-      <Header.Action
-        title="Criar postagem"
-        loading={loading}
-        goBack={router.back}
-        onPress={handleSubmit(onSubmit)}
-      />
+      <Header.Action title="Criar postagem" loading={loading} onPress={handleSubmit(onSubmit)} />
     </View>
   );
 }
