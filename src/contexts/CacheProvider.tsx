@@ -12,6 +12,7 @@ type CacheContextType = {
   notifications: Notification[];
   setNotifications: Dispatch<SetStateAction<Notification[] | any>>;
   resetCache(): void;
+  updateResidenceCache(residence: Residence): void;
   filter: {
     kind?: ResidenceTypes;
     state?: 'sell' | 'rent';
@@ -56,11 +57,38 @@ export default function CacheProvider(props: CacheProviderProps) {
     setNotifications([]);
   }
 
+  function updateResidenceCache(residence: Residence) {
+    console.log(residence);
+    console.log(userResidences);
+
+    // if (openedResidences.find((r) => r.id === residence.id)) {
+    //   setOpenedResidences((residences) => [
+    //     ...residences.filter((r) => r.id !== residence.id),
+    //     residence,
+    //   ]);
+    // }
+
+    // if (userResidences.find((r) => r.id === residence.id)) {
+    //   setUserResidences((residences) => [
+    //     ...residences.filter((r) => r.id !== residence.id),
+    //     residence,
+    //   ]);
+    // }
+
+    // if (favoritesResidences.find((r) => r.id === residence.id)) {
+    //   setFavoritesResidences((residences) => [
+    //     ...residences.filter((r) => r.id !== residence.id),
+    //     residence,
+    //   ]);
+    // }
+  }
+
   return (
     <CacheContext.Provider
       value={{
         userResidences,
         favoritesResidences,
+        updateResidenceCache,
         openedResidences,
         setUserResidences,
         setFavoritesResidences,

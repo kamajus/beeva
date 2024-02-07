@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import clsx from 'clsx';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ScrollView, Text, View } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
@@ -46,10 +46,10 @@ const schema = yup.object({
 });
 
 export default function Editor() {
-  const { openedResidences, resetCache } = useCache();
+  const { userResidences } = useCache();
   const { id } = useLocalSearchParams<{ id?: string }>();
 
-  const defaultData = openedResidences.find((residence) => residence.id === id);
+  const defaultData = userResidences.find((residence) => residence.id === id);
 
   const {
     handleSubmit,
@@ -123,7 +123,6 @@ export default function Editor() {
       }
 
       setLoading(false);
-      resetCache();
       router.back();
     } else {
       if (!hasSelectedImages) {
@@ -176,7 +175,8 @@ export default function Editor() {
     );
 
     setImages(images.filter((image) => !imagesToDelete.includes(image.uri)));
-    const residences = openedResidences.map((residence) => {
+
+    const residences = userResidences.map((residence) => {
       if (residence.id === id && residence?.photos) {
         const photos = residence?.photos.filter((image) => !imagesToDelete.includes(image));
         return { ...residence, photos };
@@ -191,9 +191,12 @@ export default function Editor() {
       .update({ photos: residences.find((r) => r.id === id)?.photos })
       .eq('id', id);
 
-    resetCache();
     setImagesToDelete([]);
   }
+
+  useEffect(() => {
+    console.log(userResidences);
+  }, []);
 
   return (
     <View className="relative bg-white">

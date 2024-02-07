@@ -30,11 +30,11 @@ export default function ResidenceDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const money = useMoneyFormat();
 
-  const { session, getUserById } = useSupabase();
+  const { getUserById, user } = useSupabase();
   const [residence, setResidence] = useState<Residence>();
 
   const alert = useAlert();
-  const [user, setUser] = useState<User>();
+  const [residenceOwner, setResidenceOwner] = useState<User>();
 
   const [showDescription, setShowDescription] = useState(false);
 
@@ -49,14 +49,23 @@ export default function ResidenceDetail() {
 
     if (residenceData) {
       setResidence(residenceData);
-
-      await getUserById(residenceData.owner_id).then(async (userData) => {
-        if (userData) {
-          setUser(userData);
-        }
-      });
-
       const newResidence = openedResidences.findIndex((r) => r.id === id);
+
+      if (residenceData.owner_id === user?.id) {
+        setResidenceOwner(user);
+
+        setUserResidences((prevResidences) => [
+          ...prevResidences.slice(0, newResidence),
+          residenceData,
+          ...prevResidences.slice(newResidence + 1),
+        ]);
+      } else {
+        await getUserById(residenceData.owner_id).then(async (userData) => {
+          if (userData) {
+            setResidenceOwner(userData);
+          }
+        });
+      }
 
       setOpenedResidences((prevResidences) => [
         ...prevResidences.slice(0, newResidence),
@@ -114,24 +123,26 @@ export default function ResidenceDetail() {
         <View className="flex flex-row items-center justify-between">
           <View className="flex gap-x-3 flex-row">
             <>
-              {user?.photo_url ? (
-                <Avatar.Image size={50} source={{ uri: user.photo_url }} />
+              {residenceOwner?.photo_url ? (
+                <Avatar.Image size={50} source={{ uri: residenceOwner.photo_url }} />
               ) : (
-                <Avatar.Text size={50} label={String(user?.first_name[0])} />
+                <Avatar.Text size={50} label={String(residenceOwner?.first_name[0])} />
               )}
             </>
             <View className="">
               <Text className="font-poppins-medium text-base">
-                {user ? `${user?.first_name} ${user?.last_name}` : '...'}
+                {residenceOwner
+                  ? `${residenceOwner?.first_name} ${residenceOwner?.last_name}`
+                  : '...'}
               </Text>
               <Text className="font-poppins-regular text-sm text-gray-400">
-                {user?.id ? (user?.id === session?.user.id ? 'Eu (:' : 'Dono') : '...'}
+                {residenceOwner?.id ? (residenceOwner?.id === user?.id ? 'Eu (:' : 'Dono') : '...'}
               </Text>
             </View>
           </View>
 
           <View className="flex flex-row items-center">
-            {user?.id === session?.user.id ? (
+            {residenceOwner?.id === user?.id ? (
               <>
                 <IconButton
                   icon="delete"
