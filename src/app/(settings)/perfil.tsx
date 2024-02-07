@@ -213,7 +213,10 @@ export default function Perfil() {
                   <Avatar.Image
                     size={150}
                     source={{
-                      uri: photo.length === 0 ? String(user?.photo_url) : photo[0].uri,
+                      uri:
+                        photo.length === 0
+                          ? String(user?.photo_url) + '?timestamp=' + new Date().getTime()
+                          : photo[0].uri,
                       cache: 'reload',
                     }}
                   />
@@ -438,12 +441,7 @@ export default function Perfil() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <Header.Action
-        title="Editar perfil"
-        onPress={handleSubmit(onSubmit)}
-        loading={loading}
-        goBack={router.back}
-      />
+      <Header.Action title="Editar perfil" onPress={handleSubmit(onSubmit)} loading={loading} />
     </View>
   );
 }
