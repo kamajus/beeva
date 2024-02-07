@@ -1,5 +1,4 @@
 import clsx from 'clsx';
-import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Dimensions, RefreshControl, ScrollView, Text, View } from 'react-native';
 
@@ -31,7 +30,6 @@ export default function Favorites() {
   const [loadingFavorites, setLoadingFavorites] = useState(false);
 
   async function getResidences() {
-    setLoadingResidences(true);
     const { data: residencesData } = await supabase
       .from('residences')
       .select('*')
@@ -45,50 +43,57 @@ export default function Favorites() {
 
       setUserResidences([...userResidences, ...newResidences]);
       setOpenedResidences([...userResidences, ...newResidences]);
-      setLoadingResidences(false);
     }
   }
 
-  function getFavorites() {
-    setLoadingFavorites(true);
-
-    supabase
+  async function getFavorites() {
+    const { data: favoritesData } = await supabase
       .from('favorites')
       .select('*')
       .eq('user_id', user?.id)
-      .select()
-      .then(async ({ data }) => {
-        if (data) {
-          const favoriteResidences = await Promise.all(
-            data.map(async (item) => {
-              const { data: FavoriteResidence } = await supabase
-                .from('residences')
-                .select('*')
-                .eq('id', item.residence_id)
-                .single();
+      .select();
 
-              return FavoriteResidence;
-            }),
-          );
+    if (favoritesData) {
+      const favoriteResidences = await Promise.all(
+        favoritesData.map(async (item) => {
+          const { data: FavoriteResidence } = await supabase
+            .from('residences')
+            .select('*')
+            .eq('id', item.residence_id)
+            .single();
 
-          setFavoritesResidences(favoriteResidences);
-          setLoadingFavorites(false);
-        }
-      });
+          return FavoriteResidence;
+        }),
+      );
+
+      setFavoritesResidences(favoriteResidences);
+    }
   }
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false);
-      getResidences();
-      getFavorites();
-    }, 2000);
+      setLoadingFavorites(true);
+      setLoadingResidences(true);
+      (async function () {
+        await getResidences();
+        await getFavorites();
+        setLoadingFavorites(false);
+        setLoadingResidences(false);
+      })();
+    }, 1000);
   }, []);
 
   useEffect(() => {
-    getResidences();
-    getFavorites();
+    setLoadingFavorites(true);
+    setLoadingResidences(true);
+    (async function () {
+      await getResidences();
+      await getFavorites();
+      setLoadingFavorites(false);
+      setLoadingResidences(false);
+    })();
   }, []);
 
   return (
@@ -139,7 +144,7 @@ export default function Favorites() {
       )}
 
       <View className="absolute">
-        <Header.Normal title="Minhas residências" goBack={router.back} />
+        <Header.Normal title="Minhas residências" />
       </View>
     </View>
   );

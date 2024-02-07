@@ -101,7 +101,7 @@ export default function ResidenceDetail() {
 
   useEffect(() => {
     getResidence();
-  }, []);
+  }, [openedResidences]);
 
   return (
     <ScrollView

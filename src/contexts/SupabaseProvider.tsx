@@ -1,9 +1,13 @@
 import { Session, User as UserSB } from '@supabase/supabase-js';
+import { decode } from 'base64-arraybuffer';
+import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { createContext, useEffect, useState } from 'react';
 
 import { User } from '../assets/@types';
 import { supabase } from '../config/supabase';
+import { useAlert } from '../hooks/useAlert';
 import { useCache } from '../hooks/useCache';
 
 type SupabaseContextProps = {
@@ -14,6 +18,11 @@ type SupabaseContextProps = {
   signUp: (email: string, password: string) => Promise<UserSB | null | void>;
   signInWithPassword: (email: string, password: string) => Promise<void>;
   sendOtpCode: (email: string) => Promise<void>;
+  uploadResidencesImage: (
+    id: string,
+    cover: string,
+    images: ImagePicker.ImagePickerAsset[],
+  ) => Promise<void>;
   signOut: () => Promise<void>;
   getUserById: (id?: string, upsert?: boolean) => Promise<User | void>;
   handleFavorite: (id: string, saved: boolean) => Promise<void>;
@@ -30,6 +39,7 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
   session: null,
   initialized: false,
   signUp: async () => {},
+  uploadResidencesImage: async () => {},
   signInWithPassword: async () => {},
   sendOtpCode: async () => {},
   signOut: async () => {},
@@ -39,10 +49,11 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
 });
 
 export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
+  const alert = useAlert();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
-  const { setNotifications, notifications } = useCache();
+  const { setNotifications, notifications, setOpenedResidences, openedResidences } = useCache();
 
   const signUp = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({
@@ -56,6 +67,60 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
       throw error;
     }
   };
+
+  async function uploadResidencesImage(
+    id: string,
+    cover: string,
+    images: ImagePicker.ImagePickerAsset[],
+  ) {
+    const imagesToAppend = [];
+
+    for (const image of images) {
+      // Checking if the image has already been posted or is stored locally
+      if (!image.uri.includes(`https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co`)) {
+        try {
+          // Read image as base64
+          const base64 = await FileSystem.readAsStringAsync(image.uri, { encoding: 'base64' });
+
+          // Define the file path based on user ID, residence ID, and timestamp
+          const filePath = `${user?.id}/${id}/${new Date().getTime()}`;
+
+          // Upload the image to Supabase storage
+          const { data: photo, error: uploadError } = await supabase.storage
+            .from('residences')
+            .upload(filePath, decode(base64), { contentType: 'image/png' });
+
+          imagesToAppend.push(
+            `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`,
+          );
+
+          // Check if the uploaded image is the cover image
+          if (image.uri === cover && !uploadError) {
+            const coverURL = `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`;
+            await supabase.from('residences').update({ cover: coverURL }).eq('id', id);
+          }
+
+          if (uploadError) {
+            alert.showAlert(
+              'Erro a realizar postagem',
+              'Houve um problema ao tentar carregar as imagens que você forneceu.',
+              'Ok',
+              () => {},
+            );
+          }
+        } catch {
+          alert.showAlert(
+            'Erro a realizar postagem',
+            'Houve um problema ao tentar carregar as imagens que você forneceu.',
+            'Ok',
+            () => {},
+          );
+        }
+      }
+    }
+
+    await supabase.from('residences').update({ photos: imagesToAppend }).eq('id', id);
+  }
 
   const residenceIsFavorite = async (id: string) => {
     const { data } = await supabase
@@ -201,12 +266,19 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
           .on(
             'postgres_changes',
             {
-              event: '*',
+              event: 'UPDATE',
               schema: 'public',
             },
             async (payload) => {
-              // Update Or Delete Residences && Favorites Cache
-              console.log(payload); // WIP -> Work In Progress
+              const residences = openedResidences.map((residence) => {
+                if (residence.id === payload['new'].id) {
+                  return payload['new'];
+                }
+
+                return residence;
+              });
+
+              setOpenedResidences(residences);
             },
           )
           .subscribe();
@@ -251,6 +323,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
         signOut,
         handleFavorite,
         residenceIsFavorite,
+        uploadResidencesImage,
       }}>
       {children}
     </SupabaseContext.Provider>

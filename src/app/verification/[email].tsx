@@ -6,6 +6,7 @@ import { Text, ScrollView, StyleSheet, Dimensions, View } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 import { Button, HelperText } from 'react-native-paper';
 
+import { Notification } from '../../assets/@types';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
 import { useCache } from '../../hooks/useCache';
@@ -75,8 +76,13 @@ export default function Confirmation() {
             trigger: null,
           });
 
-          setNotifications([...notifications, welcome]);
-          await supabase.from('notifications').insert([welcome]).select();
+          const { data: notificationData } = await supabase
+            .from('notifications')
+            .insert([welcome])
+            .select()
+            .single<Notification>();
+
+          setNotifications([...notifications, notificationData]);
 
           router.replace('/(root)/home');
         } else {
