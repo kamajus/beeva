@@ -119,6 +119,9 @@ export default function Perfil() {
           ...user,
           email: data.email ? `${data.email}` : user.email,
           phone: data.phone ? Number(data.phone) : user.phone,
+          photo_url: user?.photo_url
+            ? `${user?.photo_url}` + +'?timestamp=' + new Date().getTime()
+            : user.photo_url,
         });
       }
     }
@@ -213,10 +216,7 @@ export default function Perfil() {
                   <Avatar.Image
                     size={150}
                     source={{
-                      uri:
-                        photo.length === 0
-                          ? String(user?.photo_url) + '?timestamp=' + new Date().getTime()
-                          : photo[0].uri,
+                      uri: photo.length === 0 ? `${user?.photo_url}` : photo[0].uri,
                       cache: 'reload',
                     }}
                   />

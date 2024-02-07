@@ -44,7 +44,12 @@ export default function HomeCard(props: HomeCardProps) {
           <Icon name="location-pin" color="black" size={19} />
           <Text className="font-poppins-medium text-sm ml-1">{props.location}</Text>
         </View>
-        <Text className="font-poppins-semibold text-base">{money.format(props.price)}</Text>
+        <Text
+          className={clsx('font-poppins-semibold text-sm', {
+            'text-base': props.cardType === 'search',
+          })}>
+          {money.format(props.price)}
+        </Text>
       </View>
 
       <IconButton
