@@ -37,6 +37,7 @@ export type Database = {
           created_at: string;
           description: string;
           id: string;
+          title: string;
           type: Database['public']['Enums']['notification_type'];
           user_id: string;
           was_readed: boolean;
@@ -45,6 +46,7 @@ export type Database = {
           created_at?: string;
           description: string;
           id?: string;
+          title: string;
           type: Database['public']['Enums']['notification_type'];
           user_id?: string;
           was_readed?: boolean;
@@ -53,6 +55,7 @@ export type Database = {
           created_at?: string;
           description?: string;
           id?: string;
+          title?: string;
           type?: Database['public']['Enums']['notification_type'];
           user_id?: string;
           was_readed?: boolean;
@@ -166,7 +169,7 @@ export type Database = {
       };
     };
     Enums: {
-      notification_type: 'congratulations';
+      notification_type: 'congratulations' | 'successful';
       residence_kind: 'apartment' | 'villa' | 'land' | 'others';
       residence_state: 'sell' | 'rent';
     };

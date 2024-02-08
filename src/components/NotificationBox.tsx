@@ -13,6 +13,7 @@ interface NotificationIcons {
 
 const notificationIcons: NotificationIcons = {
   congratulations: 'party-popper',
+  successful: 'emoticon-happy',
 };
 
 export default function NotificationBox(props: Notification) {
@@ -22,7 +23,8 @@ export default function NotificationBox(props: Notification) {
         <TouchableBrightness onPress={() => {}}>
           <View className="w-full px-2 py-2 flex items-center flex-row  border-b border-gray-300">
             <View className="relative">
-              <Icon source={`${notificationIcons[props.type]}`} color="#8b6cef" size={30} />
+              <Icon source={notificationIcons[props.type]} color="#8b6cef" size={30} />
+
               <View
                 className={clsx(
                   'absolute bottom-7 left-7 bg-[#e83f5b] rounded-full flex justify-center items-center w-2 h-2',

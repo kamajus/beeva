@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import clsx from 'clsx';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ScrollView, Text, View } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
@@ -83,7 +83,7 @@ export default function Editor() {
   const [price, setPrice] = useState<number | null>(defaultData?.price ? defaultData.price : 0);
   const [kind, setKind] = useState(defaultData?.kind ? defaultData.kind : 'apartment');
   const [state, setState] = useState(defaultData?.state ? defaultData.state : 'rent');
-  const { uploadResidencesImage } = useSupabase();
+  const { uploadResidencesImage, handleCallNotification } = useSupabase();
   const [loading, setLoading] = useState(false);
 
   const [isPhotoChaged, setPhotoChanged] = useState(false);
@@ -123,6 +123,7 @@ export default function Editor() {
       }
 
       setLoading(false);
+      handleCallNotification('Residência respostado', 'A residência foi respostada com sucesso.');
       router.back();
     } else {
       if (!hasSelectedImages) {
@@ -193,10 +194,6 @@ export default function Editor() {
 
     setImagesToDelete([]);
   }
-
-  useEffect(() => {
-    console.log(userResidences);
-  }, []);
 
   return (
     <View className="relative bg-white">

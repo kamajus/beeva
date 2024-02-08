@@ -85,6 +85,13 @@ export default function Editor() {
 
       if (!error) {
         await uploadResidencesImage(data.id, `${cover}`, images);
+        await supabase.from('notifications').insert([
+          {
+            title: 'Residência postada',
+            description: 'A sua residência localizada foi postada com sucesso.',
+            type: 'successful',
+          },
+        ]);
 
         setImages([]);
         reset({
