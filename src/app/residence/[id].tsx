@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useLocalSearchParams, useFocusEffect, Link, router } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native';
 import { Avatar, IconButton } from 'react-native-paper';
 
@@ -30,7 +30,7 @@ export default function ResidenceDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const money = useMoneyFormat();
 
-  const { getUserById, user } = useSupabase();
+  const { handleCallNotification, getUserById, user } = useSupabase();
   const [residence, setResidence] = useState<Residence>();
 
   const alert = useAlert();
@@ -52,6 +52,7 @@ export default function ResidenceDetail() {
       const newResidence = openedResidences.findIndex((r) => r.id === id);
 
       if (residenceData.owner_id === user?.id) {
+        console.log('IAMHERE');
         setResidenceOwner(user);
 
         setUserResidences((prevResidences) => [
@@ -60,6 +61,7 @@ export default function ResidenceDetail() {
           ...prevResidences.slice(newResidence + 1),
         ]);
       } else {
+        console.log('IAMHERENOW');
         await getUserById(residenceData.owner_id).then(async (userData) => {
           if (userData) {
             setResidenceOwner(userData);
@@ -97,7 +99,7 @@ export default function ResidenceDetail() {
         );
 
         router.replace('/home');
-        alert.showAlert('Alerta', 'A residência foi eliminada com sucesso', 'Ok', () => {});
+        handleCallNotification('Residência eliminada', 'A residência foi eliminada com sucesso');
       } else {
         alert.showAlert(
           'Erro na postagem',
@@ -109,9 +111,9 @@ export default function ResidenceDetail() {
     }
   }
 
-  useFocusEffect(() => {
+  useEffect(() => {
     getResidence();
-  });
+  }, []);
 
   return (
     <ScrollView

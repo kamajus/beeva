@@ -2,10 +2,11 @@ import { Session, User as UserSB } from '@supabase/supabase-js';
 import { decode } from 'base64-arraybuffer';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
+import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { createContext, useEffect, useState } from 'react';
 
-import { User } from '../assets/@types';
+import { Notification, User } from '../assets/@types';
 import { supabase } from '../config/supabase';
 import { useAlert } from '../hooks/useAlert';
 import { useCache } from '../hooks/useCache';
@@ -26,6 +27,7 @@ type SupabaseContextProps = {
   signOut: () => Promise<void>;
   getUserById: (id?: string, upsert?: boolean) => Promise<User | void>;
   handleFavorite: (id: string, saved: boolean) => Promise<void>;
+  handleCallNotification(title: string, body: string): void;
   residenceIsFavorite: (id: string) => Promise<boolean>;
 };
 
@@ -46,16 +48,17 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
   getUserById: async () => {},
   handleFavorite: async () => {},
   residenceIsFavorite: async () => false,
+  handleCallNotification: async () => {},
 });
 
-export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
+export function SupabaseProvider({ children }: SupabaseProviderProps) {
   const alert = useAlert();
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
   const { setNotifications, notifications, updateResidenceCache } = useCache();
 
-  const signUp = async (email: string, password: string) => {
+  async function signUp(email: string, password: string) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -66,7 +69,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     } else {
       throw error;
     }
-  };
+  }
 
   async function uploadResidencesImage(
     id: string,
@@ -122,7 +125,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     await supabase.from('residences').update({ photos: imagesToAppend }).eq('id', id);
   }
 
-  const residenceIsFavorite = async (id: string) => {
+  async function residenceIsFavorite(id: string) {
     const { data } = await supabase
       .from('favorites')
       .select('*')
@@ -137,9 +140,9 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     });
 
     return isFavorite;
-  };
+  }
 
-  const handleFavorite = async (id: string, saved: boolean) => {
+  async function handleFavorite(id: string, saved: boolean) {
     if (!saved) {
       await supabase.from('favorites').insert({
         residence_id: id,
@@ -151,7 +154,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
         .eq('user_id', user?.id)
         .eq('residence_id', id);
     }
-  };
+  }
 
   async function getUserById(id?: string, upsert?: boolean) {
     if (!upsert && user && user?.id === id) {
@@ -175,7 +178,7 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     return data;
   }
 
-  const signInWithPassword = async (email: string, password: string) => {
+  async function signInWithPassword(email: string, password: string) {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -198,9 +201,9 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
         redirect,
       };
     }
-  };
+  }
 
-  const sendOtpCode = async (email: string) => {
+  async function sendOtpCode(email: string) {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
@@ -212,14 +215,43 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
     if (error) {
       throw error;
     }
-  };
+  }
 
-  const signOut = async () => {
+  async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) {
       throw error;
     }
-  };
+  }
+
+  async function updateNotifications(notification: Notification) {
+    const index = notifications.findIndex((r) => r.id === notification.id);
+
+    setNotifications((prevNotifications) => {
+      if (index !== -1) {
+        // If the notification is found in the array, move it to the front
+        const updatedNotifications = [
+          notification,
+          ...prevNotifications.slice(0, index),
+          ...prevNotifications.slice(index + 1),
+        ];
+        return updatedNotifications;
+      } else {
+        // If the notification is not found, add it to the beginning of the array
+        return [notification, ...prevNotifications];
+      }
+    });
+  }
+
+  function handleCallNotification(title: string, body: string) {
+    Notifications.scheduleNotificationAsync({
+      content: {
+        title,
+        body,
+      },
+      trigger: null,
+    });
+  }
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
@@ -284,8 +316,9 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
               schema: 'public',
             },
             async (payload) => {
-              if (payload['new']) {
-                setNotifications([...notifications, payload['new']]);
+              if (payload['new'].user_id === session.user.id) {
+                updateNotifications(payload['new']);
+                handleCallNotification(payload['new'].title, payload['new'].description);
               }
             },
           )
@@ -314,10 +347,11 @@ export const SupabaseProvider = ({ children }: SupabaseProviderProps) => {
         sendOtpCode,
         signOut,
         handleFavorite,
+        handleCallNotification,
         residenceIsFavorite,
         uploadResidencesImage,
       }}>
       {children}
     </SupabaseContext.Provider>
   );
-};
+}

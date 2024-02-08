@@ -1,9 +1,18 @@
+import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
 import LoadScreen from '../components/LoadScreen';
 import useLoadFonts from '../hooks/useLoadFonts';
 import { useSupabase } from '../hooks/useSupabase';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 export default function App() {
   const { fontError, fontsLoaded } = useLoadFonts();

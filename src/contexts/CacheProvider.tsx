@@ -10,7 +10,7 @@ type CacheContextType = {
   openedResidences: Residence[];
   setOpenedResidences: Dispatch<SetStateAction<Residence[]>>;
   notifications: Notification[];
-  setNotifications: Dispatch<SetStateAction<Notification[] | any>>;
+  setNotifications: Dispatch<SetStateAction<Notification[]>>;
   resetCache(): void;
   updateResidenceCache(residence: Residence): void;
   filter: {

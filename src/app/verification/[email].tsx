@@ -1,15 +1,12 @@
 import clsx from 'clsx';
-import * as Notifications from 'expo-notifications';
 import { Link, useLocalSearchParams, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text, ScrollView, StyleSheet, Dimensions, View } from 'react-native';
 import { OtpInput } from 'react-native-otp-entry';
 import { Button, HelperText } from 'react-native-paper';
 
-import { Notification } from '../../assets/@types';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
-import { useCache } from '../../hooks/useCache';
 
 const { width } = Dimensions.get('window');
 const inputWidth = width - width * 0.16;
@@ -20,7 +17,6 @@ export default function Confirmation() {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const { setNotifications, notifications } = useCache();
 
   const [counter, setCounter] = useState(180);
 
@@ -51,39 +47,18 @@ export default function Confirmation() {
         type: 'email',
       })
       .then(async ({ error, data }) => {
-        const welcome = {
-          user_id: data.user?.id,
-          description: 'Bem-vindo à plataforma onde seus sonhos de casa se tornam realidade! 🏡✨',
-          type: 'congratulations',
-        };
-
         setError(false);
 
         if (!error) {
-          Notifications.setNotificationHandler({
-            handleNotification: async () => ({
-              shouldShowAlert: true,
-              shouldPlaySound: true,
-              shouldSetBadge: false,
-            }),
-          });
-
-          Notifications.scheduleNotificationAsync({
-            content: {
-              title: 'Seje bem vindo!',
-              body: welcome.description,
+          await supabase.from('notifications').insert([
+            {
+              user_id: data.user?.id,
+              title: 'Seje bem vindo',
+              description:
+                'Bem-vindo à plataforma onde seus sonhos de casa se tornam realidade! 🏡✨',
+              type: 'congratulations',
             },
-            trigger: null,
-          });
-
-          const { data: notificationData } = await supabase
-            .from('notifications')
-            .insert([welcome])
-            .select()
-            .single<Notification>();
-
-          setNotifications([...notifications, notificationData]);
-
+          ]);
           router.replace('/(root)/home');
         } else {
           setError(true);
