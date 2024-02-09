@@ -42,14 +42,13 @@ export default function () {
                 headerShown: false,
               }}>
               <Stack.Screen name="index" />
-
               <Stack.Screen name="notification" />
-              <Stack.Screen name="verification/[email]" />
-              <Stack.Screen name="forgotPassword" />
               <Stack.Screen name="residence/[id]" />
+              <Stack.Screen name="forgotPassword" />
               <Stack.Screen name="(settings)" />
               <Stack.Screen name="location" />
               <Stack.Screen name="search" />
+              <Stack.Screen name="verification/[email]" />
             </Stack>
           </SupabaseProvider>
         </CacheProvider>

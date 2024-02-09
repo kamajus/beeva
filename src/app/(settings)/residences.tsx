@@ -14,14 +14,8 @@ import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
 
 export default function Favorites() {
-  const {
-    setFavoritesResidences,
-    setUserResidences,
-    userResidences,
-    openedResidences,
-    favoritesResidences,
-    setOpenedResidences,
-  } = useCache();
+  const { setFavoritesResidences, setUserResidences, userResidences, favoritesResidences } =
+    useCache();
 
   const { user } = useSupabase();
   const { height } = Dimensions.get('screen');
@@ -43,7 +37,6 @@ export default function Favorites() {
       );
 
       setUserResidences([...userResidences, ...newResidences]);
-      setOpenedResidences([...openedResidences, ...newResidences]);
     }
   }
 
