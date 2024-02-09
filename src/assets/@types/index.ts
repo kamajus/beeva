@@ -35,6 +35,11 @@ export interface ResidenceQuery {
   created_at: Date;
 }
 
+export interface CachedResidence {
+  residence: Residence;
+  user: User;
+}
+
 export interface ResidenceProps extends ResidenceBase {
   price: number;
   description?: string;

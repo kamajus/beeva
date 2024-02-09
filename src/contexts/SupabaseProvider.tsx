@@ -6,7 +6,7 @@ import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import { createContext, useEffect, useState } from 'react';
 
-import { Notification, User } from '../assets/@types';
+import { Notification, Residence, User } from '../assets/@types';
 import { supabase } from '../config/supabase';
 import { useAlert } from '../hooks/useAlert';
 import { useCache } from '../hooks/useCache';
@@ -229,7 +229,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
 
     setNotifications((prevNotifications) => {
       if (index !== -1) {
-        // If the notification is found in the array, move it to the front
         const updatedNotifications = [
           notification,
           ...prevNotifications.slice(0, index),
@@ -237,7 +236,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         ];
         return updatedNotifications;
       } else {
-        // If the notification is not found, add it to the beginning of the array
         return [notification, ...prevNotifications];
       }
     });
@@ -283,9 +281,9 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
               event: 'UPDATE',
               schema: 'public',
             },
-            async (payload) => {
-              if (payload['new'].id === session.user.id) {
-                setUser(payload['new']);
+            async (payload: { new: User }) => {
+              if (payload.new.id === session.user.id) {
+                setUser(payload.new);
               }
             },
           )
@@ -299,9 +297,9 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
               event: 'UPDATE',
               schema: 'public',
             },
-            async (payload) => {
-              if (payload['new']) {
-                updateResidenceCache(payload['new']);
+            async (payload: { new: Residence }) => {
+              if (payload.new) {
+                updateResidenceCache(payload.new);
               }
             },
           )
@@ -315,10 +313,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
               event: 'INSERT',
               schema: 'public',
             },
-            async (payload) => {
-              if (payload['new'].user_id === session.user.id) {
-                updateNotifications(payload['new']);
-                handleCallNotification(payload['new'].title, payload['new'].description);
+            async (payload: { new: Notification }) => {
+              if (payload.new.user_id === session.user.id) {
+                updateNotifications(payload.new);
+                handleCallNotification(payload.new.title, payload.new.description);
               }
             },
           )

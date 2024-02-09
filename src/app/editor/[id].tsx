@@ -112,19 +112,17 @@ export default function Editor() {
         await updateResidenceData(formData);
       }
 
-      // Delete selected images
       if (hasDeletedImages) {
         await removeDeletedImages();
       }
 
-      // Add new images
       if (isPhotoChaged) {
         await uploadResidencesImage(`${id}`, `${cover}`, images);
       }
 
-      setLoading(false);
-      handleCallNotification('Residência respostado', 'A residência foi respostada com sucesso.');
       router.back();
+      handleCallNotification('Residência respostado', 'A residência foi respostada com sucesso.');
+      setLoading(false);
     } else {
       if (!hasSelectedImages) {
         alert.showAlert(
@@ -144,13 +142,13 @@ export default function Editor() {
     }
   }
 
-  async function updateResidenceData(formData: FormData) {
+  async function updateResidenceData({ location, description }: FormData) {
     const { error } = await supabase
       .from('residences')
       .update({
         price,
-        location: formData.location,
-        description: formData.description,
+        location,
+        description,
         cover,
         state,
         kind,
@@ -178,8 +176,8 @@ export default function Editor() {
     setImages(images.filter((image) => !imagesToDelete.includes(image.uri)));
 
     const residences = userResidences.map((residence) => {
-      if (residence.id === id && residence?.photos) {
-        const photos = residence?.photos.filter((image) => !imagesToDelete.includes(image));
+      if (residence.id === id && residence.photos) {
+        const photos = residence.photos.filter((image) => !imagesToDelete.includes(image));
         return { ...residence, photos };
       }
       return residence;

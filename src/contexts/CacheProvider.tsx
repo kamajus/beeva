@@ -1,14 +1,14 @@
 import React, { Dispatch, ReactNode, SetStateAction, createContext, useState } from 'react';
 
-import { Residence, ResidenceTypes, Notification } from '../assets/@types';
+import { Residence, ResidenceTypes, Notification, CachedResidence } from '../assets/@types';
 
 type CacheContextType = {
   userResidences: Residence[];
   setUserResidences: Dispatch<SetStateAction<Residence[]>>;
   favoritesResidences: Residence[];
   setFavoritesResidences: Dispatch<SetStateAction<Residence[]>>;
-  openedResidences: Residence[];
-  setOpenedResidences: Dispatch<SetStateAction<Residence[]>>;
+  cachedResidences: CachedResidence[];
+  setCachedResidences: Dispatch<SetStateAction<CachedResidence[]>>;
   notifications: Notification[];
   setNotifications: Dispatch<SetStateAction<Notification[]>>;
   resetCache(): void;
@@ -38,7 +38,7 @@ interface CacheProviderProps {
 export default function CacheProvider(props: CacheProviderProps) {
   const [userResidences, setUserResidences] = useState<Residence[]>([]);
   const [favoritesResidences, setFavoritesResidences] = useState<Residence[]>([]);
-  const [openedResidences, setOpenedResidences] = useState<Residence[]>([]);
+  const [cachedResidences, setCachedResidences] = useState<CachedResidence[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const [filter, setFilter] = useState<{
@@ -53,15 +53,16 @@ export default function CacheProvider(props: CacheProviderProps) {
   function resetCache() {
     setUserResidences([]);
     setFavoritesResidences([]);
-    setOpenedResidences([]);
+    setCachedResidences([]);
     setNotifications([]);
   }
 
   function updateResidenceCache(residence: Residence) {
-    if (openedResidences.find((r) => r.id === residence.id)) {
-      setOpenedResidences((residences) => [
-        ...residences.filter((r) => r.id !== residence.id),
-        residence,
+    const openedResidenceMatch = cachedResidences.find(({ residence: r }) => r.id === residence.id);
+    if (openedResidenceMatch) {
+      setCachedResidences((residences) => [
+        ...residences,
+        { user: openedResidenceMatch.user, residence },
       ]);
     }
 
@@ -86,10 +87,10 @@ export default function CacheProvider(props: CacheProviderProps) {
         userResidences,
         favoritesResidences,
         updateResidenceCache,
-        openedResidences,
+        cachedResidences,
         setUserResidences,
         setFavoritesResidences,
-        setOpenedResidences,
+        setCachedResidences,
         notifications,
         setNotifications,
         filter,
