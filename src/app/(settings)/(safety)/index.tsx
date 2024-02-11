@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import { ScrollView, Text, View, Dimensions } from 'react-native';
 import { SheetManager, SheetProvider } from 'react-native-actions-sheet';
 import { Icon } from 'react-native-paper';
@@ -12,7 +11,6 @@ import { useSupabase } from '../../../hooks/useSupabase';
 export default function Settings() {
   const { width } = Dimensions.get('screen');
 
-  const router = useRouter();
   const { user } = useSupabase();
   const alert = useAlert();
 
@@ -40,7 +38,7 @@ export default function Settings() {
     <SheetProvider>
       <View className="relative bg-white">
         <View>
-          <Header.Normal title="Segurança" goBack={router.back} />
+          <Header.Normal title="Segurança" />
         </View>
 
         <ScrollView className="bg-white h-full">

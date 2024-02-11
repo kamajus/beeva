@@ -16,8 +16,8 @@ import TextField from '../../components/TextField';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
 import { useAlert } from '../../hooks/useAlert';
-import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
+import { useResidenceStore } from '../../store/ResidenceStore';
 
 interface FormData {
   price: number;
@@ -46,10 +46,9 @@ const schema = yup.object({
 });
 
 export default function Editor() {
-  const { userResidences } = useCache();
   const { id } = useLocalSearchParams<{ id?: string }>();
-
-  const defaultData = userResidences.find((residence) => residence.id === id);
+  const cachedResidences = useResidenceStore((state) => state.cachedResidences);
+  const defaultData = cachedResidences.find(({ residence: r }) => r.id === id);
 
   const {
     handleSubmit,
@@ -58,15 +57,15 @@ export default function Editor() {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      description: defaultData?.description ? defaultData.description : '',
-      location: defaultData?.location ? defaultData.location : '',
-      price: defaultData?.price ? defaultData.price : 0,
+      description: defaultData?.residence.description ? defaultData.residence.description : '',
+      location: defaultData?.residence.location ? defaultData.residence.location : '',
+      price: defaultData?.residence.price ? defaultData.residence.price : 0,
     },
   });
 
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>(
-    defaultData?.photos
-      ? defaultData.photos.map((uri) => ({
+    defaultData?.residence.photos
+      ? defaultData.residence.photos.map((uri) => ({
           uri,
           width: 300,
           height: 300,
@@ -78,11 +77,11 @@ export default function Editor() {
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
   const [cover, setCover] = useState<string | null | undefined>(
-    defaultData?.cover ? String(defaultData.cover) : undefined,
+    defaultData?.residence.cover || undefined,
   );
-  const [price, setPrice] = useState<number | null>(defaultData?.price ? defaultData.price : 0);
-  const [kind, setKind] = useState(defaultData?.kind ? defaultData.kind : 'apartment');
-  const [state, setState] = useState(defaultData?.state ? defaultData.state : 'rent');
+  const [price, setPrice] = useState<number | null>(defaultData?.residence.price || 0);
+  const [kind, setKind] = useState(defaultData?.residence.kind || 'apartment');
+  const [state, setState] = useState(defaultData?.residence.state || 'rent');
   const { uploadResidencesImage, handleCallNotification } = useSupabase();
   const [loading, setLoading] = useState(false);
 
@@ -91,9 +90,9 @@ export default function Editor() {
 
   async function onSubmit(formData: FormData) {
     const hasSelectedImages = images.length > 0;
-    const isCoverChanged = defaultData?.cover !== cover;
-    const isStateDifferent = defaultData?.state !== state;
-    const isKindDifferent = defaultData?.kind !== kind;
+    const isCoverChanged = defaultData?.residence.cover !== cover;
+    const isStateDifferent = defaultData?.residence.state !== state;
+    const isKindDifferent = defaultData?.residence.kind !== kind;
     const hasDeletedImages = imagesToDelete.length > 0;
 
     if (
@@ -120,9 +119,9 @@ export default function Editor() {
         await uploadResidencesImage(`${id}`, `${cover}`, images);
       }
 
+      setLoading(false);
       router.back();
       handleCallNotification('Residência respostado', 'A residência foi respostada com sucesso.');
-      setLoading(false);
     } else {
       if (!hasSelectedImages) {
         alert.showAlert(
@@ -175,7 +174,7 @@ export default function Editor() {
 
     setImages(images.filter((image) => !imagesToDelete.includes(image.uri)));
 
-    const residences = userResidences.map((residence) => {
+    const residences = cachedResidences.map(({ residence }) => {
       if (residence.id === id && residence.photos) {
         const photos = residence.photos.filter((image) => !imagesToDelete.includes(image));
         return { ...residence, photos };

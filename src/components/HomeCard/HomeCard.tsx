@@ -6,18 +6,22 @@ import { IconButton } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { Residence } from '../../assets/@types';
-import { useCache } from '../../hooks/useCache';
 import useMoneyFormat from '../../hooks/useMoneyFormat';
 import { useSupabase } from '../../hooks/useSupabase';
+import { useResidenceStore } from '../../store/ResidenceStore';
 
 interface HomeCardProps extends Residence {
   cardType: 'search' | 'big' | 'small';
 }
 
 export default function HomeCard(props: HomeCardProps) {
-  const { setFavoritesResidences, openedResidences, favoritesResidences } = useCache();
+  const cachedResidences = useResidenceStore((state) => state.cachedResidences);
+  const addToResidences = useResidenceStore((state) => state.addToResidences);
+
   const { residenceIsFavorite, handleFavorite, user } = useSupabase();
-  const [favorite, setFavorite] = useState(favoritesResidences.some((r) => r.id === props.id));
+  const [favorite, setFavorite] = useState(
+    cachedResidences.some(({ residence: r }) => r.id === props.id),
+  );
   const money = useMoneyFormat();
 
   useEffect(() => {
@@ -63,8 +67,8 @@ export default function HomeCard(props: HomeCardProps) {
         })}
         onPress={() => {
           setFavorite(!favorite);
-          setFavoritesResidences(openedResidences.filter((r) => r.id === props.id && !favorite));
           handleFavorite(props.id, favorite);
+          if (!favorite) addToResidences(props, 'favorites');
         }}
       />
     </View>

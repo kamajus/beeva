@@ -10,9 +10,11 @@ import Constants from '../../constants';
 import { useAlert } from '../../hooks/useAlert';
 import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
+import { useResidenceStore } from '../../store/ResidenceStore';
 
 export default function Settings() {
   const { width } = Dimensions.get('screen');
+  const resetResidenceCache = useResidenceStore((state) => state.resetResidenceCache);
   const { signOut, session, user } = useSupabase();
   const [exiting, setExiting] = useState(false);
   const { resetCache } = useCache();
@@ -76,6 +78,7 @@ export default function Settings() {
                 setExiting(true);
                 signOut().then(() => {
                   resetCache();
+                  resetResidenceCache();
                   router.replace('/signin');
                 });
               },

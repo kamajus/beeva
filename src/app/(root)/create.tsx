@@ -9,7 +9,7 @@ import CurrencyInput from 'react-native-currency-input';
 import { HelperText, RadioButton } from 'react-native-paper';
 import * as yup from 'yup';
 
-import { Residence } from '../../assets/@types';
+import { Residence, ResidenceTypes } from '../../assets/@types';
 import GaleryGrid from '../../components/GaleryGrid';
 import Header from '../../components/Header';
 import SearchPlace from '../../components/SearchPlace';
@@ -59,8 +59,8 @@ export default function Editor() {
 
   const [cover, setCover] = useState<string | null>();
   const [price, setPrice] = useState<number | null>(0);
-  const [kind, setKind] = useState('apartment');
-  const [state, setState] = useState('rent');
+  const [kind, setKind] = useState<ResidenceTypes>('apartment');
+  const [state, setState] = useState<'rent' | 'sell'>('rent');
   const { uploadResidencesImage } = useSupabase();
   const [loading, setLoading] = useState(false);
   const alert = useAlert();
