@@ -10,6 +10,9 @@ import * as yup from 'yup';
 
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
+import { useAlert } from '../../hooks/useAlert';
+import { useCache } from '../../hooks/useCache';
+import { useResidenceStore } from '../../store/ResidenceStore';
 import TextField from '../TextField';
 
 interface FormData {
@@ -25,6 +28,8 @@ const schema = yup.object({
 });
 
 export default function DeleteActionSheet(props: SheetProps) {
+  const resetResidenceCache = useResidenceStore((state) => state.resetResidenceCache);
+  const { resetCache } = useCache();
   const {
     handleSubmit,
     control,
@@ -36,6 +41,7 @@ export default function DeleteActionSheet(props: SheetProps) {
   });
 
   const [loading, setLoading] = useState(false);
+  const alert = useAlert();
 
   async function onSubmit({ password }: FormData) {
     setLoading(true);
@@ -51,9 +57,17 @@ export default function DeleteActionSheet(props: SheetProps) {
 
     if (verifyResponse.data === true) {
       const { error } = await supabase.rpc('deleteUser');
-      if (error) console.error(error);
-      else {
+      if (error) {
+        alert.showAlert(
+          'Erro',
+          'Parece que aconteceu algum erro no processo de eliminação da sua conta, tente novamente mais tarde.',
+          'Ok',
+          () => {},
+        );
+      } else {
         supabase.auth.signOut();
+        resetCache();
+        resetResidenceCache();
         router.replace('/signin');
       }
 

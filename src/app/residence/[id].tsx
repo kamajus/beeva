@@ -1,23 +1,25 @@
 import clsx from 'clsx';
-import { useLocalSearchParams, useFocusEffect, Link, router } from 'expo-router';
+import { useLocalSearchParams, Link, router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native';
 import { Avatar, IconButton } from 'react-native-paper';
 
-import { Residence, User } from '../../assets/@types';
+import { CachedResidence, Residence } from '../../assets/@types';
 import Carousel from '../../components/Carousel';
 import Header from '../../components/Header';
 import PublishedSince from '../../components/PublishedSince';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
 import { useAlert } from '../../hooks/useAlert';
-import { useCache } from '../../hooks/useCache';
 import useMoneyFormat from '../../hooks/useMoneyFormat';
 import { useSupabase } from '../../hooks/useSupabase';
+import { useResidenceStore } from '../../store/ResidenceStore';
 
 export default function ResidenceDetail() {
   const [refreshing, setRefreshing] = useState(false);
-  const { setOpenedResidences, openedResidences, setUserResidences } = useCache();
+  const cachedResidences = useResidenceStore((state) => state.cachedResidences);
+  const pushResidence = useResidenceStore((state) => state.pushResidence);
+  const removeResidence = useResidenceStore((state) => state.removeResidence);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -31,16 +33,14 @@ export default function ResidenceDetail() {
   const money = useMoneyFormat();
 
   const { handleCallNotification, getUserById, user } = useSupabase();
-  const [residence, setResidence] = useState<Residence>();
+  const [cachedData, setCachedData] = useState<CachedResidence | undefined>(
+    cachedResidences.find((r) => r.residence.id === id),
+  );
 
   const alert = useAlert();
-  const [residenceOwner, setResidenceOwner] = useState<User>();
-
   const [showDescription, setShowDescription] = useState(false);
 
   async function getResidence() {
-    setResidence(openedResidences.find((r) => r.id === id));
-
     const { data: residenceData } = await supabase
       .from('residences')
       .select('*')
@@ -48,57 +48,43 @@ export default function ResidenceDetail() {
       .single<Residence>();
 
     if (residenceData) {
-      setResidence(residenceData);
-      const newResidence = openedResidences.findIndex((r) => r.id === id);
-
       if (residenceData.owner_id === user?.id) {
-        console.log('IAMHERE');
-        setResidenceOwner(user);
+        setCachedData({
+          residence: residenceData,
+          user,
+        });
 
-        setUserResidences((prevResidences) => [
-          ...prevResidences.slice(0, newResidence),
-          residenceData,
-          ...prevResidences.slice(newResidence + 1),
-        ]);
+        pushResidence(residenceData, user);
       } else {
-        console.log('IAMHERENOW');
         await getUserById(residenceData.owner_id).then(async (userData) => {
           if (userData) {
-            setResidenceOwner(userData);
+            setCachedData({
+              residence: residenceData,
+              user: userData,
+            });
+
+            pushResidence(residenceData, userData);
           }
         });
       }
-
-      setOpenedResidences((prevResidences) => [
-        ...prevResidences.slice(0, newResidence),
-        residenceData,
-        ...prevResidences.slice(newResidence + 1),
-      ]);
     }
   }
 
   async function deleteResidence() {
-    if (residence?.photos) {
-      const residenceIndex = openedResidences.findIndex((r) => r.id === id);
-
+    if (cachedData?.residence?.photos) {
       const { error } = await supabase.from('residences').delete().eq('id', id);
 
-      const filesToRemove = residence?.photos.map((image) => `${user?.id}/${id}/${image}`);
+      const filesToRemove = cachedData.residence?.photos.map(
+        (image) => `${user?.id}/${id}/${image}`,
+      );
 
       if (filesToRemove) {
         await supabase.storage.from('residences').remove(filesToRemove);
       }
 
       if (!error) {
-        setOpenedResidences((prevResidences) =>
-          prevResidences.filter((_, index) => index !== residenceIndex),
-        );
-
-        setUserResidences((prevResidences) =>
-          prevResidences.filter((_, index) => index !== residenceIndex),
-        );
-
         router.replace('/home');
+        removeResidence(id);
         handleCallNotification('Residência eliminada', 'A residência foi eliminada com sucesso');
       } else {
         alert.showAlert(
@@ -115,36 +101,44 @@ export default function ResidenceDetail() {
     getResidence();
   }, []);
 
+  useEffect(() => {
+    setCachedData(cachedResidences.find((r) => r.residence.id === id));
+  }, [cachedResidences]);
+
   return (
     <ScrollView
       className="flex-1 bg-white relative w-full"
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-      <Carousel photos={residence?.photos} style={{ height: 460 }} />
+      <Carousel photos={cachedData?.residence.photos} style={{ height: 460 }} />
       <View className="px-4 bg-white flex mt-7">
         <View className="flex flex-row items-center justify-between">
           <View className="flex gap-x-3 flex-row">
             <>
-              {residenceOwner?.photo_url ? (
-                <Avatar.Image size={50} source={{ uri: residenceOwner.photo_url }} />
+              {cachedData?.user?.photo_url ? (
+                <Avatar.Image size={50} source={{ uri: cachedData?.user.photo_url }} />
               ) : (
-                <Avatar.Text size={50} label={String(residenceOwner?.first_name[0])} />
+                <Avatar.Text size={50} label={String(cachedData?.user?.first_name[0] || '...')} />
               )}
             </>
             <View className="">
               <Text className="font-poppins-medium text-base">
-                {residenceOwner
-                  ? `${residenceOwner?.first_name} ${residenceOwner?.last_name}`
+                {cachedData?.user
+                  ? `${cachedData.user.first_name} ${cachedData.user.last_name}`
                   : '...'}
               </Text>
               <Text className="font-poppins-regular text-sm text-gray-400">
-                {residenceOwner?.id ? (residenceOwner?.id === user?.id ? 'Eu (:' : 'Dono') : '...'}
+                {cachedData?.user && cachedData?.user.id
+                  ? cachedData.user.id === user?.id
+                    ? 'Eu (:'
+                    : 'Dono'
+                  : '...'}
               </Text>
             </View>
           </View>
 
           <View className="flex flex-row items-center">
-            {residenceOwner?.id === user?.id ? (
+            {cachedData?.user?.id === user?.id ? (
               <>
                 <IconButton
                   icon="delete"
@@ -161,8 +155,8 @@ export default function ResidenceDetail() {
                     );
                   }}
                 />
-                {residence && (
-                  <Link href={`/editor/${residence.id}`}>
+                {cachedData?.residence && (
+                  <Link href={`/editor/${cachedData?.residence.id}`}>
                     <IconButton icon="pencil-outline" mode="outlined" iconColor="#000" />
                   </Link>
                 )}
@@ -177,68 +171,85 @@ export default function ResidenceDetail() {
         </View>
 
         <View className="flex gap-1 flex-row items-center mt-7">
-          <Text className="text-2xl font-poppins-semibold">
-            {money.format(residence?.price ? Number(residence?.price) : 0)}
-          </Text>
-          <Text
-            className={clsx('text-xs font-poppins-regular text-gray-400', {
-              hidden: residence?.state === 'sell',
-            })}>
-            /mês
-          </Text>
+          {cachedData?.residence?.price ? (
+            <>
+              <Text className="text-2xl font-poppins-semibold">
+                {money.format(Number(cachedData?.residence?.price))}
+              </Text>
+              <Text
+                className={clsx('text-xs font-poppins-regular text-gray-400', {
+                  hidden: cachedData?.residence?.state === 'sell',
+                })}>
+                /mês
+              </Text>
+            </>
+          ) : (
+            <Text className="text-xs font-poppins-regular">...</Text>
+          )}
         </View>
 
         <View className="mt-7">
           <Text className="font-poppins-regular text-xs text-gray-400">Tipo</Text>
           <Text className="font-poppins-medium">
-            {residence &&
-              Constants.categories.map((categorie) => {
-                if (categorie.value === residence.kind) {
-                  return `${categorie.emoji} ${categorie.name}`;
-                }
-              })}
+            {cachedData?.residence
+              ? Constants.categories.map((categorie) => {
+                  if (categorie.value === cachedData.residence.kind) {
+                    return `${categorie.emoji} ${categorie.name}`;
+                  }
+                })
+              : '...'}
           </Text>
         </View>
 
         <View className="mt-7">
           <Text className="font-poppins-regular text-xs text-gray-400">Data da postagem</Text>
-          <PublishedSince className="font-poppins-medium" date={String(residence?.created_at)} />
+          <PublishedSince
+            className="font-poppins-medium"
+            date={String(cachedData?.residence?.created_at)}
+          />
         </View>
 
         <View className="mt-7">
           <Text className="font-poppins-regular text-xs text-gray-400">Localização</Text>
 
           <Text className="font-poppins-medium text-gray-600 mt-2 mb-2">
-            {residence?.location ? residence?.location : '...'}
+            {cachedData?.residence?.location ? cachedData.residence?.location : '...'}
           </Text>
         </View>
 
         <Pressable
           className="mt-7 mb-7"
           onPress={() => {
-            if (residence?.description && residence?.description.length > 100) {
+            if (
+              cachedData?.residence?.description &&
+              cachedData.residence?.description.length > 100
+            ) {
               setShowDescription(!showDescription);
             }
           }}>
           <Text className="font-poppins-semibold text-lg">Descrição</Text>
           <Text className="font-poppins-regular text-gray-600">
-            {residence?.description && residence?.description.length > 100 && !showDescription
-              ? `${residence?.description.slice(0, 100)}...`
-              : residence?.description}
+            {cachedData?.residence?.description &&
+            cachedData.residence?.description.length > 100 &&
+            !showDescription
+              ? `${cachedData.residence?.description.slice(0, 100)}...`
+              : cachedData?.residence?.description}
           </Text>
           <Text
             className={clsx('text-primary text-xs font-poppins-medium', {
-              hidden: !(residence?.description && residence?.description.length > 100),
+              hidden: !(
+                cachedData?.residence?.description && cachedData.residence?.description.length > 100
+              ),
             })}>
             {showDescription ? ' - ver menos' : ' ver mais +'}
           </Text>
         </Pressable>
       </View>
 
-      {residence?.id && (
+      {cachedData?.residence?.id && (
         <Header.Carousel
-          owner_id={String(residence?.owner_id)}
-          residence_id={String(residence?.id)}
+          owner_id={String(cachedData?.residence?.owner_id)}
+          residence_id={String(cachedData?.residence?.id)}
         />
       )}
     </ScrollView>
