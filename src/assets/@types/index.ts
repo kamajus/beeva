@@ -4,6 +4,7 @@ import { Database } from './supabase';
 
 export type ResidenceTypes = 'apartment' | 'land' | 'others' | 'villa' | 'all';
 export type Residence = Database['public']['Tables']['residences']['Row'];
+export type Favorite = Database['public']['Tables']['favorites']['Row'];
 export type User = Database['public']['Tables']['users']['Row'];
 export type Notification = Database['public']['Tables']['notifications']['Row'];
 
@@ -33,6 +34,11 @@ export interface ResidenceQuery {
   type: ResidenceTypes;
   description: string;
   created_at: Date;
+}
+
+export interface CachedResidence {
+  residence: Residence;
+  user?: User;
 }
 
 export interface ResidenceProps extends ResidenceBase {
