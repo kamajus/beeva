@@ -45,6 +45,7 @@ export default function () {
               <Stack.Screen name="notification" />
               <Stack.Screen name="residence/[id]" />
               <Stack.Screen name="forgotPassword" />
+              <Stack.Screen name="changePassword" />
               <Stack.Screen name="(settings)" />
               <Stack.Screen name="location" />
               <Stack.Screen name="search" />
