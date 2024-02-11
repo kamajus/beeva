@@ -1,8 +1,15 @@
 import clsx from 'clsx';
 import { Link } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState } from 'react';
-import { View, ScrollView, FlatList, Text, Dimensions, RefreshControl } from 'react-native';
+import {
+  View,
+  ScrollView,
+  FlatList,
+  Text,
+  Dimensions,
+  RefreshControl,
+  StatusBar,
+} from 'react-native';
 import { IconButton, Searchbar } from 'react-native-paper';
 
 import { RESIDENCE_DATA } from '../../assets/data';
@@ -120,7 +127,7 @@ export default function House() {
           />
         </HomeCard.Root>
       </View>
-      <StatusBar backgroundColor="#fff" style="dark" />
+      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
     </ScrollView>
   );
 }

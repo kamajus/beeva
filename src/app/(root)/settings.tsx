@@ -1,7 +1,7 @@
 import ExpoContants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, Text, View, Dimensions, Pressable, ActivityIndicator } from 'react-native';
+import { ScrollView, Text, View, Dimensions, ActivityIndicator, Linking } from 'react-native';
 import { Avatar, Icon } from 'react-native-paper';
 
 import Header from '../../components/Header';
@@ -61,41 +61,45 @@ export default function Settings() {
           </View>
         </TouchableBrightness>
 
-        <TouchableBrightness>
+        <TouchableBrightness
+          onPress={() =>
+            Linking.openURL(process.env.EXPO_PUBLIC_WEBSITE_URL + '/termos-gerais' || '')
+          }>
           <View className="w-full px-4 py-6 mb-4 flex-row justify-between items-center">
             <Text className="text-base font-poppins-medium">Termos e privacidade</Text>
             <Icon source="open-in-new" size={30} />
           </View>
         </TouchableBrightness>
 
-        <Pressable
-          onPress={() => {
-            alert.showAlert(
-              'Alerta',
-              'Você tem certeza que deseja terminar sessão?',
-              'Sim',
-              () => {
-                setExiting(true);
-                signOut().then(() => {
-                  resetCache();
-                  resetResidenceCache();
-                  router.replace('/signin');
-                });
-              },
-              'Cancelar',
-              () => {},
-            );
-          }}
-          style={{ display: session ? 'flex' : 'none' }}
-          className="bg-white w-full px-4 py-6 mb-4 flex-row justify-between items-center">
-          <Text className="text-base font-poppins-medium">Terminar sessão</Text>
-
-          {!exiting ? (
-            <Icon source="logout" color="#E54D2E" size={30} />
-          ) : (
-            <ActivityIndicator animating color={Constants.colors.primary} size={30} />
-          )}
-        </Pressable>
+        {session && (
+          <TouchableBrightness
+            onPress={() => {
+              alert.showAlert(
+                'Alerta',
+                'Você tem certeza que deseja terminar sessão?',
+                'Sim',
+                () => {
+                  setExiting(true);
+                  signOut().then(() => {
+                    resetCache();
+                    resetResidenceCache();
+                    router.replace('/signin');
+                  });
+                },
+                'Cancelar',
+                () => {},
+              );
+            }}>
+            <View className="w-full px-4 py-6 mb-4 flex-row justify-between items-center">
+              <Text className="text-base font-poppins-medium">Terminar sessão</Text>
+              {!exiting ? (
+                <Icon source="logout" color="#E54D2E" size={30} />
+              ) : (
+                <ActivityIndicator animating color={Constants.colors.primary} size={30} />
+              )}
+            </View>
+          </TouchableBrightness>
+        )}
 
         <View className="w-full p-4 pb-8 flex-row gap-x-2 items-center">
           <Text className="text-sm font-poppins-semibold text-[#212121]">Versão</Text>
