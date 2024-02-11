@@ -4,20 +4,22 @@ import { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native';
 import { Avatar, IconButton } from 'react-native-paper';
 
-import { Residence, User } from '../../assets/@types';
+import { CachedResidence, Residence } from '../../assets/@types';
 import Carousel from '../../components/Carousel';
 import Header from '../../components/Header';
 import PublishedSince from '../../components/PublishedSince';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
 import { useAlert } from '../../hooks/useAlert';
-import { useCache } from '../../hooks/useCache';
 import useMoneyFormat from '../../hooks/useMoneyFormat';
 import { useSupabase } from '../../hooks/useSupabase';
+import { useResidenceStore } from '../../store/ResidenceStore';
 
 export default function ResidenceDetail() {
   const [refreshing, setRefreshing] = useState(false);
-  const { setCachedResidences, cachedResidences } = useCache();
+  const cachedResidences = useResidenceStore((state) => state.cachedResidences);
+  const pushResidence = useResidenceStore((state) => state.pushResidence);
+  const removeResidence = useResidenceStore((state) => state.removeResidence);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -31,10 +33,9 @@ export default function ResidenceDetail() {
   const money = useMoneyFormat();
 
   const { handleCallNotification, getUserById, user } = useSupabase();
-  const [cachedData, setCachedData] = useState<{
-    residence: Residence;
-    user: User;
-  }>();
+  const [cachedData, setCachedData] = useState<CachedResidence | undefined>(
+    cachedResidences.find((r) => r.residence.id === id),
+  );
 
   const alert = useAlert();
   const [showDescription, setShowDescription] = useState(false);
@@ -53,13 +54,7 @@ export default function ResidenceDetail() {
           user,
         });
 
-        setCachedResidences([
-          ...cachedResidences.filter(({ residence: r }) => r.id !== id),
-          {
-            residence: residenceData,
-            user,
-          },
-        ]);
+        pushResidence(residenceData, user);
       } else {
         await getUserById(residenceData.owner_id).then(async (userData) => {
           if (userData) {
@@ -68,13 +63,7 @@ export default function ResidenceDetail() {
               user: userData,
             });
 
-            setCachedResidences([
-              ...cachedResidences.filter(({ residence: r }) => r.id !== id),
-              {
-                residence: residenceData,
-                user: userData,
-              },
-            ]);
+            pushResidence(residenceData, userData);
           }
         });
       }
@@ -95,6 +84,7 @@ export default function ResidenceDetail() {
 
       if (!error) {
         router.replace('/home');
+        removeResidence(id);
         handleCallNotification('Residência eliminada', 'A residência foi eliminada com sucesso');
       } else {
         alert.showAlert(
@@ -111,6 +101,10 @@ export default function ResidenceDetail() {
     getResidence();
   }, []);
 
+  useEffect(() => {
+    setCachedData(cachedResidences.find((r) => r.residence.id === id));
+  }, [cachedResidences]);
+
   return (
     <ScrollView
       className="flex-1 bg-white relative w-full"
@@ -124,7 +118,7 @@ export default function ResidenceDetail() {
               {cachedData?.user?.photo_url ? (
                 <Avatar.Image size={50} source={{ uri: cachedData?.user.photo_url }} />
               ) : (
-                <Avatar.Text size={50} label={String(cachedData?.user?.first_name[0])} />
+                <Avatar.Text size={50} label={String(cachedData?.user?.first_name[0] || '...')} />
               )}
             </>
             <View className="">
@@ -134,7 +128,11 @@ export default function ResidenceDetail() {
                   : '...'}
               </Text>
               <Text className="font-poppins-regular text-sm text-gray-400">
-                {cachedData?.user.id ? (cachedData.user.id === user?.id ? 'Eu (:' : 'Dono') : '...'}
+                {cachedData?.user && cachedData?.user.id
+                  ? cachedData.user.id === user?.id
+                    ? 'Eu (:'
+                    : 'Dono'
+                  : '...'}
               </Text>
             </View>
           </View>
@@ -173,26 +171,33 @@ export default function ResidenceDetail() {
         </View>
 
         <View className="flex gap-1 flex-row items-center mt-7">
-          <Text className="text-2xl font-poppins-semibold">
-            {money.format(cachedData?.residence?.price ? Number(cachedData?.residence?.price) : 0)}
-          </Text>
-          <Text
-            className={clsx('text-xs font-poppins-regular text-gray-400', {
-              hidden: cachedData?.residence?.state === 'sell',
-            })}>
-            /mês
-          </Text>
+          {cachedData?.residence?.price ? (
+            <>
+              <Text className="text-2xl font-poppins-semibold">
+                {money.format(Number(cachedData?.residence?.price))}
+              </Text>
+              <Text
+                className={clsx('text-xs font-poppins-regular text-gray-400', {
+                  hidden: cachedData?.residence?.state === 'sell',
+                })}>
+                /mês
+              </Text>
+            </>
+          ) : (
+            <Text className="text-xs font-poppins-regular">...</Text>
+          )}
         </View>
 
         <View className="mt-7">
           <Text className="font-poppins-regular text-xs text-gray-400">Tipo</Text>
           <Text className="font-poppins-medium">
-            {cachedData?.residence &&
-              Constants.categories.map((categorie) => {
-                if (categorie.value === cachedData.residence.kind) {
-                  return `${categorie.emoji} ${categorie.name}`;
-                }
-              })}
+            {cachedData?.residence
+              ? Constants.categories.map((categorie) => {
+                  if (categorie.value === cachedData.residence.kind) {
+                    return `${categorie.emoji} ${categorie.name}`;
+                  }
+                })
+              : '...'}
           </Text>
         </View>
 

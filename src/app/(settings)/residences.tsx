@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import { Dimensions, RefreshControl, ScrollView, Text, View } from 'react-native';
 
-import { Residence } from '../../assets/@types';
+import { Residence, Favorite } from '../../assets/@types';
 import NoData from '../../assets/images/no-data';
 import NoFavorite from '../../assets/images/no-favorite';
 import GaleryItem from '../../components/GaleryItem';
@@ -10,12 +10,13 @@ import Header from '../../components/Header';
 import LoadScreen from '../../components/LoadScreen';
 import { supabase } from '../../config/supabase';
 import Constants from '../../constants';
-import { useCache } from '../../hooks/useCache';
 import { useSupabase } from '../../hooks/useSupabase';
+import { useResidenceStore } from '../../store/ResidenceStore';
 
 export default function Favorites() {
-  const { setFavoritesResidences, setUserResidences, userResidences, favoritesResidences } =
-    useCache();
+  const userResidences = useResidenceStore((state) => state.userResidences);
+  const favoritesResidences = useResidenceStore((state) => state.favoritesResidences);
+  const addToResidences = useResidenceStore((state) => state.addToResidences);
 
   const { user } = useSupabase();
   const { height } = Dimensions.get('screen');
@@ -32,11 +33,9 @@ export default function Favorites() {
       .returns<Residence[]>();
 
     if (residencesData) {
-      const newResidences = residencesData.filter(
-        (data) => !userResidences.some((r) => r.id === data.id),
-      );
-
-      setUserResidences([...userResidences, ...newResidences]);
+      residencesData.map((residence) => {
+        addToResidences(residence, 'user');
+      });
     }
   }
 
@@ -45,22 +44,18 @@ export default function Favorites() {
       .from('favorites')
       .select('*')
       .eq('user_id', user?.id)
-      .select();
+      .returns<Favorite[]>();
 
     if (favoritesData) {
-      const favoriteResidences = await Promise.all(
-        favoritesData.map(async (item) => {
-          const { data: FavoriteResidence } = await supabase
-            .from('residences')
-            .select('*')
-            .eq('id', item.residence_id)
-            .single();
+      favoritesData.map(async (item) => {
+        const { data: favorite } = await supabase
+          .from('residences')
+          .select('*')
+          .eq('id', item.residence_id)
+          .single();
 
-          return FavoriteResidence;
-        }),
-      );
-
-      setFavoritesResidences(favoriteResidences);
+        addToResidences(favorite, 'favorites');
+      });
     }
   }
 
@@ -98,7 +93,7 @@ export default function Favorites() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
           <Text className="text-black text-lg font-poppins-semibold">Postadas por mim</Text>
           <View className="mt-2 flex-1 flex-row flex-wrap">
-            {userResidences && userResidences?.length > 0 ? (
+            {userResidences.length > 0 ? (
               userResidences.map(({ id, cover }) => (
                 <View key={id} className="mr-3 mt-3">
                   <GaleryItem image={cover} id={id} key={id} activeted={false} />
@@ -117,7 +112,7 @@ export default function Favorites() {
             Guardados por mim
           </Text>
           <View className={clsx('mt-2 flex-1 flex-row flex-wrap')}>
-            {favoritesResidences && favoritesResidences?.length > 0 ? (
+            {favoritesResidences.length > 0 ? (
               favoritesResidences.map(({ id, cover }) => (
                 <View key={id} className="mr-3 mt-3">
                   <GaleryItem image={cover} id={id} key={id} activeted={false} />

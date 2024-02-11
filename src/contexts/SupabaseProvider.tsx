@@ -10,6 +10,7 @@ import { Notification, Residence, User } from '../assets/@types';
 import { supabase } from '../config/supabase';
 import { useAlert } from '../hooks/useAlert';
 import { useCache } from '../hooks/useCache';
+import { useResidenceStore } from '../store/ResidenceStore';
 
 type SupabaseContextProps = {
   user: User | null;
@@ -56,7 +57,13 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
-  const { setNotifications, notifications, updateResidenceCache } = useCache();
+  const { setNotifications, notifications } = useCache();
+
+  const userResidences = useResidenceStore((state) => state.userResidences);
+  const cachedResidences = useResidenceStore((state) => state.cachedResidences);
+  const favoritesResidences = useResidenceStore((state) => state.favoritesResidences);
+  const addToResidences = useResidenceStore((state) => state.addToResidences);
+  const pushResidence = useResidenceStore((state) => state.pushResidence);
 
   async function signUp(email: string, password: string) {
     const { data, error } = await supabase.auth.signUp({
@@ -254,6 +261,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
       setSession(session);
+
       if (session) {
         await getUserById(session?.user.id, true)
           .then((data) => {
@@ -290,22 +298,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           .subscribe();
 
         supabase
-          .channel('residences')
-          .on(
-            'postgres_changes',
-            {
-              event: 'UPDATE',
-              schema: 'public',
-            },
-            async (payload: { new: Residence }) => {
-              if (payload.new) {
-                updateResidenceCache(payload.new);
-              }
-            },
-          )
-          .subscribe();
-
-        supabase
           .channel('notifications')
           .on(
             'postgres_changes',
@@ -331,6 +323,34 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       data.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    supabase
+      .channel('residences')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+        },
+        async (payload: { new: Residence }) => {
+          if (payload.new) {
+            if (userResidences.find((r) => r.id === payload.new.id)) {
+              addToResidences(payload.new, 'user');
+            }
+
+            if (favoritesResidences.find((r) => r.id === payload.new.id)) {
+              addToResidences(payload.new, 'favorites');
+            }
+
+            if (cachedResidences.find(({ residence: r }) => r.id === payload.new.id)) {
+              pushResidence(payload.new);
+            }
+          }
+        },
+      )
+      .subscribe();
+  }, [userResidences, favoritesResidences, cachedResidences]);
 
   return (
     <SupabaseContext.Provider
