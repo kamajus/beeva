@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter, useNavigation, useLocalSearchParams } from 'expo-router';
+import { useNavigation, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native';
 import { SheetProvider } from 'react-native-actions-sheet';
@@ -13,7 +13,6 @@ import Constants from '../constants';
 import { useCache } from '../hooks/useCache';
 
 export default function Search() {
-  const { back } = useRouter();
   const navigation = useNavigation();
   const { location } = useLocalSearchParams<{ location: string }>();
   const [residences, setResidences] = useState<Residence[]>();
@@ -110,7 +109,7 @@ export default function Search() {
   return (
     <SheetProvider>
       <View className="w-full h-full bg-white ">
-        <Header.Search goBack={back} value={location} />
+        <Header.Search value={location} />
 
         <View>
           {!loading ? (
