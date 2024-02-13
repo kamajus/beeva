@@ -17,12 +17,17 @@ interface FormData {
 }
 
 const schema = yup.object({
-  email: yup.string().email('Endereço de e-mail inválido').required('O e-mail é obrigatório'),
+  email: yup
+    .string()
+    .email('Endereço de e-mail inválido')
+    .required('O e-mail é obrigatório')
+    .trim(),
   password: yup
     .string()
     .required('A senha é obrigatória')
     .min(8, 'A senha deve ter pelo menos 8 caracteres')
-    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número'),
+    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número')
+    .trim(),
 });
 
 export default function SignIn() {
