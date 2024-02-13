@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Keyboard, ScrollView, TouchableWithoutFeedback, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Header from '../components/Header';
@@ -74,10 +74,13 @@ export default function LocationSearch() {
     <View className="w-full h-full bg-white">
       <Header.Location setSearchQuery={setSearchQuery} searchQuery={searchQuery} />
 
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss}>
-        <ScrollView showsVerticalScrollIndicator={false} className="p-1">
+      <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={80}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          className="p-1"
+          keyboardShouldPersistTaps="handled">
           {dataSource.map((item, index) => (
-            <View className="flex flex-row items-center gap-2 p-4" key={index}>
+            <View className="flex flex-row  items-center gap-2 p-4" key={index}>
               <Icon
                 name={item.origin === 'search' ? 'location-pin' : 'history'}
                 color="black"
@@ -88,13 +91,13 @@ export default function LocationSearch() {
                   pathname: '/search',
                   params: { location: item.value },
                 }}
-                className="font-poppins-medium text-base">
+                className="font-poppins-medium text-sm w-">
                 {item.value}
               </Link>
             </View>
           ))}
         </ScrollView>
-      </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </View>
   );
 }

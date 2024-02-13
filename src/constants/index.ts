@@ -6,7 +6,7 @@ type Categories = { name: string; value: ResidenceTypes; emoji: string }[];
 
 const colors = {
   primary: '#8b6cef',
-  input: '#f5f5f5',
+  input: '#f9f9f9',
   alert: '#EF4444',
 };
 

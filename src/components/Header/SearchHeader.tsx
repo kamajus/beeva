@@ -10,11 +10,10 @@ import TextField from '../TextField';
 import '../ActionSheet';
 
 interface SearchHeaderProps {
-  goBack: () => void;
   value: string;
 }
 
-export default function SearchHeader({ goBack, value }: SearchHeaderProps) {
+export default function SearchHeader({ value }: SearchHeaderProps) {
   return (
     <View className="border-b-[.5px] border-b-gray-300">
       <View
@@ -22,7 +21,7 @@ export default function SearchHeader({ goBack, value }: SearchHeaderProps) {
         className="w-full py-4 px-4 flex justify-center items-center flex-row">
         <TextField.Root>
           <TextField.Container disableFocus>
-            <Icon name="arrow-left" color="#000" size={25} onPress={goBack} />
+            <Icon name="arrow-left" color="#000" size={25} onPress={router.back} />
             <TextField.Input
               value={value}
               onFocus={() => router.push('/location')}
