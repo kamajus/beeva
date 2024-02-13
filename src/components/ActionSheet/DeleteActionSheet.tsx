@@ -51,7 +51,6 @@ export default function DeleteActionSheet(props: SheetProps) {
     });
 
     if (verifyResponse.error) {
-      console.error(verifyResponse.error);
       return false;
     }
 

@@ -33,7 +33,9 @@ export default function Confirmation() {
 
   async function onSubmit(data: FormData) {
     setLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(data.email);
+    const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+      redirectTo: `${process.env.EXPO_PUBLIC_WEBSITE_URL}/reset`,
+    });
 
     if (error) {
       alert.showAlert(
