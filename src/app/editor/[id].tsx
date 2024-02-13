@@ -48,11 +48,14 @@ const schema = yup.object({
 export default function Editor() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const cachedResidences = useResidenceStore((state) => state.cachedResidences);
-  const defaultData = cachedResidences.find(({ residence: r }) => r.id === id);
+  const [defaultData, setDefaultData] = useState(
+    cachedResidences.find(({ residence: r }) => r.id === id),
+  );
 
   const {
     handleSubmit,
     control,
+    reset,
     formState: { errors, isDirty },
   } = useForm({
     resolver: yupResolver(schema),
@@ -75,7 +78,6 @@ export default function Editor() {
   );
 
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
-
   const [cover, setCover] = useState<string | null | undefined>(
     defaultData?.residence.cover || undefined,
   );
@@ -120,6 +122,7 @@ export default function Editor() {
       }
 
       setLoading(false);
+
       router.back();
       handleCallNotification('Residência respostado', 'A residência foi respostada com sucesso.');
     } else {
@@ -161,6 +164,24 @@ export default function Editor() {
         'Ok',
         () => {},
       );
+    } else if (defaultData) {
+      setDefaultData({
+        residence: {
+          ...defaultData?.residence,
+          price: price ? price : Number(defaultData?.residence.price),
+          location: location ? location : `${defaultData?.residence.location}`,
+          description: description ? description : `${defaultData?.residence.description}`,
+          cover: cover ? cover : `${defaultData?.residence.cover}`,
+          state,
+          kind,
+        },
+      });
+
+      reset({
+        description,
+        location,
+        price: price ? price : undefined,
+      });
     }
   }
 

@@ -29,13 +29,19 @@ const schema = yup.object({
     .string()
     .required('O campo de nome é obrigatório')
     .min(2, 'O nome deve ter pelo menos 2 caracteres')
-    .max(50, 'O nome deve ter no máximo 50 caracteres'),
+    .max(50, 'O nome deve ter no máximo 50 caracteres')
+    .trim(),
   lastName: yup
     .string()
     .required('O campo de sobrenome é obrigatório')
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
-    .max(50, 'O sobrenome deve ter no máximo 50 caracteres'),
-  email: yup.string().email('Endereço de e-mail inválido').required('O e-mail é obrigatório'),
+    .max(50, 'O sobrenome deve ter no máximo 50 caracteres')
+    .trim(),
+  email: yup
+    .string()
+    .email('Endereço de e-mail inválido')
+    .required('O e-mail é obrigatório')
+    .trim(),
   phone: yup.number(),
 });
 
@@ -61,7 +67,9 @@ export default function Perfil() {
   const navigation = useNavigation();
 
   const { height } = Dimensions.get('screen');
+
   const [loading, setLoading] = useState(false);
+  const [userCanExit, setUserCanExit] = useState(true);
 
   const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset[]>([]);
   const [isPhotoChaged, setPhotoChanged] = useState(false);
@@ -119,8 +127,8 @@ export default function Perfil() {
           ...user,
           email: data.email ? `${data.email}` : user.email,
           phone: data.phone ? Number(data.phone) : user.phone,
-          photo_url: user?.photo_url
-            ? `${user?.photo_url}` + +'?timestamp=' + new Date().getTime()
+          photo_url: data.photo_url
+            ? `${data?.photo_url}` + +'?timestamp=' + new Date().getTime()
             : user.photo_url,
         });
       }
@@ -133,10 +141,12 @@ export default function Perfil() {
       phone: data.phone,
     });
 
+    setUserCanExit(true);
     router.back();
   }
 
   const onSubmit = async (data: FormData) => {
+    setUserCanExit(false);
     if (isDirty || isPhotoChaged) {
       setLoading(true);
 
@@ -172,25 +182,24 @@ export default function Perfil() {
         await updatePerfil({
           first_name: data.firstName,
           last_name: data.lastName,
-          email: data.email,
+          email: data.email?.trim() || data.email,
           phone: data.phone,
         });
       }
     }
+
+    setUserCanExit(true);
   };
 
   useEffect(
     () =>
       navigation.addListener('beforeRemove', (e) => {
-        if ((!isDirty && !isPhotoChaged) || loading) {
-          // If we don't have unsaved changes, then we don't need to do anything
+        if (!isDirty && !isPhotoChaged && userCanExit) {
           return;
         }
 
-        // Prevent default behavior of leaving the screen
         e.preventDefault();
 
-        // Prompt the user before leaving the screen
         alert.showAlert(
           'Descartar alterações?',
           'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',
@@ -200,7 +209,7 @@ export default function Perfil() {
           () => {},
         );
       }),
-    [navigation, isDirty, isPhotoChaged],
+    [navigation, isDirty, isPhotoChaged, userCanExit],
   );
 
   return (
@@ -393,7 +402,7 @@ export default function Perfil() {
 
           <View>
             <Text className="font-poppins-medium text-xs text-gray-500">
-              OBS: Esse telefone vai estar visível para todos 🌐
+              OBS: Esse número vai estar visível para todos 🌐
             </Text>
             <View>
               <Controller
@@ -405,7 +414,7 @@ export default function Perfil() {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View>
                     <TextField.Root>
-                      <TextField.Label>Telefone</TextField.Label>
+                      <TextField.Label>Contacto</TextField.Label>
                       <TextField.Container error={errors.phone?.message !== undefined}>
                         <TextField.Input
                           placeholder="Degite o número de telefone"
