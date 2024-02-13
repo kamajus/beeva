@@ -10,7 +10,6 @@ import { useSupabase } from '../../../hooks/useSupabase';
 
 export default function Settings() {
   const { width } = Dimensions.get('screen');
-
   const { user } = useSupabase();
   const alert = useAlert();
 
@@ -57,7 +56,7 @@ export default function Settings() {
             }}>
             <View style={{ width }} className="px-4 py-6 flex-row justify-between items-center">
               <Text className="text-base font-poppins-medium">Alterar a sua palavra-passe</Text>
-              <Icon source="key-change" size={30} />
+              <Icon source="shield-key" size={30} />
             </View>
           </TouchableBrightness>
 

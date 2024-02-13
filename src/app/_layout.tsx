@@ -1,3 +1,4 @@
+import * as Linking from 'expo-linking';
 import { Stack } from 'expo-router';
 import { PaperProvider, MD2LightTheme, configureFonts } from 'react-native-paper';
 
@@ -32,6 +33,12 @@ export default function () {
     fonts: configureFonts({ config: fontConfig, isV3: false }),
   };
 
+  const url = Linking.useURL();
+
+  if (url) {
+    const { hostname, path, queryParams } = Linking.parse(url);
+  }
+
   return (
     <PaperProvider theme={theme}>
       <AlertProvider>
@@ -42,14 +49,13 @@ export default function () {
                 headerShown: false,
               }}>
               <Stack.Screen name="index" />
-              <Stack.Screen name="notification" />
+              <Stack.Screen name="verification/[email]" />
               <Stack.Screen name="residence/[id]" />
               <Stack.Screen name="forgotPassword" />
-              <Stack.Screen name="changePassword" />
+              <Stack.Screen name="notification" />
               <Stack.Screen name="(settings)" />
               <Stack.Screen name="location" />
               <Stack.Screen name="search" />
-              <Stack.Screen name="verification/[email]" />
             </Stack>
           </SupabaseProvider>
         </CacheProvider>

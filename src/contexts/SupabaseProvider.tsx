@@ -259,7 +259,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   }
 
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
+    const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
 
       if (session) {
@@ -277,9 +277,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           .select('*')
           .eq('user_id', session?.user.id);
 
-        if (notificationsData) {
-          setNotifications(notificationsData);
-        }
+        if (notificationsData) setNotifications(notificationsData);
 
         supabase
           .channel('users')

@@ -16,9 +16,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.adjpro.cubata"
     },
     "android": {
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.vercel.app",
+              "pathPrefix": "/records"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
         "backgroundColor": "#8b6cef"
@@ -26,7 +41,7 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.carlosmateus.cubata"
+      "package": "com.adjpro.cubata"
     },
     "web": {
       "favicon": "./src/assets/images/favicon.png"
@@ -58,7 +73,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "cfb7c737-546f-4cbc-badb-f95a0576eab2"
+        "projectId": "3420f684-6226-41ee-8b3f-0c99c22fbdc3"
       }
     }
   }
