@@ -24,7 +24,7 @@ export default function Settings() {
   return (
     <View className="relative bg-white">
       <View>
-        <Header.Normal title="Perfil & Configurações" />
+        <Header.Normal title="Definições" />
       </View>
 
       <ScrollView className="bg-white h-full">

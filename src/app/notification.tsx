@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { useCallback, useState } from 'react';
 import { RefreshControl, ScrollView, View, Text } from 'react-native';
 
-import { Notification as NotificationType } from '../assets/@types';
+import { Notification } from '../assets/@types';
 import NoNotification from '../assets/images/no-notification';
 import Header from '../components/Header';
 import NotificationBox from '../components/NotificationBox';
@@ -18,8 +18,9 @@ export default function () {
     const { data } = await supabase
       .from('notifications')
       .select()
+      .order('created_at', { ascending: false })
       .eq('user_id', user?.id)
-      .returns<NotificationType[]>();
+      .returns<Notification[]>();
 
     if (data) {
       setNotifications(data);

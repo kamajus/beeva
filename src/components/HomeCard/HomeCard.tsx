@@ -46,7 +46,9 @@ export default function HomeCard(props: HomeCardProps) {
       <View className="w-full gap-1 mt-2">
         <View className="flex flex-row items-center">
           <Icon name="location-pin" color="black" size={19} />
-          <Text className="font-poppins-medium text-sm ml-1">{props.location}</Text>
+          <Text className="font-poppins-medium text-sm ml-1">
+            {props.location.length > 70 ? `${props.location.slice(0, 60)}...` : props.location}
+          </Text>
         </View>
         <Text
           className={clsx('font-poppins-semibold text-sm', {

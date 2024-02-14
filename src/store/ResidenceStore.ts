@@ -25,7 +25,7 @@ export const useResidenceStore = create<ResidenceState>((set) => {
           if (favoriteIndex > -1) {
             favorites[favoriteIndex] = item;
           } else {
-            favorites.push(item);
+            favorites.unshift(item);
           }
 
           return {
@@ -40,7 +40,7 @@ export const useResidenceStore = create<ResidenceState>((set) => {
           if (residenceIndex > -1) {
             residences[residenceIndex] = item;
           } else {
-            residences.push(item);
+            residences.unshift(item);
           }
 
           return {
@@ -57,7 +57,7 @@ export const useResidenceStore = create<ResidenceState>((set) => {
           residences[residenceIndex].residence = residence;
           if (user) residences[residenceIndex].user = user;
         } else {
-          residences.push({ residence, user });
+          residences.unshift({ residence, user });
         }
 
         return {
@@ -73,7 +73,7 @@ export const useResidenceStore = create<ResidenceState>((set) => {
       }));
     },
     resetResidenceCache: () => {
-      set((state) => ({
+      set(() => ({
         userResidences: [],
         favoritesResidences: [],
         cachedResidences: [],

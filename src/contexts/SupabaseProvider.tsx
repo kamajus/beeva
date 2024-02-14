@@ -173,7 +173,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     const { data, error } = await supabase
       .from('users')
       .select('*')
-      .eq('id', !id ? user?.id : id)
+      .eq('id', id || user?.id)
       .single<User>();
 
     if (error) {
@@ -280,6 +280,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         const { data: notificationsData } = await supabase
           .from('notifications')
           .select('*')
+          .order('created_at', { ascending: false })
           .eq('user_id', session?.user.id);
 
         if (notificationsData) setNotifications(notificationsData);
