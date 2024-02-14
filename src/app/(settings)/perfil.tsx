@@ -3,7 +3,7 @@ import { decode } from 'base64-arraybuffer';
 import clsx from 'clsx';
 import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter, useNavigation } from 'expo-router';
+import { useNavigation } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Dimensions, Pressable, ScrollView, Text, View, KeyboardAvoidingView } from 'react-native';
@@ -30,13 +30,15 @@ const schema = yup.object({
     .required('O campo de nome é obrigatório')
     .min(2, 'O nome deve ter pelo menos 2 caracteres')
     .max(50, 'O nome deve ter no máximo 50 caracteres')
-    .trim(),
+    .trim()
+    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida está invalida'),
   lastName: yup
     .string()
     .required('O campo de sobrenome é obrigatório')
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
     .max(50, 'O sobrenome deve ter no máximo 50 caracteres')
-    .trim(),
+    .trim()
+    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida está invalida'),
   email: yup
     .string()
     .email('Endereço de e-mail inválido')
@@ -63,16 +65,15 @@ export default function Perfil() {
     },
   });
 
-  const router = useRouter();
   const navigation = useNavigation();
 
   const { height } = Dimensions.get('screen');
 
   const [loading, setLoading] = useState(false);
-  const [userCanExit, setUserCanExit] = useState(true);
+  const [forceExiting, setForceExiting] = useState(false);
 
   const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset[]>([]);
-  const [isPhotoChaged, setPhotoChanged] = useState(false);
+  const [isPhotoChanged, setPhotoChanged] = useState(false);
 
   const alert = useAlert();
 
@@ -121,17 +122,19 @@ export default function Perfil() {
         'Ok',
         () => {},
       );
-    } else {
-      if (setUser && user) {
-        setUser({
-          ...user,
-          email: data.email ? `${data.email}` : user.email,
-          phone: data.phone ? Number(data.phone) : user.phone,
-          photo_url: data.photo_url
-            ? `${data?.photo_url}` + +'?timestamp=' + new Date().getTime()
-            : user.photo_url,
-        });
-      }
+    }
+
+    if (setUser && user) {
+      setUser({
+        ...user,
+        first_name: data.first_name ? data.first_name : user.first_name,
+        last_name: data.last_name ? data.last_name : user.last_name,
+        email: data.email ? data.email : user.email,
+        phone: data.phone ? Number(data.phone) : user.phone,
+        photo_url: data.photo_url
+          ? data.photo_url + '?timestamp=' + new Date().getTime()
+          : user.photo_url + '?timestamp=' + new Date().getTime(),
+      });
     }
 
     reset({
@@ -141,16 +144,16 @@ export default function Perfil() {
       phone: data.phone,
     });
 
-    setUserCanExit(true);
-    router.back();
+    setLoading(false);
+    setForceExiting(true);
+    navigation.goBack();
   }
 
   const onSubmit = async (data: FormData) => {
-    setUserCanExit(false);
-    if (isDirty || isPhotoChaged) {
+    if (isDirty || isPhotoChanged) {
       setLoading(true);
 
-      if (isPhotoChaged) {
+      if (isPhotoChanged) {
         const base64 = await FileSystem.readAsStringAsync(photo[0].uri, {
           encoding: 'base64',
         });
@@ -160,7 +163,7 @@ export default function Perfil() {
           .upload(`${user?.id}`, decode(base64), { contentType: 'image/png', upsert: true })
           .then(async () => {
             setPhotoChanged(false);
-            const photo_url = `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/avatars/${user?.id}`;
+            const photo_url = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/avatars/${user?.id}`;
 
             await updatePerfil({
               first_name: data.firstName,
@@ -182,19 +185,18 @@ export default function Perfil() {
         await updatePerfil({
           first_name: data.firstName,
           last_name: data.lastName,
-          email: data.email?.trim() || data.email,
+          email: data.email,
           phone: data.phone,
         });
       }
     }
-
-    setUserCanExit(true);
   };
 
   useEffect(
     () =>
       navigation.addListener('beforeRemove', (e) => {
-        if (!isDirty && !isPhotoChaged && userCanExit) {
+        if (forceExiting) return;
+        if (!loading && !isDirty && !isPhotoChanged) {
           return;
         }
 
@@ -209,7 +211,7 @@ export default function Perfil() {
           () => {},
         );
       }),
-    [navigation, isDirty, isPhotoChaged, userCanExit],
+    [navigation, isDirty, isPhotoChanged, loading],
   );
 
   return (
@@ -217,6 +219,7 @@ export default function Perfil() {
       <KeyboardAvoidingView behavior="padding">
         <ScrollView
           style={{ marginTop: Constants.customHeaderDistance }}
+          showsVerticalScrollIndicator={false}
           className="flex gap-y-9 px-4 mt-[2%] bg-white">
           <View className="m-auto flex items-center justify-center">
             {user?.photo_url || photo.length > 0 ? (

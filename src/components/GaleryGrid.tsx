@@ -61,7 +61,7 @@ export default function Galery({
                 if (imagesToDelete && setImagesToDelete) {
                   if (
                     item.uri.includes(
-                      `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
+                      `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
                     )
                   ) {
                     setImagesToDelete([...imagesToDelete, item.uri]);

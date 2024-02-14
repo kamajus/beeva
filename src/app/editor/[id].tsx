@@ -1,8 +1,8 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import clsx from 'clsx';
 import * as ImagePicker from 'expo-image-picker';
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { ScrollView, Text, View } from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
@@ -46,8 +46,12 @@ const schema = yup.object({
 });
 
 export default function Editor() {
+  const navigation = useNavigation();
   const { id } = useLocalSearchParams<{ id?: string }>();
+
   const cachedResidences = useResidenceStore((state) => state.cachedResidences);
+  const [forceExiting, setForceExiting] = useState(false);
+
   const [defaultData, setDefaultData] = useState(
     cachedResidences.find(({ residence: r }) => r.id === id),
   );
@@ -122,8 +126,8 @@ export default function Editor() {
       }
 
       setLoading(false);
-
-      router.back();
+      setForceExiting(true);
+      navigation.goBack();
       handleCallNotification('Residência respostado', 'A residência foi respostada com sucesso.');
     } else {
       if (!hasSelectedImages) {
@@ -188,7 +192,7 @@ export default function Editor() {
   async function removeDeletedImages() {
     const filesToRemove = imagesToDelete.map((image) =>
       image.replace(
-        `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
+        `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
         '',
       ),
     );
@@ -212,6 +216,43 @@ export default function Editor() {
 
     setImagesToDelete([]);
   }
+
+  useEffect(
+    () =>
+      navigation.addListener('beforeRemove', (e) => {
+        const hasSelectedImages =
+          defaultData?.residence.photos && defaultData?.residence.photos?.length > images.length;
+        const isCoverChanged = defaultData?.residence.cover !== cover;
+        const isStateDifferent = defaultData?.residence.state !== state;
+        const isKindDifferent = defaultData?.residence.kind !== kind;
+        const hasDeletedImages = imagesToDelete.length > 0;
+
+        if (forceExiting) return;
+        if (
+          !loading &&
+          !isDirty &&
+          !isCoverChanged &&
+          !isStateDifferent &&
+          !isKindDifferent &&
+          !hasDeletedImages &&
+          !hasSelectedImages
+        ) {
+          return;
+        }
+
+        e.preventDefault();
+
+        alert.showAlert(
+          'Descartar alterações?',
+          'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',
+          'Descartar',
+          () => navigation.dispatch(e.data.action),
+          'Não sair',
+          () => {},
+        );
+      }),
+    [navigation, isDirty, defaultData, loading],
+  );
 
   return (
     <View className="relative bg-white">

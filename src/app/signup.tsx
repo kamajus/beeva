@@ -25,17 +25,20 @@ const schema = yup.object({
     .string()
     .required('O campo de nome é obrigatório')
     .min(2, 'O nome deve ter pelo menos 2 caracteres')
-    .max(50, 'O nome deve ter no máximo 50 caracteres'),
+    .max(50, 'O nome deve ter no máximo 50 caracteres')
+    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida está invalida'),
   lastName: yup
     .string()
     .required('O campo de sobrenome é obrigatório')
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
-    .max(50, 'O sobrenome deve ter no máximo 50 caracteres'),
+    .max(50, 'O sobrenome deve ter no máximo 50 caracteres')
+    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida está invalida'),
   password: yup
     .string()
     .required('A senha é obrigatória')
     .min(8, 'A senha deve ter pelo menos 8 caracteres')
-    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número'),
+    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número')
+    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida está invalida'),
 });
 
 export default function SignIn() {

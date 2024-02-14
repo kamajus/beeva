@@ -1,5 +1,5 @@
 {
-  "name": "cubata",
+  "name": "kubata",
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "update-db-types": "dotenv -e .env.local -- cross-var supabase gen types typescript --project-id '%EXPO_PUBLIC_SUPABASE_PROJECT_ID%' --schema public > src/assets/@types/supabase.ts --debug"
+    "update-db-types": "dotenv -- cross-var supabase gen types typescript --project-id '%EXPO_PUBLIC_SUPABASE_PROJECT_ID%' --schema public > src/assets/@types/supabase.ts --debug"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
