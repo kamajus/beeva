@@ -31,7 +31,10 @@
               "pathPrefix": "/records"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ],
       "adaptiveIcon": {
@@ -75,6 +78,7 @@
       "eas": {
         "projectId": "3420f684-6226-41ee-8b3f-0c99c22fbdc3"
       }
-    }
+    },
+    "owner": "adj-pro"
   }
 }
