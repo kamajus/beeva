@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "sb-types": "dotenv -- cross-var supabase gen types typescript --project-id '%EXPO_PUBLIC_PROJECT_ID%' --schema public > src/assets/@types/supabase.ts"
+    "update-db-types": "dotenv -e .env.local -- cross-var supabase gen types typescript --project-id '%EXPO_PUBLIC_SUPABASE_PROJECT_ID%' --schema public > src/assets/@types/supabase.ts --debug"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
