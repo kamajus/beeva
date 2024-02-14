@@ -2,11 +2,12 @@ import { ScrollView, Text, View, Dimensions } from 'react-native';
 import { SheetManager, SheetProvider } from 'react-native-actions-sheet';
 import { Icon } from 'react-native-paper';
 
-import Header from '../../../components/Header';
-import TouchableBrightness from '../../../components/TouchableBrightness';
-import { supabase } from '../../../config/supabase';
-import { useAlert } from '../../../hooks/useAlert';
-import { useSupabase } from '../../../hooks/useSupabase';
+import Header from '../../components/Header';
+import TouchableBrightness from '../../components/TouchableBrightness';
+import { supabase } from '../../config/supabase';
+import Constants from '../../constants';
+import { useAlert } from '../../hooks/useAlert';
+import { useSupabase } from '../../hooks/useSupabase';
 
 export default function Settings() {
   const { width } = Dimensions.get('screen');
@@ -56,7 +57,7 @@ export default function Settings() {
             }}>
             <View style={{ width }} className="px-4 py-6 flex-row justify-between items-center">
               <Text className="text-base font-poppins-medium">Alterar a sua palavra-passe</Text>
-              <Icon source="shield-key" size={30} />
+              <Icon source="shield-key" size={30} color={Constants.colors.primary} />
             </View>
           </TouchableBrightness>
 
