@@ -71,8 +71,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "cfb7c737-546f-4cbc-badb-f95a0576eab2"
+        "projectId": "44ba6e53-7f56-45a1-8df8-f671beeed022"
       }
-    }
+    },
+    "owner": "carlosmateus"
   }
 }
