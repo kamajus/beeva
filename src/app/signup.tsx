@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View, Linking } from 'react-native';
 import { TextInput, Button, HelperText } from 'react-native-paper';
 import * as yup from 'yup';
 
@@ -279,7 +279,11 @@ export default function SignIn() {
 
           <Text className="w-full font-poppins-regular text-gray-500">
             Ao se inscrever, você está concordando com os nossos{' '}
-            <Text className="text-gray-700 font-poppins-medium">
+            <Text
+              onPress={() =>
+                Linking.openURL(process.env.EXPO_PUBLIC_WEBSITE_URL + '/termos-gerais' || '')
+              }
+              className="text-gray-700 font-poppins-medium">
               Termos, Condições e Políticas de Privacidade.
             </Text>
           </Text>

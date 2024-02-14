@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Header from '../components/Header';
+import TouchableBrightness from '../components/TouchableBrightness';
 import { placeApi } from '../config/axios';
 
 export default function LocationSearch() {
@@ -77,24 +77,20 @@ export default function LocationSearch() {
       <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={80}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          className="p-1"
+          className="py-1"
           keyboardShouldPersistTaps="handled">
           {dataSource.map((item, index) => (
-            <View className="flex flex-row  items-center gap-2 p-4" key={index}>
-              <Icon
-                name={item.origin === 'search' ? 'location-pin' : 'history'}
-                color="black"
-                size={25}
-              />
-              <Link
-                href={{
-                  pathname: '/search',
-                  params: { location: item.value },
-                }}
-                className="font-poppins-medium text-sm w-">
-                {item.value}
-              </Link>
-            </View>
+            <TouchableBrightness href={`/search/${item.value}`} key={index}>
+              <View className="flex flex-row  items-center gap-2 p-4">
+                <Icon
+                  name={item.origin === 'search' ? 'location-pin' : 'history'}
+                  color="black"
+                  size={25}
+                />
+
+                <Text className="font-poppins-medium text-sm">{item.value}</Text>
+              </View>
+            </TouchableBrightness>
           ))}
         </ScrollView>
       </KeyboardAvoidingView>

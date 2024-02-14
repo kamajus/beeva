@@ -4,17 +4,17 @@ import { useEffect, useState } from 'react';
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native';
 import { SheetProvider } from 'react-native-actions-sheet';
 
-import { Residence, ResidenceTypes } from '../assets/@types';
-import NoData from '../assets/images/no-data';
-import Header from '../components/Header';
-import HomeCard from '../components/HomeCard';
-import { supabase } from '../config/supabase';
-import Constants from '../constants';
-import { useCache } from '../hooks/useCache';
+import { Residence, ResidenceTypes } from '../../assets/@types';
+import NoData from '../../assets/images/no-data';
+import Header from '../../components/Header';
+import HomeCard from '../../components/HomeCard';
+import { supabase } from '../../config/supabase';
+import Constants from '../../constants';
+import { useCache } from '../../hooks/useCache';
 
 export default function Search() {
   const navigation = useNavigation();
-  const { location } = useLocalSearchParams<{ location: string }>();
+  const { query } = useLocalSearchParams<{ query: string }>();
   const [residences, setResidences] = useState<Residence[]>();
   const [loading, setLoading] = useState(false);
   const { filter, setFilter } = useCache();
@@ -68,7 +68,7 @@ export default function Search() {
     async function fetchData() {
       setLoading(true);
       const { data, error } = await supabase.rpc('get_residences_by_location', {
-        place: location,
+        place: query,
       });
 
       if (data) {
@@ -80,8 +80,8 @@ export default function Search() {
     }
 
     fetchData();
-    addItemToHistory(location);
-  }, [location, filter]);
+    addItemToHistory(query);
+  }, [query, filter]);
 
   function filterResidences({
     kind,
@@ -109,7 +109,7 @@ export default function Search() {
   return (
     <SheetProvider>
       <View className="w-full h-full bg-white ">
-        <Header.Search value={location} />
+        <Header.Search value={query} />
 
         <View>
           {!loading ? (

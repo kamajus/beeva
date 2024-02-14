@@ -54,7 +54,7 @@ export default function Settings() {
           </View>
         </TouchableBrightness>
 
-        <TouchableBrightness href="/(settings)/(safety)">
+        <TouchableBrightness href="/(settings)/secure">
           <View style={{ width }} className="px-4 py-6 flex-row justify-between items-center">
             <Text className="text-base font-poppins-medium">Segurança</Text>
             <Icon source="chevron-right" size={30} />
