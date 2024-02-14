@@ -35,7 +35,6 @@ export default function NotificationBox(props: Notification) {
               />
             </View>
 
-            {/* !item.was_reade*/}
             <View className="p-4 pr-8">
               <Text className="font-poppins-medium text-sm leading-relaxed text-black">
                 {props.description}

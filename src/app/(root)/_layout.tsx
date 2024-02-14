@@ -41,7 +41,7 @@ export default function HomeLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Configurações',
+          title: 'Definições',
           tabBarIcon: ({ color, size }) => <Icon name="settings" size={size} color={color} />,
         }}
       />

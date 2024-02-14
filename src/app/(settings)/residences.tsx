@@ -29,6 +29,7 @@ export default function Favorites() {
     const { data: residencesData } = await supabase
       .from('residences')
       .select('*')
+
       .eq('owner_id', user?.id)
       .returns<Residence[]>();
 
