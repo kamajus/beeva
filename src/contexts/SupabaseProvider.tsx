@@ -87,7 +87,9 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
 
     for (const image of images) {
       // Checking if the image has already been posted or is stored locally
-      if (!image.uri.includes(`https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co`)) {
+      if (
+        !image.uri.includes(`https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co`)
+      ) {
         try {
           // Read image as base64
           const base64 = await FileSystem.readAsStringAsync(image.uri, { encoding: 'base64' });
@@ -101,12 +103,12 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
             .upload(filePath, decode(base64), { contentType: 'image/png' });
 
           imagesToAppend.push(
-            `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`,
+            `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`,
           );
 
           // Check if the uploaded image is the cover image
           if (image.uri === cover && !uploadError) {
-            const coverURL = `https://${process.env.EXPO_PUBLIC_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`;
+            const coverURL = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`;
             await supabase.from('residences').update({ cover: coverURL }).eq('id', id);
           }
 
@@ -265,7 +267,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       if (session) {
         await getUserById(session?.user.id, true)
           .then((data) => {
-            setUser(data);
+            setUser({
+              ...data,
+              photo_url: data.photo_url + '?timestamp=' + new Date().getTime(),
+            });
           })
           .catch(async () => {
             await supabase.auth.signOut();
@@ -289,7 +294,12 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
             },
             async (payload: { new: User }) => {
               if (payload.new.id === session.user.id) {
-                setUser(payload.new);
+                setUser({
+                  ...payload.new,
+                  photo_url:
+                    payload.new.photo_url &&
+                    payload.new.photo_url + '?timestamp=' + new Date().getTime(),
+                });
               }
             },
           )

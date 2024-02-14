@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Cubata",
-    "slug": "cubata",
+    "name": "Kubata",
+    "slug": "kubata",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.adjpro.cubata"
+      "bundleIdentifier": "com.adjpro.kubata"
     },
     "android": {
       "intentFilters": [
@@ -44,11 +44,9 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.adjpro.cubata"
+      "package": "com.adjpro.kubata"
     },
-    "web": {
-      "favicon": "./src/assets/images/favicon.png"
-    },
+    "web": {},
     "plugins": [
       "expo-router",
       [
@@ -61,10 +59,7 @@
         "expo-notifications",
         {
           "icon": "./src/assets/images/icon.png",
-          "color": "#ffffff",
-          "sounds": [
-            "./src/assets/notification.wav"
-          ]
+          "color": "#ffffff"
         }
       ]
     ],
