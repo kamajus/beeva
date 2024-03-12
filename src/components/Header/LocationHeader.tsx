@@ -30,6 +30,8 @@ export default function LocationHeader({ setSearchQuery, searchQuery }: Location
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholder="Qual é a localização?"
+              keyboardType="web-search"
+              returnKeyType="search"
               autoFocus
             />
           </TextField.Container>

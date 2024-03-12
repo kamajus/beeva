@@ -24,7 +24,8 @@ const schema = yup.object({
     .string()
     .required('A senha é obrigatória')
     .min(8, 'A senha deve ter pelo menos 8 caracteres')
-    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número'),
+    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número')
+    .trim(),
 });
 
 export default function DeleteActionSheet(props: SheetProps) {

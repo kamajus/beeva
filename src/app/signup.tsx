@@ -26,19 +26,18 @@ const schema = yup.object({
     .required('O campo de nome é obrigatório')
     .min(2, 'O nome deve ter pelo menos 2 caracteres')
     .max(50, 'O nome deve ter no máximo 50 caracteres')
-    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida está invalida'),
+    .matches(/^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/, 'A expressão introduzida está inválida'),
   lastName: yup
     .string()
     .required('O campo de sobrenome é obrigatório')
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
     .max(50, 'O sobrenome deve ter no máximo 50 caracteres')
-    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida está invalida'),
+    .matches(/^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/, 'A expressão introduzida está inválida'),
   password: yup
     .string()
     .required('A senha é obrigatória')
     .min(8, 'A senha deve ter pelo menos 8 caracteres')
-    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número')
-    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida está invalida'),
+    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número'),
 });
 
 export default function SignIn() {
@@ -46,7 +45,7 @@ export default function SignIn() {
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
       email: '',
@@ -58,13 +57,11 @@ export default function SignIn() {
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
   const { signUp } = useSupabase();
   const router = useRouter();
   const alert = useAlert();
 
   function onSubmit(data: FormData) {
-    setLoading(true);
     signUp(data.email, data.password)
       .then(async (userData) => {
         if (userData) {
@@ -113,15 +110,7 @@ export default function SignIn() {
           () => {},
         );
 
-        reset({
-          email: '',
-          password: '',
-          firstName: '',
-          lastName: '',
-        });
-      })
-      .finally(() => {
-        setLoading(false);
+        reset();
       });
   }
 
@@ -302,7 +291,7 @@ export default function SignIn() {
             buttonColor={Constants.colors.primary}
             textColor="white"
             uppercase={false}
-            loading={loading}
+            loading={isSubmitting}
             onPress={handleSubmit(onSubmit)}>
             Continuar
           </Button>

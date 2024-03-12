@@ -261,7 +261,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   }
 
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
       setSession(session);
 
       if (session) {

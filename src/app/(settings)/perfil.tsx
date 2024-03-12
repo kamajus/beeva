@@ -31,14 +31,14 @@ const schema = yup.object({
     .min(2, 'O nome deve ter pelo menos 2 caracteres')
     .max(50, 'O nome deve ter no máximo 50 caracteres')
     .trim()
-    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida está invalida'),
+    .matches(/^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/, 'A expressão introduzida está inválida'),
   lastName: yup
     .string()
     .required('O campo de sobrenome é obrigatório')
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
     .max(50, 'O sobrenome deve ter no máximo 50 caracteres')
     .trim()
-    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida está invalida'),
+    .matches(/^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/, 'A expressão introduzida está inválida'),
   email: yup
     .string()
     .email('Endereço de e-mail inválido')
@@ -54,7 +54,7 @@ export default function Perfil() {
     handleSubmit,
     control,
     reset,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -68,8 +68,6 @@ export default function Perfil() {
   const navigation = useNavigation();
 
   const { height } = Dimensions.get('screen');
-
-  const [loading, setLoading] = useState(false);
   const [forceExiting, setForceExiting] = useState(false);
 
   const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset[]>([]);
@@ -144,15 +142,12 @@ export default function Perfil() {
       phone: data.phone,
     });
 
-    setLoading(false);
     setForceExiting(true);
     navigation.goBack();
   }
 
   const onSubmit = async (data: FormData) => {
     if (isDirty || isPhotoChanged) {
-      setLoading(true);
-
       if (isPhotoChanged) {
         const base64 = await FileSystem.readAsStringAsync(photo[0].uri, {
           encoding: 'base64',
@@ -196,7 +191,7 @@ export default function Perfil() {
     () =>
       navigation.addListener('beforeRemove', (e) => {
         if (forceExiting) return;
-        if (!loading && !isDirty && !isPhotoChanged) {
+        if (!isSubmitting && !isDirty && !isPhotoChanged) {
           return;
         }
 
@@ -211,7 +206,7 @@ export default function Perfil() {
           () => {},
         );
       }),
-    [navigation, isDirty, isPhotoChanged, loading],
+    [navigation, isDirty, isPhotoChanged, isSubmitting],
   );
 
   return (
@@ -453,7 +448,11 @@ export default function Perfil() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <Header.Action title="Editar perfil" onPress={handleSubmit(onSubmit)} loading={loading} />
+      <Header.Action
+        title="Editar perfil"
+        onPress={handleSubmit(onSubmit)}
+        loading={isSubmitting}
+      />
     </View>
   );
 }

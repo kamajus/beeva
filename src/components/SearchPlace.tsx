@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TouchableOpacity, View, Text, TouchableWithoutFeedback } from 'react-native';
 
 import TextField from './TextField';
+import TouchableBrightness from './TouchableBrightness';
 import { placeApi } from '../config/axios';
 
 interface DropDownProps {
@@ -32,15 +33,14 @@ const DropDownItem = ({
   updateValue: (...event: any[]) => void;
 }) => (
   <View style={{ width: '100%', paddingLeft: 4, paddingTop: 4 }}>
-    <Text
-      style={{ color: 'black', padding: 16, fontFamily: 'poppins-medium' }}
+    <TouchableBrightness
       onPress={() => {
         onPress();
         setValue(item);
         updateValue(item);
       }}>
-      {item}
-    </Text>
+      <Text style={{ color: 'black', padding: 16, fontFamily: 'poppins-medium' }}>{item}</Text>
+    </TouchableBrightness>
   </View>
 );
 

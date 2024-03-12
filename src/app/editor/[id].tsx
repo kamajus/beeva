@@ -60,7 +60,7 @@ export default function Editor() {
     handleSubmit,
     control,
     reset,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -89,7 +89,6 @@ export default function Editor() {
   const [kind, setKind] = useState(defaultData?.residence.kind || 'apartment');
   const [state, setState] = useState(defaultData?.residence.state || 'rent');
   const { uploadResidencesImage, handleCallNotification } = useSupabase();
-  const [loading, setLoading] = useState(false);
 
   const [isPhotoChaged, setPhotoChanged] = useState(false);
   const alert = useAlert();
@@ -111,8 +110,6 @@ export default function Editor() {
         hasDeletedImages ||
         isPhotoChaged)
     ) {
-      setLoading(true);
-
       if (isDirty || isKindDifferent || isStateDifferent || isCoverChanged) {
         await updateResidenceData(formData);
       }
@@ -125,7 +122,6 @@ export default function Editor() {
         await uploadResidencesImage(`${id}`, `${cover}`, images);
       }
 
-      setLoading(false);
       setForceExiting(true);
       navigation.goBack();
       handleCallNotification('Residência respostado', 'A residência foi respostada com sucesso.');
@@ -229,7 +225,7 @@ export default function Editor() {
 
         if (forceExiting) return;
         if (
-          !loading &&
+          !isSubmitting &&
           !isDirty &&
           !isCoverChanged &&
           !isStateDifferent &&
@@ -251,7 +247,7 @@ export default function Editor() {
           () => {},
         );
       }),
-    [navigation, isDirty, defaultData, loading],
+    [navigation, isDirty, defaultData, isSubmitting],
   );
 
   return (
@@ -287,7 +283,7 @@ export default function Editor() {
                           onChange(String(price));
                         }}
                         onBlur={onBlur}
-                        editable={!loading}
+                        editable={!isSubmitting}
                       />
                     </TextField.Container>
                   </TextField.Root>
@@ -317,7 +313,7 @@ export default function Editor() {
                     <SearchPlace
                       onBlur={onBlur}
                       onChange={onChange}
-                      editable={!loading}
+                      editable={!isSubmitting}
                       value={value}
                       placeholder="Onde está localizada?"
                       error={errors.location?.message !== undefined}
@@ -353,7 +349,7 @@ export default function Editor() {
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
-                        editable={!loading}
+                        editable={!isSubmitting}
                       />
                     </TextField.Container>
                   </TextField.Root>
@@ -379,7 +375,7 @@ export default function Editor() {
                 status={state === 'rent' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setState('rent')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
 
@@ -390,7 +386,7 @@ export default function Editor() {
                 status={state === 'sell' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setState('sell')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
           </View>
@@ -404,7 +400,7 @@ export default function Editor() {
                 status={kind === 'apartment' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setKind('apartment')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
 
@@ -415,7 +411,7 @@ export default function Editor() {
                 status={kind === 'villa' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setKind('villa')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
 
@@ -426,7 +422,7 @@ export default function Editor() {
                 status={kind === 'land' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setKind('land')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
 
@@ -437,7 +433,7 @@ export default function Editor() {
                 status={kind === 'others' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setKind('others')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
           </View>
@@ -451,7 +447,7 @@ export default function Editor() {
               images={images}
               setCover={setCover}
               setImages={setImages}
-              disabled={loading}
+              disabled={isSubmitting}
               setImagesToDelete={setImagesToDelete}
               imagesToDelete={imagesToDelete}
               setPhotoChanged={setPhotoChanged}
@@ -460,7 +456,11 @@ export default function Editor() {
         </View>
       </ScrollView>
 
-      <Header.Action title="Editar postagem" loading={loading} onPress={handleSubmit(onSubmit)} />
+      <Header.Action
+        title="Editar postagem"
+        loading={isSubmitting}
+        onPress={handleSubmit(onSubmit)}
+      />
     </View>
   );
 }

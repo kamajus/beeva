@@ -53,7 +53,7 @@ export default function House() {
                 )}>
                 <Text
                   className={clsx('font-poppins-semibold text-[10px] text-center text-white', {
-                    hidden: notifications.filter((item) => !item.was_readed).length > 10,
+                    hidden: notifications.filter((item) => !item.was_readed).length >= 10,
                   })}>
                   {notifications.filter((item) => !item.was_readed).length}
                 </Text>

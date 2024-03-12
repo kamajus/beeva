@@ -24,6 +24,7 @@ export default function SearchHeader({ value }: SearchHeaderProps) {
             <Icon name="arrow-left" color="#000" size={25} onPress={router.back} />
             <TextField.Input
               value={value}
+              keyboardType="web-search"
               onFocus={() => router.push('/location')}
               placeholder="Diga a localização"
             />
