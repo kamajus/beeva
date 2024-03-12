@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { router } from 'expo-router';
 import React, { ReactNode, useState } from 'react';
 import { View, TouchableWithoutFeedback } from 'react-native';
@@ -19,15 +20,11 @@ export default function TouchableBrightness(props: TouchableBrightnessProps) {
     setIsPressed(false);
   };
 
-  const buttonStyle = {
-    backgroundColor: isPressed ? 'rgba(0, 0, 0, 0.1)' : 'white',
-  };
-
   return (
     <TouchableWithoutFeedback
       onPressIn={handlePressIn}
-      onPressOut={() => {
-        handlePressOut();
+      onPressOut={handlePressOut}
+      onPress={() => {
         if (props.href) {
           router.push(props.href);
         }
@@ -36,7 +33,12 @@ export default function TouchableBrightness(props: TouchableBrightnessProps) {
           props.onPress();
         }
       }}>
-      <View style={[buttonStyle]}>{props.children}</View>
+      <View
+        className={clsx('bg-white', {
+          'bg-input': isPressed,
+        })}>
+        {props.children}
+      </View>
     </TouchableWithoutFeedback>
   );
 }

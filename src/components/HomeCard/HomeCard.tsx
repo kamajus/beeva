@@ -31,11 +31,10 @@ export default function HomeCard(props: HomeCardProps) {
   }, []);
 
   return (
-    <View className=" mb-2">
+    <View className="mb-2">
       <Pressable onPress={() => router.push(`/residence/${props.id}`)}>
         <Image
           source={{ uri: String(props.cover) }}
-          alt="Home"
           className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
             'mt-0 w-[272px] h-[220px] mr-2': props.cardType === 'big',
             'mt-0 w-[172px] h-[190px] mr-2': props.cardType === 'small',

@@ -27,7 +27,6 @@ const schema = yup.object({
     .required('A senha é obrigatória')
     .min(8, 'A senha deve ter pelo menos 8 caracteres')
     .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número')
-    .matches(/^[a-zA-Z]+$/, 'A expressão introduzida é invalida')
     .trim(),
 });
 
@@ -37,18 +36,16 @@ export default function SignIn() {
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
   const { signInWithPassword } = useSupabase();
   const alert = useAlert();
 
   function onSubmit({ email, password }: FormData) {
-    setLoading(true);
     signInWithPassword(email, password)
       .then(() => {
         router.replace('/(root)/home');
@@ -62,9 +59,6 @@ export default function SignIn() {
             password: '',
           });
         }
-      })
-      .finally(() => {
-        setLoading(false);
       });
   }
 
@@ -173,7 +167,7 @@ export default function SignIn() {
             buttonColor={Constants.colors.primary}
             textColor="white"
             uppercase={false}
-            loading={loading}
+            loading={isSubmitting}
             onPress={handleSubmit(onSubmit)}>
             Entrar
           </Button>

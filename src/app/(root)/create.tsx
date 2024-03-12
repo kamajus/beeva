@@ -50,7 +50,7 @@ export default function Editor() {
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -62,13 +62,10 @@ export default function Editor() {
   const [kind, setKind] = useState<ResidenceTypes>('apartment');
   const [state, setState] = useState<'rent' | 'sell'>('rent');
   const { uploadResidencesImage } = useSupabase();
-  const [loading, setLoading] = useState(false);
   const alert = useAlert();
 
   async function onSubmit(formData: FormData) {
     if (images.length !== 0 && cover) {
-      setLoading(true);
-
       const { data, error } = await supabase
         .from('residences')
         .insert([
@@ -94,11 +91,7 @@ export default function Editor() {
         ]);
 
         setImages([]);
-        reset({
-          description: '',
-          location: '',
-          price: 0,
-        });
+        reset();
         router.replace(`/(root)/home`);
       } else {
         alert.showAlert(
@@ -108,7 +101,6 @@ export default function Editor() {
           () => {},
         );
       }
-      setLoading(false);
     } else {
       if (images.length === 0) {
         alert.showAlert(
@@ -161,7 +153,7 @@ export default function Editor() {
                           onChange(String(price));
                         }}
                         onBlur={onBlur}
-                        editable={!loading}
+                        editable={!isSubmitting}
                       />
                     </TextField.Container>
                   </TextField.Root>
@@ -191,7 +183,7 @@ export default function Editor() {
                     <SearchPlace
                       onBlur={onBlur}
                       onChange={onChange}
-                      editable={!loading}
+                      editable={!isSubmitting}
                       value={value}
                       placeholder="Onde está localizada?"
                       error={errors.location?.message !== undefined}
@@ -227,7 +219,7 @@ export default function Editor() {
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
-                        editable={!loading}
+                        editable={!isSubmitting}
                       />
                     </TextField.Container>
                   </TextField.Root>
@@ -253,7 +245,7 @@ export default function Editor() {
                 status={state === 'rent' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setState('rent')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
 
@@ -264,7 +256,7 @@ export default function Editor() {
                 status={state === 'sell' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setState('sell')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
           </View>
@@ -278,7 +270,7 @@ export default function Editor() {
                 status={kind === 'apartment' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setKind('apartment')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
 
@@ -289,7 +281,7 @@ export default function Editor() {
                 status={kind === 'villa' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setKind('villa')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
 
@@ -300,7 +292,7 @@ export default function Editor() {
                 status={kind === 'land' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setKind('land')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
 
@@ -311,7 +303,7 @@ export default function Editor() {
                 status={kind === 'others' ? 'checked' : 'unchecked'}
                 color={Constants.colors.primary}
                 onPress={() => setKind('others')}
-                disabled={loading}
+                disabled={isSubmitting}
               />
             </View>
           </View>
@@ -325,13 +317,17 @@ export default function Editor() {
               images={images}
               setCover={setCover}
               setImages={setImages}
-              disabled={loading}
+              disabled={isSubmitting}
             />
           </View>
         </View>
       </ScrollView>
 
-      <Header.Action title="Criar postagem" loading={loading} onPress={handleSubmit(onSubmit)} />
+      <Header.Action
+        title="Criar postagem"
+        loading={isSubmitting}
+        onPress={handleSubmit(onSubmit)}
+      />
     </View>
   );
 }
