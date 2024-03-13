@@ -1,6 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import clsx from 'clsx';
-import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { ScrollView, View } from 'react-native';
 import { Button, HelperText, TextInput } from 'react-native-paper';
@@ -16,7 +15,7 @@ interface FormData {
 }
 
 const schema = yup.object({
-  email: yup.string().email('Endereço de e-mail inválido').required('O e-mail é obrigatório'),
+  email: yup.string().email('Preencha com um e-mail válido').required('O e-mail é obrigatório'),
 });
 
 export default function Confirmation() {
@@ -24,21 +23,19 @@ export default function Confirmation() {
     handleSubmit,
     control,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const [loading, setLoading] = useState(false);
   const alert = useAlert();
 
   async function onSubmit(data: FormData) {
-    setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(data.email);
 
     if (error) {
       alert.showAlert(
         'Erro na autenticação',
-        'Ocorreu algum erro ao tentar enviar o email de confirmação. Verifique o seu enderço de email e tente novamente mais tarde',
+        'Ocorreu algum erro ao tentar enviar o email de confirmação. Verifique o seu endereço de email e tente novamente mais tarde',
         'Ok',
         () => {},
       );
@@ -51,10 +48,7 @@ export default function Confirmation() {
       );
     }
 
-    setLoading(false);
-    reset({
-      email: '',
-    });
+    reset();
   }
 
   return (
@@ -73,7 +67,7 @@ export default function Confirmation() {
                 <View>
                   <TextInput
                     mode="outlined"
-                    label="Email"
+                    label="E-mail"
                     style={{
                       fontSize: 15,
                       textTransform: 'lowercase',
@@ -112,7 +106,7 @@ export default function Confirmation() {
             buttonColor={Constants.colors.primary}
             textColor="white"
             uppercase={false}
-            loading={loading}
+            loading={isSubmitting}
             onPress={handleSubmit(onSubmit)}>
             Continuar
           </Button>

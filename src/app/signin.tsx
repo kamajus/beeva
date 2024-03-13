@@ -19,7 +19,7 @@ interface FormData {
 const schema = yup.object({
   email: yup
     .string()
-    .email('Endereço de e-mail inválido')
+    .email('Preencha com um e-mail válido')
     .required('O e-mail é obrigatório')
     .trim(),
   password: yup
@@ -47,17 +47,12 @@ export default function SignIn() {
 
   function onSubmit({ email, password }: FormData) {
     signInWithPassword(email, password)
-      .then(() => {
-        router.replace('/(root)/home');
-      })
+      .then(() => router.replace('/(root)/home'))
       .catch((response) => {
         if (response.redirect) router.replace(response.redirect);
         else {
           alert.showAlert('Erro na autenticação', response.message, 'Ok', () => {});
-          reset({
-            email: '',
-            password: '',
-          });
+          reset();
         }
       });
   }
@@ -80,7 +75,7 @@ export default function SignIn() {
                 <View>
                   <TextInput
                     mode="outlined"
-                    label="Email"
+                    label="E-mail"
                     style={{
                       fontSize: 15,
                       textTransform: 'lowercase',

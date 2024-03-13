@@ -41,7 +41,7 @@ const schema = yup.object({
     .matches(/^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/, 'A expressão introduzida está inválida'),
   email: yup
     .string()
-    .email('Endereço de e-mail inválido')
+    .email('Preencha com um e-mail válido')
     .required('O e-mail é obrigatório')
     .trim(),
   phone: yup.number(),
@@ -58,10 +58,10 @@ export default function Perfil() {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      firstName: user?.first_name ? user?.first_name : '',
-      lastName: user?.last_name ? user?.last_name : '',
-      email: user?.email ? user?.email : '',
-      phone: user?.phone ? Number(user?.phone) : undefined,
+      firstName: user?.first_name,
+      lastName: user?.last_name,
+      email: session?.user.email,
+      phone: user?.phone || undefined,
     },
   });
 
@@ -97,10 +97,15 @@ export default function Perfil() {
   }) {
     const { error } = await supabase
       .from('users')
-      .update(data)
+      .update({
+        first_name: data.first_name,
+        last_name: data.last_name,
+        phone: data.phone,
+        photo_url: data.photo_url,
+      })
       .eq('id', user?.id);
 
-    if (user?.email !== data.email) {
+    if (session?.user.email !== data.email) {
       alert.showAlert(
         'Alerta',
         'Por favor, confirme o e-mail que foi enviado para você. Após a confirmação, seu endereço de e-mail será atualizado.',
@@ -120,15 +125,16 @@ export default function Perfil() {
         'Ok',
         () => {},
       );
+
+      console.log(error);
     }
 
     if (setUser && user) {
       setUser({
         ...user,
-        first_name: data.first_name ? data.first_name : user.first_name,
-        last_name: data.last_name ? data.last_name : user.last_name,
-        email: data.email ? data.email : user.email,
-        phone: data.phone ? Number(data.phone) : user.phone,
+        first_name: data.first_name || user.first_name,
+        last_name: data.last_name || user.last_name,
+        phone: data.phone || user.phone,
         photo_url: data.photo_url
           ? data.photo_url + '?timestamp=' + new Date().getTime()
           : user.photo_url + '?timestamp=' + new Date().getTime(),
@@ -136,9 +142,9 @@ export default function Perfil() {
     }
 
     reset({
-      firstName: data.first_name ? data.first_name : user?.first_name,
-      lastName: data.last_name ? data.last_name : user?.last_name,
-      email: data.email ? `${data.email}` : user?.email,
+      firstName: data.first_name,
+      lastName: data.last_name,
+      email: session?.user.email,
       phone: data.phone,
     });
 
@@ -168,13 +174,14 @@ export default function Perfil() {
               photo_url,
             });
           })
-          .catch(() => {
+          .catch((error) => {
             alert.showAlert(
               'Erro a atualizar informações',
               'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
               'Ok',
               () => {},
             );
+            console.log(error);
           });
       } else {
         await updatePerfil({
@@ -373,26 +380,6 @@ export default function Perfil() {
                     visible={errors.email?.message !== undefined}>
                     {errors.email?.message}
                   </HelperText>
-
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: session?.user.email === user?.email,
-                    })}
-                    type="error">
-                    <Text
-                      className="text-primary font-poppins-medium"
-                      onPress={async () => {
-                        await supabase.auth.resend({
-                          type: 'email_change',
-                          email: `${user?.email}`,
-                          options: {
-                            emailRedirectTo: 'https://example.com/welcome',
-                          },
-                        });
-                      }}>
-                      Enviar código para cofirmar email
-                    </Text>
-                  </HelperText>
                 </View>
               )}
             />
@@ -412,7 +399,7 @@ export default function Perfil() {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View>
                     <TextField.Root>
-                      <TextField.Label>Contacto</TextField.Label>
+                      <TextField.Label>Telefone</TextField.Label>
                       <TextField.Container error={errors.phone?.message !== undefined}>
                         <TextField.Input
                           placeholder="Degite o número de telefone"
