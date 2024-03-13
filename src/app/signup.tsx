@@ -35,9 +35,12 @@ const schema = yup.object({
     .matches(/^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/, 'A expressão introduzida está inválida'),
   password: yup
     .string()
-    .required('A senha é obrigatória')
-    .min(8, 'A senha deve ter pelo menos 8 caracteres')
-    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número'),
+    .required('A palavra-passe é obrigatória')
+    .min(8, 'A palavra-passe deve ter pelo menos 8 caracteres')
+    .matches(
+      /^(?=.*[a-zA-Z])(?=.*\d)/,
+      'A palavra-passe deve conter pelo menos uma letra e um número',
+    ),
 });
 
 export default function SignIn() {

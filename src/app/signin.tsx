@@ -24,9 +24,12 @@ const schema = yup.object({
     .trim(),
   password: yup
     .string()
-    .required('A senha é obrigatória')
-    .min(8, 'A senha deve ter pelo menos 8 caracteres')
-    .matches(/^(?=.*[a-zA-Z])(?=.*\d)/, 'A senha deve conter pelo menos uma letra e um número')
+    .required('A palavra-passe é obrigatória')
+    .min(8, 'A palavra-passe deve ter pelo menos 8 caracteres')
+    .matches(
+      /^(?=.*[a-zA-Z])(?=.*\d)/,
+      'A palavra-passe deve conter pelo menos uma letra e um número',
+    )
     .trim(),
 });
 
@@ -148,7 +151,7 @@ export default function SignIn() {
           </View>
 
           <Link href="/forgotPassword" className="text-[#8b6cef] font-poppins-medium mb-4">
-            Queres recuperar a conta?
+            Esqueceste a tua palavra-passe?
           </Link>
 
           <Button

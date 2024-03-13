@@ -35,7 +35,7 @@ export default function Confirmation() {
     if (error) {
       alert.showAlert(
         'Erro na autenticação',
-        'Ocorreu algum erro ao tentar enviar o email de confirmação. Verifique o seu endereço de email e tente novamente mais tarde',
+        'Ocorreu um erro ao tentar enviar um email de recuperação da conta, tente novamente mais tarde.',
         'Ok',
         () => {},
       );
@@ -48,7 +48,9 @@ export default function Confirmation() {
       );
     }
 
-    reset();
+    reset({
+      email: '',
+    });
   }
 
   return (

@@ -11,7 +11,7 @@ import { useSupabase } from '../../hooks/useSupabase';
 
 export default function Settings() {
   const { width } = Dimensions.get('screen');
-  const { user } = useSupabase();
+  const { session } = useSupabase();
   const alert = useAlert();
 
   async function sendRecoveryEmail(email: string) {
@@ -20,14 +20,14 @@ export default function Settings() {
     if (error) {
       alert.showAlert(
         'Erro na autenticação',
-        'Ocorreu algum erro ao tentar enviar o email de confirmação. Verifique o seu enderço de email e tente novamente mais tarde',
+        'Ocorreu um erro ao tentar enviar o email para a alteração da palavra-passe, tente novamente mais tarde.',
         'Ok',
         () => {},
       );
     } else {
       alert.showAlert(
         'Sucesso',
-        'Foi enviando um email para você conseguir alterar a sua senha.',
+        'Foi enviando um email com intruções para alterar a sua palavra-passe.',
         'Ok',
         () => {},
       );
@@ -46,10 +46,12 @@ export default function Settings() {
             onPress={() => {
               alert.showAlert(
                 'Alerta',
-                'Você quer enviemos para você um email de alteração de senha?',
+                'Você tem certeza que quer alterar a sua palavra-passe?',
                 'Sim',
                 () => {
-                  sendRecoveryEmail(`${user?.email}`);
+                  if (session?.user.email) {
+                    sendRecoveryEmail(session?.user.email);
+                  }
                 },
                 'Cancelar',
                 () => {},
