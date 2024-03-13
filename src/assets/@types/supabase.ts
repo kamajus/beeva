@@ -30,6 +30,13 @@ export type Database = {
             referencedRelation: 'residences';
             referencedColumns: ['id'];
           },
+          {
+            foreignKeyName: 'public_favorites_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
         ];
       };
       notifications: {
@@ -48,7 +55,7 @@ export type Database = {
           id?: string;
           title: string;
           type: Database['public']['Enums']['notification_type'];
-          user_id?: string;
+          user_id: string;
           was_readed?: boolean;
         };
         Update: {
@@ -60,7 +67,15 @@ export type Database = {
           user_id?: string;
           was_readed?: boolean;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'public_notifications_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       residences: {
         Row: {
@@ -84,7 +99,7 @@ export type Database = {
           id?: string;
           kind: Database['public']['Enums']['residence_kind'];
           location: string;
-          owner_id?: string;
+          owner_id: string;
           photos?: string[] | null;
           price: number;
           state: Database['public']['Enums']['residence_state'];
@@ -102,12 +117,19 @@ export type Database = {
           price?: number;
           state?: Database['public']['Enums']['residence_state'];
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'public_residences_owner_id_fkey';
+            columns: ['owner_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       users: {
         Row: {
           created_at: string;
-          email: string;
           first_name: string;
           id: string;
           last_name: string;
@@ -116,7 +138,6 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
-          email: string;
           first_name: string;
           id?: string;
           last_name: string;
@@ -125,7 +146,6 @@ export type Database = {
         };
         Update: {
           created_at?: string;
-          email?: string;
           first_name?: string;
           id?: string;
           last_name?: string;

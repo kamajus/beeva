@@ -267,10 +267,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       if (session) {
         await getUserById(session?.user.id, true)
           .then((data) => {
-            setUser({
-              ...data,
-              photo_url: data.photo_url + '?timestamp=' + new Date().getTime(),
-            });
+            setUser(data);
           })
           .catch(async () => {
             await supabase.auth.signOut();

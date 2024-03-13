@@ -10,7 +10,6 @@ import Constants from '../../constants';
 
 const { width } = Dimensions.get('window');
 const inputWidth = width - width * 0.16;
-const MAX_COUNT = 600; // 10 minutes
 
 export default function Confirmation() {
   const { email } = useLocalSearchParams();
@@ -21,13 +20,9 @@ export default function Confirmation() {
   const [counter, setCounter] = useState(180);
 
   useEffect(() => {
-    setCounter(0);
-  }, []);
-
-  useEffect(() => {
     const intervalId = setInterval(() => {
-      if (counter < MAX_COUNT) {
-        setCounter(counter + 1);
+      if (counter > 0) {
+        setCounter(counter - 1);
       } else {
         clearInterval(intervalId);
       }
@@ -47,15 +42,13 @@ export default function Confirmation() {
         type: 'email',
       })
       .then(async ({ error, data }) => {
-        setError(false);
-
         if (!error) {
           await supabase.from('notifications').insert([
             {
               user_id: data.user?.id,
-              title: 'Seje bem vindo',
+              title: 'Seja bem vindo',
               description:
-                'Bem-vindo à plataforma onde seus sonhos de casa se tornam realidade! 🏡✨',
+                'Bem-vindo à plataforma onde seus sonhos de moradia se tornam realidade! 🏡✨',
               type: 'congratulations',
             },
           ]);
@@ -66,9 +59,6 @@ export default function Confirmation() {
       })
       .catch(() => {
         setError(true);
-      })
-      .finally(() => {
-        setLoading(false);
       });
   }
 
@@ -82,7 +72,7 @@ export default function Confirmation() {
           <Text style={styles.title}>Confirmação de email</Text>
           <Text style={styles.message}>
             Enviamos um código de confirmação de 6 dígitos para{' '}
-            <Text style={styles.highlight}>{email}</Text>.{'\n'}
+            <Text style={styles.highlight}>{email}</Text>
           </Text>
           <Link href="/signup" className="text-primary font-poppins-medium">
             Voltar
@@ -100,15 +90,15 @@ export default function Confirmation() {
           />
           <Text
             className={clsx('font-poppins-medium text-gray-300', {
-              'text-primary': counter === MAX_COUNT,
+              'text-primary': counter === 0,
             })}
             onPress={() => {
-              if (counter === MAX_COUNT) {
+              if (counter === 0) {
                 supabase.auth.resend({ email: String(email), type: 'signup' });
-                setCounter(0);
+                setCounter(180);
               }
             }}>
-            {counter !== MAX_COUNT
+            {counter !== 0
               ? `Reenviar código: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
                   2,
                   '0',

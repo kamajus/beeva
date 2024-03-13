@@ -45,6 +45,7 @@ export default function SignIn() {
     handleSubmit,
     control,
     reset,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -66,23 +67,20 @@ export default function SignIn() {
       .then(async (userData) => {
         if (userData) {
           if (userData && userData.identities && userData.identities.length === 0) {
-            alert.showAlert(
-              'Erro na autenticação',
-              'O usuário que você está tentando criar já existe!!!',
-              'Ok',
-              () => {},
-            );
+            setError('email', {
+              message: 'Já exite um conta castrada com esse e-mail',
+            });
           } else {
             const { error } = await supabase.from('users').insert([
               {
-                id: userData?.id,
-                email: data.email,
+                id: userData.id,
                 first_name: data.firstName,
                 last_name: data.lastName,
               },
             ]);
 
             if (error) {
+              console.log(error);
               alert.showAlert(
                 'Erro na autenticação',
                 'Algo de errado aconteceu, tente novamente mais tarde.',
@@ -109,9 +107,9 @@ export default function SignIn() {
           'Ok',
           () => {},
         );
-
-        reset();
       });
+
+    reset();
   }
 
   return (
@@ -200,7 +198,7 @@ export default function SignIn() {
                 <View>
                   <TextInput
                     mode="outlined"
-                    label="Email"
+                    label="E-mail"
                     style={{
                       fontSize: 15,
                     }}

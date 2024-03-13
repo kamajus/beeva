@@ -35,12 +35,14 @@ export default function Settings() {
                 {user?.photo_url ? (
                   <Avatar.Image size={50} source={{ uri: user.photo_url }} />
                 ) : (
-                  <Avatar.Text size={50} label={String(user?.first_name[0])} />
+                  <Avatar.Text size={50} label={user?.first_name[0] || 'U'} />
                 )}
               </View>
               <View>
                 <Text className="font-poppins-medium text-base">{`${user?.first_name} ${user?.last_name}`}</Text>
-                <Text className="font-poppins-medium text-sm text-gray-400">{user?.email}</Text>
+                <Text className="font-poppins-medium text-sm text-gray-400">
+                  {session?.user.email}
+                </Text>
               </View>
             </View>
             <Icon source="chevron-right" size={30} />
@@ -103,7 +105,7 @@ export default function Settings() {
 
         <View className="w-full p-4 pb-8 flex-row gap-x-2 items-center">
           <Text className="text-sm font-poppins-semibold text-[#212121]">Versão</Text>
-          <Text className="text-sm font-poppins-regular text-[lightgray]">
+          <Text className="text-sm font-poppins-regular text-[#d3d3d3]">
             {ExpoContants.expoConfig?.version}
           </Text>
         </View>
