@@ -150,7 +150,7 @@ export default function Editor() {
                         separator=","
                         precision={2}
                         minValue={0}
-                        cursorColor="#a78bfa"
+                        cursorColor={Constants.colors.primary}
                         className="flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium"
                         placeholder="Quanto está custando? (em kz)"
                         onChangeText={() => {

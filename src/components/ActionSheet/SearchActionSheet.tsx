@@ -69,7 +69,7 @@ export default function SearchActionSheet(props: SheetProps) {
             separator=","
             precision={2}
             minValue={0}
-            cursorColor="#a78bfa"
+            cursorColor={Constants.colors.primary}
             placeholder="0.00 kz"
             className="bg-[#f5f5f5] h-14 p-4 rounded font-poppins-medium"
           />
@@ -86,7 +86,7 @@ export default function SearchActionSheet(props: SheetProps) {
             separator=","
             precision={2}
             minValue={0}
-            cursorColor="#a78bfa"
+            cursorColor={Constants.colors.primary}
             placeholder="0.00 kz"
             className="bg-[#f5f5f5] h-14 p-4 rounded font-poppins-medium"
           />
