@@ -39,13 +39,13 @@
       ],
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/images/adaptive-icon.png",
-        "backgroundColor": "#6B0088"
+        "backgroundColor": "#ffffff"
       },
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.adjpro.kubata",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {},
     "plugins": [
