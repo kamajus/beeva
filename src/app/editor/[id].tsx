@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import { EventArg } from '@react-navigation/native';
 import clsx from 'clsx';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
@@ -214,45 +215,58 @@ export default function Editor() {
   }
 
   useEffect(() => {
-    function unsubscribe() {
-      navigation.addListener('beforeRemove', (e) => {
-        e.preventDefault();
+    type beforeRemoveEventType = EventArg<
+      'beforeRemove',
+      true,
+      {
+        action: Readonly<{
+          type: string;
+          payload?: object | undefined;
+          source?: string | undefined;
+          target?: string | undefined;
+        }>;
+      }
+    >;
 
-        const hasSelectedImages =
-          defaultData?.residence.photos && defaultData?.residence.photos?.length > images.length;
-        const isCoverChanged = defaultData?.residence.cover !== cover;
-        const isStateDifferent = defaultData?.residence.state !== state;
-        const isKindDifferent = defaultData?.residence.kind !== kind;
-        const hasDeletedImages = imagesToDelete.length > 0;
+    function handleBeforeRemove(e: beforeRemoveEventType) {
+      e.preventDefault();
 
-        if (forceExiting) return;
+      const hasSelectedImages =
+        defaultData?.residence.photos && defaultData?.residence.photos?.length > images.length;
+      const isCoverChanged = defaultData?.residence.cover !== cover;
+      const isStateDifferent = defaultData?.residence.state !== state;
+      const isKindDifferent = defaultData?.residence.kind !== kind;
+      const hasDeletedImages = imagesToDelete.length > 0;
 
-        if (
-          !isSubmitting &&
-          !isDirty &&
-          !isCoverChanged &&
-          !isStateDifferent &&
-          !isKindDifferent &&
-          !hasDeletedImages &&
-          !hasSelectedImages
-        ) {
-          navigation.dispatch(e.data.action);
-          return;
-        }
+      if (forceExiting) return;
 
-        alert.showAlert(
-          'Descartar alterações?',
-          'Você possui alterações não salvas, tens certeza de que deseja descartá-las?',
-          'Sim',
-          () => navigation.dispatch(e.data.action),
-          'Não',
-          () => {},
-        );
-      });
+      if (
+        !isSubmitting &&
+        !isDirty &&
+        !isCoverChanged &&
+        !isStateDifferent &&
+        !isKindDifferent &&
+        !hasDeletedImages &&
+        !hasSelectedImages
+      ) {
+        navigation.dispatch(e.data.action);
+        return;
+      }
+
+      alert.showAlert(
+        'Descartar alterações?',
+        'Você possui alterações não salvas, tens certeza de que deseja descartá-las?',
+        'Sim',
+        () => navigation.dispatch(e.data.action),
+        'Não',
+        () => {},
+      );
     }
 
-    unsubscribe();
-    return unsubscribe;
+    navigation.addListener('beforeRemove', handleBeforeRemove);
+    return () => {
+      navigation.removeListener('beforeRemove', handleBeforeRemove);
+    };
   }, [isDirty, defaultData, isSubmitting, forceExiting]);
 
   return (
