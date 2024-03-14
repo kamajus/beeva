@@ -150,7 +150,7 @@ export default function SignIn() {
             />
           </View>
 
-          <Link href="/forgotPassword" className="text-[#8b6cef] font-poppins-medium mb-4">
+          <Link href="/forgotPassword" className="text-primary font-poppins-medium mb-4">
             Esqueceste a tua palavra-passe?
           </Link>
 
@@ -173,7 +173,7 @@ export default function SignIn() {
 
         <View className="flex justify-center items-center flex-row gap-2 w-full mt-5">
           <Text className="font-poppins-medium text-gray-700">Ainda não tem uma conta?</Text>
-          <Link className="text-[#8b6cef] font-poppins-medium" href="/signup">
+          <Link className="text-primary font-poppins-medium" href="/signup">
             Crie uma
           </Link>
         </View>

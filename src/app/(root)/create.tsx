@@ -89,7 +89,7 @@ export default function Editor() {
           {
             user_id: session.user.id,
             title: 'Residência postada',
-            description: 'A sua residência localizada foi postada com sucesso.',
+            description: 'A sua residência foi postada com sucesso.',
             type: 'successful',
           },
         ]);
@@ -328,7 +328,7 @@ export default function Editor() {
       </ScrollView>
 
       <Header.Action
-        title="Criar postagem"
+        title="Postar residência"
         loading={isSubmitting}
         onPress={handleSubmit(onSubmit)}
       />

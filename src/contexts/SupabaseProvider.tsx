@@ -132,6 +132,8 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
             () => {},
           );
         }
+      } else {
+        imagesToAppend.push(image.uri);
       }
     }
 
