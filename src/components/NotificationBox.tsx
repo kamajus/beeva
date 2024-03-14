@@ -6,6 +6,7 @@ import { Icon } from 'react-native-paper';
 import PublishedSince from './PublishedSince';
 import TouchableBrightness from './TouchableBrightness';
 import { Notification } from '../assets/@types';
+import Constants from '../constants';
 
 interface NotificationIcons {
   [key: string]: string;
@@ -23,7 +24,11 @@ export default function NotificationBox(props: Notification) {
         <TouchableBrightness onPress={() => {}}>
           <View className="w-full px-2 py-2 flex items-center flex-row  border-b border-gray-300">
             <View className="relative">
-              <Icon source={notificationIcons[props.type]} color="#8b6cef" size={30} />
+              <Icon
+                source={notificationIcons[props.type]}
+                color={Constants.colors.primary}
+                size={30}
+              />
 
               <View
                 className={clsx(
