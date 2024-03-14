@@ -93,6 +93,8 @@ export default function Editor() {
   const [isPhotoChaged, setPhotoChanged] = useState(false);
   const alert = useAlert();
 
+  const { session } = useSupabase();
+
   async function onSubmit(formData: FormData) {
     const hasSelectedImages = images.length > 0;
     const isCoverChanged = defaultData?.residence.cover !== cover;
@@ -145,72 +147,78 @@ export default function Editor() {
   }
 
   async function updateResidenceData({ location, description }: FormData) {
-    const { error } = await supabase
-      .from('residences')
-      .update({
-        price,
-        location,
-        description,
-        cover,
-        state,
-        kind,
-      })
-      .eq('id', id);
-
-    if (error) {
-      alert.showAlert(
-        'Erro a realizar postagem',
-        'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
-        'Ok',
-        () => {},
-      );
-    } else if (defaultData) {
-      setDefaultData({
-        residence: {
-          ...defaultData?.residence,
-          price: price ? price : Number(defaultData?.residence.price),
-          location: location ? location : `${defaultData?.residence.location}`,
-          description: description ? description : `${defaultData?.residence.description}`,
-          cover: cover ? cover : `${defaultData?.residence.cover}`,
+    if (session) {
+      const { error } = await supabase
+        .from('residences')
+        .update({
+          owner_id: session.user.id,
+          price,
+          location,
+          description,
+          cover,
           state,
           kind,
-        },
-      });
+        })
+        .eq('id', id);
 
-      reset({
-        description,
-        location,
-        price: price ? price : undefined,
-      });
+      if (error) {
+        alert.showAlert(
+          'Erro a realizar postagem',
+          'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
+          'Ok',
+          () => {},
+        );
+      } else if (defaultData) {
+        setDefaultData({
+          residence: {
+            ...defaultData?.residence,
+            price: price ? price : Number(defaultData?.residence.price),
+            location: location ? location : `${defaultData?.residence.location}`,
+            description: description ? description : `${defaultData?.residence.description}`,
+            cover: cover ? cover : `${defaultData?.residence.cover}`,
+            state,
+            kind,
+          },
+        });
+
+        reset({
+          description,
+          location,
+          price: price ? price : undefined,
+        });
+      }
     }
   }
 
   async function removeDeletedImages() {
-    const filesToRemove = imagesToDelete.map((image) =>
-      image.replace(
-        `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
-        '',
-      ),
-    );
+    if (session) {
+      const filesToRemove = imagesToDelete.map((image) =>
+        image.replace(
+          `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
+          '',
+        ),
+      );
 
-    setImages(images.filter((image) => !imagesToDelete.includes(image.uri)));
+      setImages(images.filter((image) => !imagesToDelete.includes(image.uri)));
 
-    const residences = cachedResidences.map(({ residence }) => {
-      if (residence.id === id && residence.photos) {
-        const photos = residence.photos.filter((image) => !imagesToDelete.includes(image));
-        return { ...residence, photos };
-      }
-      return residence;
-    });
+      const residences = cachedResidences.map(({ residence }) => {
+        if (residence.id === id && residence.photos) {
+          const photos = residence.photos.filter((image) => !imagesToDelete.includes(image));
+          return { ...residence, photos };
+        }
+        return residence;
+      });
 
-    await supabase.storage.from('residences').remove(filesToRemove);
+      await supabase.storage.from('residences').remove(filesToRemove);
 
-    await supabase
-      .from('residences')
-      .update({ photos: residences.find((r) => r.id === id)?.photos })
-      .eq('id', id);
+      await supabase
+        .from('residences')
+        .update({ photos: residences.find((r) => r.id === id)?.photos })
+        .eq('id', id)
+        .eq('owner_id', session.user.id);
 
-    setImagesToDelete([]);
+      setImagesToDelete([]);
+    }
   }
 
   useEffect(

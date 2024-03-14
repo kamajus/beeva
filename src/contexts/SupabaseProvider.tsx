@@ -107,9 +107,13 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           );
 
           // Check if the uploaded image is the cover image
-          if (image.uri === cover && !uploadError) {
+          if (image.uri === cover && !uploadError && session) {
             const coverURL = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`;
-            await supabase.from('residences').update({ cover: coverURL }).eq('id', id);
+            await supabase
+              .from('residences')
+              .update({ cover: coverURL })
+              .eq('id', id)
+              .eq('owner_id', session.user.id);
           }
 
           if (uploadError) {
@@ -131,7 +135,13 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       }
     }
 
-    await supabase.from('residences').update({ photos: imagesToAppend }).eq('id', id);
+    if (session) {
+      await supabase
+        .from('residences')
+        .update({ photos: imagesToAppend })
+        .eq('id', id)
+        .eq('owner_id', session.user.id);
+    }
   }
 
   async function residenceIsFavorite(id: string) {
@@ -152,16 +162,19 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   }
 
   async function handleFavorite(id: string, saved: boolean) {
-    if (!saved) {
-      await supabase.from('favorites').insert({
-        residence_id: id,
-      });
-    } else {
-      await supabase
-        .from('favorites')
-        .delete()
-        .eq('user_id', user?.id)
-        .eq('residence_id', id);
+    if (user) {
+      if (!saved) {
+        await supabase.from('favorites').insert({
+          user_id: user.id,
+          residence_id: id,
+        });
+      } else {
+        await supabase
+          .from('favorites')
+          .delete()
+          .eq('user_id', user?.id)
+          .eq('residence_id', id);
+      }
     }
   }
 
@@ -266,7 +279,13 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
 
       if (session) {
         await getUserById(session?.user.id, true)
-          .then((data) => {
+          .then(async (data) => {
+            if (data) {
+              setUser(data);
+            } else {
+              await supabase.auth.signOut();
+              router.replace('/signin');
+            }
             setUser(data);
           })
           .catch(async () => {

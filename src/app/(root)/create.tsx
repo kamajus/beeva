@@ -64,12 +64,15 @@ export default function Editor() {
   const { uploadResidencesImage } = useSupabase();
   const alert = useAlert();
 
+  const { session } = useSupabase();
+
   async function onSubmit(formData: FormData) {
-    if (images.length !== 0 && cover) {
+    if (images.length !== 0 && cover && session) {
       const { data, error } = await supabase
         .from('residences')
         .insert([
           {
+            owner_id: session.user.id,
             price,
             location: formData.location,
             description: formData.description,
@@ -84,6 +87,7 @@ export default function Editor() {
         await uploadResidencesImage(data.id, `${cover}`, images);
         await supabase.from('notifications').insert([
           {
+            user_id: session.user.id,
             title: 'Residência postada',
             description: 'A sua residência localizada foi postada com sucesso.',
             type: 'successful',
