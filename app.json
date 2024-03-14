@@ -45,7 +45,7 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.adjpro.kubata",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {},
     "plugins": [
