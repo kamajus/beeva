@@ -29,11 +29,14 @@ export default function Filter(props: FilterProps) {
           renderItem={({ item }) => (
             <Pressable
               className={clsx('mr-2 py-4 px-5 border-t-transparent rounded-md bg-[#f5f5f5]', {
-                'bg-[#a78bfa9a]': props.kind === item.value,
+                'bg-primary': props.kind === item.value,
                 'mr-0': Constants.categories[Constants.categories.length - 1] === item,
               })}
               onPress={() => onButtonActive(item.value)}>
-              <Text className="font-poppins-medium text-black text-sm">
+              <Text
+                className={clsx('font-poppins-medium text-black text-sm', {
+                  'text-white': props.kind === item.value,
+                })}>
                 {Constants.categories.map((categorie) => {
                   if (categorie.value === item.value) {
                     return `${categorie.emoji} ${categorie.name}`;

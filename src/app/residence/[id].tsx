@@ -110,7 +110,7 @@ export default function ResidenceDetail() {
       className="flex-1 bg-white relative w-full"
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-      <Carousel photos={cachedData?.residence.photos} style={{ height: 460 }} />
+      <Carousel photos={cachedData?.residence.photos} style={{ height: 640 }} />
       <View className="px-4 bg-white flex mt-7">
         <View className="flex flex-row items-center justify-between">
           <View className="flex gap-x-3 flex-row">

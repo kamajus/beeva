@@ -1,6 +1,8 @@
 import { Tabs } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+import Constants from '../../constants';
+
 export default function HomeLayout() {
   return (
     <Tabs
@@ -10,7 +12,7 @@ export default function HomeLayout() {
           height: 70,
           paddingBottom: 10,
         },
-        tabBarActiveTintColor: '#8b6cef',
+        tabBarActiveTintColor: Constants.colors.primary,
         tabBarInactiveTintColor: '#212121',
         tabBarHideOnKeyboard: true,
         tabBarLabelStyle: {

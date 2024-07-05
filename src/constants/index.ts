@@ -5,7 +5,7 @@ import { ResidenceTypes } from '../assets/@types';
 type Categories = { name: string; value: ResidenceTypes; emoji: string }[];
 
 const colors = {
-  primary: '#8b6cef',
+  primary: '#6B0088',
   input: '#f9f9f9',
   alert: '#EF4444',
 };
