@@ -4,6 +4,8 @@ import { Dispatch, SetStateAction } from 'react';
 import { FlatList, Image, Pressable, View } from 'react-native';
 import { Button, IconButton } from 'react-native-paper';
 
+import Constants from '../constants';
+
 interface GaleryProps {
   images: ImagePicker.ImagePickerAsset[];
   cover: string | null | undefined;
@@ -106,7 +108,7 @@ export default function Galery({
         }}
         style={{
           height: 56,
-          backgroundColor: '#212121',
+          backgroundColor: Constants.colors.primary,
         }}
         className={clsx('flex items-center justify-center', {
           hidden: disabled || images.length >= 5,

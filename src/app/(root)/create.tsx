@@ -64,12 +64,15 @@ export default function Editor() {
   const { uploadResidencesImage } = useSupabase();
   const alert = useAlert();
 
+  const { session } = useSupabase();
+
   async function onSubmit(formData: FormData) {
-    if (images.length !== 0 && cover) {
+    if (images.length !== 0 && cover && session) {
       const { data, error } = await supabase
         .from('residences')
         .insert([
           {
+            owner_id: session.user.id,
             price,
             location: formData.location,
             description: formData.description,
@@ -84,8 +87,9 @@ export default function Editor() {
         await uploadResidencesImage(data.id, `${cover}`, images);
         await supabase.from('notifications').insert([
           {
+            user_id: session.user.id,
             title: 'Residência postada',
-            description: 'A sua residência localizada foi postada com sucesso.',
+            description: 'A sua residência foi postada com sucesso.',
             type: 'successful',
           },
         ]);
@@ -146,7 +150,7 @@ export default function Editor() {
                         separator=","
                         precision={2}
                         minValue={0}
-                        cursorColor="#a78bfa"
+                        cursorColor={Constants.colors.primary}
                         className="flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium"
                         placeholder="Quanto está custando? (em kz)"
                         onChangeText={() => {
@@ -324,7 +328,7 @@ export default function Editor() {
       </ScrollView>
 
       <Header.Action
-        title="Criar postagem"
+        title="Postar residência"
         loading={isSubmitting}
         onPress={handleSubmit(onSubmit)}
       />

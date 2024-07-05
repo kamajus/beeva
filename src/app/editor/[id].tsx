@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup';
+import { EventArg } from '@react-navigation/native';
 import clsx from 'clsx';
 import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
@@ -64,9 +65,9 @@ export default function Editor() {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      description: defaultData?.residence.description ? defaultData.residence.description : '',
-      location: defaultData?.residence.location ? defaultData.residence.location : '',
-      price: defaultData?.residence.price ? defaultData.residence.price : 0,
+      description: defaultData?.residence.description || '',
+      location: defaultData?.residence.location || '',
+      price: defaultData?.residence.price || 0,
     },
   });
 
@@ -118,8 +119,8 @@ export default function Editor() {
         await removeDeletedImages();
       }
 
-      if (isPhotoChaged) {
-        await uploadResidencesImage(`${id}`, `${cover}`, images);
+      if (isPhotoChaged && id && cover) {
+        await uploadResidencesImage(id, cover, images);
       }
 
       setForceExiting(true);
@@ -168,10 +169,10 @@ export default function Editor() {
       setDefaultData({
         residence: {
           ...defaultData?.residence,
-          price: price ? price : Number(defaultData?.residence.price),
-          location: location ? location : `${defaultData?.residence.location}`,
-          description: description ? description : `${defaultData?.residence.description}`,
-          cover: cover ? cover : `${defaultData?.residence.cover}`,
+          price: price || defaultData?.residence.price,
+          location: location || defaultData?.residence.location,
+          description: description || defaultData?.residence.description,
+          cover: cover || defaultData?.residence.cover,
           state,
           kind,
         },
@@ -213,42 +214,60 @@ export default function Editor() {
     setImagesToDelete([]);
   }
 
-  useEffect(
-    () =>
-      navigation.addListener('beforeRemove', (e) => {
-        const hasSelectedImages =
-          defaultData?.residence.photos && defaultData?.residence.photos?.length > images.length;
-        const isCoverChanged = defaultData?.residence.cover !== cover;
-        const isStateDifferent = defaultData?.residence.state !== state;
-        const isKindDifferent = defaultData?.residence.kind !== kind;
-        const hasDeletedImages = imagesToDelete.length > 0;
+  useEffect(() => {
+    type beforeRemoveEventType = EventArg<
+      'beforeRemove',
+      true,
+      {
+        action: Readonly<{
+          type: string;
+          payload?: object | undefined;
+          source?: string | undefined;
+          target?: string | undefined;
+        }>;
+      }
+    >;
 
-        if (forceExiting) return;
-        if (
-          !isSubmitting &&
-          !isDirty &&
-          !isCoverChanged &&
-          !isStateDifferent &&
-          !isKindDifferent &&
-          !hasDeletedImages &&
-          !hasSelectedImages
-        ) {
-          return;
-        }
+    function handleBeforeRemove(e: beforeRemoveEventType) {
+      e.preventDefault();
 
-        e.preventDefault();
+      const hasSelectedImages =
+        defaultData?.residence.photos && defaultData?.residence.photos?.length > images.length;
+      const isCoverChanged = defaultData?.residence.cover !== cover;
+      const isStateDifferent = defaultData?.residence.state !== state;
+      const isKindDifferent = defaultData?.residence.kind !== kind;
+      const hasDeletedImages = imagesToDelete.length > 0;
 
-        alert.showAlert(
-          'Descartar alterações?',
-          'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',
-          'Descartar',
-          () => navigation.dispatch(e.data.action),
-          'Não sair',
-          () => {},
-        );
-      }),
-    [navigation, isDirty, defaultData, isSubmitting],
-  );
+      if (forceExiting) return;
+
+      if (
+        !isSubmitting &&
+        !isDirty &&
+        !isCoverChanged &&
+        !isStateDifferent &&
+        !isKindDifferent &&
+        !hasDeletedImages &&
+        !hasSelectedImages
+      ) {
+        navigation.dispatch(e.data.action);
+        return;
+      }
+
+      alert.showAlert(
+        'Descartar alterações?',
+        'Você possui alterações não salvas, tens certeza de que deseja descartá-las?',
+        'Sim',
+        () => navigation.dispatch(e.data.action),
+        'Não',
+        () => {},
+      );
+    }
+
+    navigation.addListener('beforeRemove', handleBeforeRemove);
+    return () => {
+      navigation.removeListener('beforeRemove', handleBeforeRemove);
+    };
+  }, [isDirty, defaultData, isSubmitting, forceExiting]);
 
   return (
     <View className="relative bg-white">
@@ -457,7 +476,7 @@ export default function Editor() {
       </ScrollView>
 
       <Header.Action
-        title="Editar postagem"
+        title="Editando a residência"
         loading={isSubmitting}
         onPress={handleSubmit(onSubmit)}
       />
