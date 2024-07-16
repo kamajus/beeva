@@ -1,17 +1,17 @@
-import ExpoConstants from 'expo-constants';
+import ExpoConstants from 'expo-constants'
 
-import { ResidenceTypes } from '../assets/@types';
+import { ResidenceTypes } from '../assets/@types'
 
-type Categories = { name: string; value: ResidenceTypes; emoji: string }[];
+type Categories = { name: string; value: ResidenceTypes; emoji: string }[]
 
 const colors = {
   primary: '#6B0088',
   input: '#f9f9f9',
   alert: '#EF4444',
-};
+}
 
 // Calculates the distance between the custom navigation header and screen
-const customHeaderDistance = ExpoConstants.statusBarHeight * 2 + 30;
+const customHeaderDistance = ExpoConstants.statusBarHeight * 2 + 30
 
 const categories: Categories = [
   {
@@ -39,10 +39,10 @@ const categories: Categories = [
     value: 'others',
     emoji: '🏪',
   },
-];
+]
 
 export default {
   colors,
   categories,
   customHeaderDistance,
-};
+}

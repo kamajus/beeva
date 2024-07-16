@@ -1,18 +1,18 @@
-import clsx from 'clsx';
-import { useCallback, useState } from 'react';
-import { RefreshControl, ScrollView, View, Text } from 'react-native';
+import clsx from 'clsx'
+import { useCallback, useState } from 'react'
+import { RefreshControl, ScrollView, View, Text } from 'react-native'
 
-import { Notification } from '../assets/@types';
-import NoNotification from '../assets/images/no-notification';
-import Header from '../components/Header';
-import NotificationBox from '../components/NotificationBox';
-import { supabase } from '../config/supabase';
-import { useCache } from '../hooks/useCache';
-import { useSupabase } from '../hooks/useSupabase';
+import { Notification } from '../assets/@types'
+import NoNotification from '../assets/images/no-notification'
+import Header from '../components/Header'
+import NotificationBox from '../components/NotificationBox'
+import { supabase } from '../config/supabase'
+import { useCache } from '../hooks/useCache'
+import { useSupabase } from '../hooks/useSupabase'
 
 export default function () {
-  const { user } = useSupabase();
-  const { notifications, setNotifications } = useCache();
+  const { user } = useSupabase()
+  const { notifications, setNotifications } = useCache()
 
   async function getData() {
     const { data } = await supabase
@@ -20,22 +20,22 @@ export default function () {
       .select()
       .order('created_at', { ascending: false })
       .eq('user_id', user?.id)
-      .returns<Notification[]>();
+      .returns<Notification[]>()
 
     if (data) {
-      setNotifications(data);
+      setNotifications(data)
     }
   }
 
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false)
 
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
+    setRefreshing(true)
     setTimeout(() => {
-      getData();
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+      getData()
+      setRefreshing(false)
+    }, 2000)
+  }, [])
 
   return (
     <View
@@ -50,7 +50,9 @@ export default function () {
         <ScrollView
           className="w-full h-full"
           showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
           {notifications.map((notification) => (
             <NotificationBox key={notification.id} {...notification} />
           ))}
@@ -64,5 +66,5 @@ export default function () {
         </View>
       )}
     </View>
-  );
+  )
 }

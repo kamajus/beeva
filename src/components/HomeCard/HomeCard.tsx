@@ -1,34 +1,34 @@
-import clsx from 'clsx';
-import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Pressable, Text, View, Image } from 'react-native';
-import { IconButton } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import clsx from 'clsx'
+import { router } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { Pressable, Text, View, Image } from 'react-native'
+import { IconButton } from 'react-native-paper'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
-import { Residence } from '../../assets/@types';
-import useMoneyFormat from '../../hooks/useMoneyFormat';
-import { useSupabase } from '../../hooks/useSupabase';
-import { useResidenceStore } from '../../store/ResidenceStore';
+import { Residence } from '../../assets/@types'
+import useMoneyFormat from '../../hooks/useMoneyFormat'
+import { useSupabase } from '../../hooks/useSupabase'
+import { useResidenceStore } from '../../store/ResidenceStore'
 
 interface HomeCardProps extends Residence {
-  cardType: 'search' | 'big' | 'small';
+  cardType: 'search' | 'big' | 'small'
 }
 
 export default function HomeCard(props: HomeCardProps) {
-  const cachedResidences = useResidenceStore((state) => state.cachedResidences);
-  const addToResidences = useResidenceStore((state) => state.addToResidences);
+  const cachedResidences = useResidenceStore((state) => state.cachedResidences)
+  const addToResidences = useResidenceStore((state) => state.addToResidences)
 
-  const { residenceIsFavorite, handleFavorite, user } = useSupabase();
+  const { residenceIsFavorite, handleFavorite, user } = useSupabase()
   const [favorite, setFavorite] = useState(
     cachedResidences.some(({ residence: r }) => r.id === props.id),
-  );
-  const money = useMoneyFormat();
+  )
+  const money = useMoneyFormat()
 
   useEffect(() => {
     residenceIsFavorite(props.id).then((data) => {
-      setFavorite(data);
-    });
-  }, []);
+      setFavorite(data)
+    })
+  }, [])
 
   return (
     <View className="mb-2">
@@ -46,7 +46,9 @@ export default function HomeCard(props: HomeCardProps) {
         <View className="flex flex-row items-center">
           <Icon name="location-pin" color="black" size={19} />
           <Text className="font-poppins-medium text-sm ml-1">
-            {props.location.length > 70 ? `${props.location.slice(0, 60)}...` : props.location}
+            {props.location.length > 70
+              ? `${props.location.slice(0, 60)}...`
+              : props.location}
           </Text>
         </View>
         <Text
@@ -67,11 +69,11 @@ export default function HomeCard(props: HomeCardProps) {
           'absolute top-6 right-1': props.cardType === 'search',
         })}
         onPress={() => {
-          setFavorite(!favorite);
-          handleFavorite(props.id, favorite);
-          if (!favorite) addToResidences(props, 'favorites');
+          setFavorite(!favorite)
+          handleFavorite(props.id, favorite)
+          if (!favorite) addToResidences(props, 'favorites')
         }}
       />
     </View>
-  );
+  )
 }

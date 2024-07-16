@@ -1,11 +1,12 @@
-import { Inter_400Regular, Inter_500Medium } from '@expo-google-fonts/inter';
+/* eslint-disable camelcase */
+import { Inter_400Regular, Inter_500Medium } from '@expo-google-fonts/inter'
 import {
   useFonts,
   Poppins_400Regular,
   Poppins_600SemiBold,
   Poppins_700Bold,
   Poppins_500Medium,
-} from '@expo-google-fonts/poppins';
+} from '@expo-google-fonts/poppins'
 
 export default function useLoadFonts() {
   const [fontsLoaded, fontError] = useFonts({
@@ -15,7 +16,7 @@ export default function useLoadFonts() {
     'poppins-bold': Poppins_700Bold,
     'inter-regular': Inter_400Regular,
     'inter-medium': Inter_500Medium,
-  });
+  })
 
-  return { fontsLoaded, fontError };
+  return { fontsLoaded, fontError }
 }

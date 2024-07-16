@@ -1,22 +1,25 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import clsx from 'clsx';
-import { useForm, Controller } from 'react-hook-form';
-import { ScrollView, View } from 'react-native';
-import { Button, HelperText, TextInput } from 'react-native-paper';
-import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup'
+import clsx from 'clsx'
+import { useForm, Controller } from 'react-hook-form'
+import { ScrollView, View } from 'react-native'
+import { Button, HelperText, TextInput } from 'react-native-paper'
+import * as yup from 'yup'
 
-import Header from '../components/Header';
-import { supabase } from '../config/supabase';
-import Constants from '../constants';
-import { useAlert } from '../hooks/useAlert';
+import Header from '../components/Header'
+import { supabase } from '../config/supabase'
+import Constants from '../constants'
+import { useAlert } from '../hooks/useAlert'
 
 interface FormData {
-  email: string;
+  email: string
 }
 
 const schema = yup.object({
-  email: yup.string().email('Preencha com um e-mail válido').required('O e-mail é obrigatório'),
-});
+  email: yup
+    .string()
+    .email('Preencha com um e-mail válido')
+    .required('O e-mail é obrigatório'),
+})
 
 export default function Confirmation() {
   const {
@@ -26,11 +29,11 @@ export default function Confirmation() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
-  });
-  const alert = useAlert();
+  })
+  const alert = useAlert()
 
   async function onSubmit(data: FormData) {
-    const { error } = await supabase.auth.resetPasswordForEmail(data.email);
+    const { error } = await supabase.auth.resetPasswordForEmail(data.email)
 
     if (error) {
       alert.showAlert(
@@ -38,19 +41,19 @@ export default function Confirmation() {
         'Ocorreu um erro ao tentar enviar um email de recuperação da conta, tente novamente mais tarde.',
         'Ok',
         () => {},
-      );
+      )
     } else {
       alert.showAlert(
         'Sucesso',
         'Foi enviando um email para você conseguir alterar a sua senha.',
         'Ok',
         () => {},
-      );
+      )
     }
 
     reset({
       email: '',
-    });
+    })
   }
 
   return (
@@ -115,5 +118,5 @@ export default function Confirmation() {
         </View>
       </ScrollView>
     </View>
-  );
+  )
 }

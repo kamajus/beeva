@@ -1,19 +1,22 @@
-import Constants from 'expo-constants';
-import { router } from 'expo-router';
-import { Dispatch, SetStateAction } from 'react';
-import { View } from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
+import Constants from 'expo-constants'
+import { router } from 'expo-router'
+import { Dispatch, SetStateAction } from 'react'
+import { View } from 'react-native'
+import Icon from 'react-native-vector-icons/Feather'
 
-import TextField from '../TextField';
+import TextField from '../TextField'
 
-import '../ActionSheet';
+import '../ActionSheet'
 
 interface LocationHeaderProps {
-  setSearchQuery: Dispatch<SetStateAction<string>>;
-  searchQuery: string;
+  setSearchQuery: Dispatch<SetStateAction<string>>
+  searchQuery: string
 }
 
-export default function LocationHeader({ setSearchQuery, searchQuery }: LocationHeaderProps) {
+export default function LocationHeader({
+  setSearchQuery,
+  searchQuery,
+}: LocationHeaderProps) {
   return (
     <View>
       <View
@@ -25,7 +28,12 @@ export default function LocationHeader({ setSearchQuery, searchQuery }: Location
               borderColor: 'transparent',
             }}
             disableFocus>
-            <Icon name="arrow-left" color="#000" size={25} onPress={router.back} />
+            <Icon
+              name="arrow-left"
+              color="#000"
+              size={25}
+              onPress={router.back}
+            />
             <TextField.Input
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -38,5 +46,5 @@ export default function LocationHeader({ setSearchQuery, searchQuery }: Location
         </TextField.Root>
       </View>
     </View>
-  );
+  )
 }

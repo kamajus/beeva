@@ -1,40 +1,40 @@
-import { Session, User as UserSB } from '@supabase/supabase-js';
-import { decode } from 'base64-arraybuffer';
-import * as FileSystem from 'expo-file-system';
-import * as ImagePicker from 'expo-image-picker';
-import * as Notifications from 'expo-notifications';
-import { router } from 'expo-router';
-import { createContext, useEffect, useState } from 'react';
+import { Session, User as UserSB } from '@supabase/supabase-js'
+import { decode } from 'base64-arraybuffer'
+import * as FileSystem from 'expo-file-system'
+import * as ImagePicker from 'expo-image-picker'
+import * as Notifications from 'expo-notifications'
+import { router } from 'expo-router'
+import { createContext, useEffect, useState } from 'react'
 
-import { Notification, Residence, User } from '../assets/@types';
-import { supabase } from '../config/supabase';
-import { useAlert } from '../hooks/useAlert';
-import { useCache } from '../hooks/useCache';
-import { useResidenceStore } from '../store/ResidenceStore';
+import { Notification, Residence, User } from '../assets/@types'
+import { supabase } from '../config/supabase'
+import { useAlert } from '../hooks/useAlert'
+import { useCache } from '../hooks/useCache'
+import { useResidenceStore } from '../store/ResidenceStore'
 
 type SupabaseContextProps = {
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>> | null;
-  session: Session | null;
-  initialized?: boolean;
-  signUp: (email: string, password: string) => Promise<UserSB | null | void>;
-  signInWithPassword: (email: string, password: string) => Promise<void>;
-  sendOtpCode: (email: string) => Promise<void>;
+  user: User | null
+  setUser: React.Dispatch<React.SetStateAction<User | null>> | null
+  session: Session | null
+  initialized?: boolean
+  signUp: (email: string, password: string) => Promise<UserSB | null | void>
+  signInWithPassword: (email: string, password: string) => Promise<void>
+  sendOtpCode: (email: string) => Promise<void>
   uploadResidencesImage: (
     id: string,
     cover: string,
     images: ImagePicker.ImagePickerAsset[],
-  ) => Promise<void>;
-  signOut: () => Promise<void>;
-  getUserById: (id?: string, upsert?: boolean) => Promise<User | void>;
-  handleFavorite: (id: string, saved: boolean) => Promise<void>;
-  handleCallNotification(title: string, body: string): void;
-  residenceIsFavorite: (id: string) => Promise<boolean>;
-};
+  ) => Promise<void>
+  signOut: () => Promise<void>
+  getUserById: (id?: string, upsert?: boolean) => Promise<User | void>
+  handleFavorite: (id: string, saved: boolean) => Promise<void>
+  handleCallNotification(title: string, body: string): void
+  residenceIsFavorite: (id: string) => Promise<boolean>
+}
 
 type SupabaseProviderProps = {
-  children: React.ReactNode;
-};
+  children: React.ReactNode
+}
 
 export const SupabaseContext = createContext<SupabaseContextProps>({
   user: null,
@@ -50,31 +50,33 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
   handleFavorite: async () => {},
   residenceIsFavorite: async () => false,
   handleCallNotification: async () => {},
-});
+})
 
 export function SupabaseProvider({ children }: SupabaseProviderProps) {
-  const alert = useAlert();
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [initialized, setInitialized] = useState<boolean>(false);
-  const { setNotifications, notifications } = useCache();
+  const alert = useAlert()
+  const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
+  const [initialized, setInitialized] = useState<boolean>(false)
+  const { setNotifications, notifications } = useCache()
 
-  const userResidences = useResidenceStore((state) => state.userResidences);
-  const cachedResidences = useResidenceStore((state) => state.cachedResidences);
-  const favoritesResidences = useResidenceStore((state) => state.favoritesResidences);
-  const addToResidences = useResidenceStore((state) => state.addToResidences);
-  const pushResidence = useResidenceStore((state) => state.pushResidence);
+  const userResidences = useResidenceStore((state) => state.userResidences)
+  const cachedResidences = useResidenceStore((state) => state.cachedResidences)
+  const favoritesResidences = useResidenceStore(
+    (state) => state.favoritesResidences,
+  )
+  const addToResidences = useResidenceStore((state) => state.addToResidences)
+  const pushResidence = useResidenceStore((state) => state.pushResidence)
 
   async function signUp(email: string, password: string) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-    });
+    })
 
     if (data.user) {
-      return data.user;
+      return data.user
     } else {
-      throw error;
+      throw error
     }
   }
 
@@ -83,37 +85,41 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     cover: string,
     images: ImagePicker.ImagePickerAsset[],
   ) {
-    const imagesToAppend = [];
+    const imagesToAppend = []
 
     for (const image of images) {
       // Checking if the image has already been posted or is stored locally
       if (
-        !image.uri.includes(`https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co`)
+        !image.uri.includes(
+          `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co`,
+        )
       ) {
         try {
           // Read image as base64
-          const base64 = await FileSystem.readAsStringAsync(image.uri, { encoding: 'base64' });
+          const base64 = await FileSystem.readAsStringAsync(image.uri, {
+            encoding: 'base64',
+          })
 
           // Define the file path based on user ID, residence ID, and timestamp
-          const filePath = `${user?.id}/${id}/${new Date().getTime()}`;
+          const filePath = `${user?.id}/${id}/${new Date().getTime()}`
 
           // Upload the image to Supabase storage
           const { data: photo, error: uploadError } = await supabase.storage
             .from('residences')
-            .upload(filePath, decode(base64), { contentType: 'image/png' });
+            .upload(filePath, decode(base64), { contentType: 'image/png' })
 
           imagesToAppend.push(
             `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`,
-          );
+          )
 
           // Check if the uploaded image is the cover image
           if (image.uri === cover && !uploadError && session) {
-            const coverURL = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`;
+            const coverURL = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`
             await supabase
               .from('residences')
               .update({ cover: coverURL })
               .eq('id', id)
-              .eq('owner_id', session.user.id);
+              .eq('owner_id', session.user.id)
           }
 
           if (uploadError) {
@@ -122,7 +128,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
               'Houve um problema ao tentar carregar as imagens que você forneceu.',
               'Ok',
               () => {},
-            );
+            )
           }
         } catch {
           alert.showAlert(
@@ -130,10 +136,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
             'Houve um problema ao tentar carregar as imagens que você forneceu.',
             'Ok',
             () => {},
-          );
+          )
         }
       } else {
-        imagesToAppend.push(image.uri);
+        imagesToAppend.push(image.uri)
       }
     }
 
@@ -142,7 +148,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         .from('residences')
         .update({ photos: imagesToAppend })
         .eq('id', id)
-        .eq('owner_id', session.user.id);
+        .eq('owner_id', session.user.id)
     }
   }
 
@@ -151,16 +157,16 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       .from('favorites')
       .select('*')
       .eq('user_id', user?.id)
-      .eq('residence_id', id);
-    let isFavorite = false;
+      .eq('residence_id', id)
+    let isFavorite = false
 
     data?.forEach((item) => {
       if (item.residence_id === id) {
-        isFavorite = true;
+        isFavorite = true
       }
-    });
+    })
 
-    return isFavorite;
+    return isFavorite
   }
 
   async function handleFavorite(id: string, saved: boolean) {
@@ -169,61 +175,61 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         await supabase.from('favorites').insert({
           user_id: user.id,
           residence_id: id,
-        });
+        })
       } else {
         await supabase
           .from('favorites')
           .delete()
           .eq('user_id', user?.id)
-          .eq('residence_id', id);
+          .eq('residence_id', id)
       }
     }
   }
 
   async function getUserById(id?: string, upsert?: boolean) {
     if (!upsert && user && user?.id === id) {
-      return user;
+      return user
     }
 
     const { data, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', id || user?.id)
-      .single<User>();
+      .single<User>()
 
     if (error) {
-      throw error;
+      throw error
     }
 
     if (data.photo_url) {
-      data.photo_url = data.photo_url + '?timestamp=' + new Date().getTime();
+      data.photo_url = data.photo_url + '?timestamp=' + new Date().getTime()
     }
 
-    return data;
+    return data
   }
 
   async function signInWithPassword(email: string, password: string) {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    });
+    })
     if (error) {
-      let message;
-      let redirect;
+      let message
+      let redirect
 
       if (error.status) {
         if (error.message === 'Email not confirmed') {
-          supabase.auth.resend({ email, type: 'signup' });
-          redirect = `/verification/${email}`;
+          supabase.auth.resend({ email, type: 'signup' })
+          redirect = `/verification/${email}`
         }
-        message = 'As credências de acesso a conta estão incorrectas.';
+        message = 'As credências de acesso a conta estão incorrectas.'
       }
 
       // eslint-disable-next-line no-throw-literal
       throw {
         message,
         redirect,
-      };
+      }
     }
   }
 
@@ -234,22 +240,22 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         shouldCreateUser: true,
         emailRedirectTo: 'https://example.com/welcome',
       },
-    });
+    })
 
     if (error) {
-      throw error;
+      throw error
     }
   }
 
   async function signOut() {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut()
     if (error) {
-      throw error;
+      throw error
     }
   }
 
   async function updateNotifications(notification: Notification) {
-    const index = notifications.findIndex((r) => r.id === notification.id);
+    const index = notifications.findIndex((r) => r.id === notification.id)
 
     setNotifications((prevNotifications) => {
       if (index !== -1) {
@@ -257,12 +263,12 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           notification,
           ...prevNotifications.slice(0, index),
           ...prevNotifications.slice(index + 1),
-        ];
-        return updatedNotifications;
+        ]
+        return updatedNotifications
       } else {
-        return [notification, ...prevNotifications];
+        return [notification, ...prevNotifications]
       }
-    });
+    })
   }
 
   function handleCallNotification(title: string, body: string) {
@@ -272,36 +278,36 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         body,
       },
       trigger: null,
-    });
+    })
   }
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
-      setSession(session);
+      setSession(session)
 
       if (session) {
         await getUserById(session?.user.id, true)
           .then(async (data) => {
             if (data) {
-              setUser(data);
+              setUser(data)
             } else {
-              await supabase.auth.signOut();
-              router.replace('/signin');
+              await supabase.auth.signOut()
+              router.replace('/signin')
             }
-            setUser(data);
+            setUser(data)
           })
           .catch(async () => {
-            await supabase.auth.signOut();
-            router.replace('/signin');
-          });
+            await supabase.auth.signOut()
+            router.replace('/signin')
+          })
 
         const { data: notificationsData } = await supabase
           .from('notifications')
           .select('*')
           .order('created_at', { ascending: false })
-          .eq('user_id', session?.user.id);
+          .eq('user_id', session?.user.id)
 
-        if (notificationsData) setNotifications(notificationsData);
+        if (notificationsData) setNotifications(notificationsData)
 
         supabase
           .channel('users')
@@ -317,12 +323,14 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
                   ...payload.new,
                   photo_url:
                     payload.new.photo_url &&
-                    payload.new.photo_url + '?timestamp=' + new Date().getTime(),
-                });
+                    payload.new.photo_url +
+                      '?timestamp=' +
+                      new Date().getTime(),
+                })
               }
             },
           )
-          .subscribe();
+          .subscribe()
 
         supabase
           .channel('notifications')
@@ -334,22 +342,25 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
             },
             async (payload: { new: Notification }) => {
               if (payload.new.user_id === session.user.id) {
-                updateNotifications(payload.new);
-                handleCallNotification(payload.new.title, payload.new.description);
+                updateNotifications(payload.new)
+                handleCallNotification(
+                  payload.new.title,
+                  payload.new.description,
+                )
               }
             },
           )
-          .subscribe();
+          .subscribe()
       } else {
-        setUser(null);
+        setUser(null)
       }
 
-      setInitialized(true);
-    });
+      setInitialized(true)
+    })
     return () => {
-      data.subscription.unsubscribe();
-    };
-  }, []);
+      data.subscription.unsubscribe()
+    }
+  }, [])
 
   useEffect(() => {
     supabase
@@ -363,21 +374,25 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         async (payload: { new: Residence }) => {
           if (payload.new) {
             if (userResidences.find((r) => r.id === payload.new.id)) {
-              addToResidences(payload.new, 'user');
+              addToResidences(payload.new, 'user')
             }
 
             if (favoritesResidences.find((r) => r.id === payload.new.id)) {
-              addToResidences(payload.new, 'favorites');
+              addToResidences(payload.new, 'favorites')
             }
 
-            if (cachedResidences.find(({ residence: r }) => r.id === payload.new.id)) {
-              pushResidence(payload.new);
+            if (
+              cachedResidences.find(
+                ({ residence: r }) => r.id === payload.new.id,
+              )
+            ) {
+              pushResidence(payload.new)
             }
           }
         },
       )
-      .subscribe();
-  }, [userResidences, favoritesResidences, cachedResidences]);
+      .subscribe()
+  }, [userResidences, favoritesResidences, cachedResidences])
 
   return (
     <SupabaseContext.Provider
@@ -398,5 +413,5 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       }}>
       {children}
     </SupabaseContext.Provider>
-  );
+  )
 }

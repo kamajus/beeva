@@ -1,9 +1,13 @@
-import { Stack } from 'expo-router';
-import { PaperProvider, MD2LightTheme, configureFonts } from 'react-native-paper';
+import { Stack } from 'expo-router'
+import {
+  PaperProvider,
+  MD2LightTheme,
+  configureFonts,
+} from 'react-native-paper'
 
-import { AlertProvider } from '../contexts/AlertProvider';
-import CacheProvider from '../contexts/CacheProvider';
-import { SupabaseProvider } from '../contexts/SupabaseProvider';
+import { AlertProvider } from '../contexts/AlertProvider'
+import CacheProvider from '../contexts/CacheProvider'
+import { SupabaseProvider } from '../contexts/SupabaseProvider'
 
 export default function () {
   const fontConfig = {
@@ -25,12 +29,12 @@ export default function () {
         fontWeight: 'normal',
       },
     },
-  };
+  }
 
   const theme = {
     ...MD2LightTheme,
     fonts: configureFonts({ config: fontConfig, isV3: false }),
-  };
+  }
 
   return (
     <PaperProvider theme={theme}>
@@ -54,5 +58,5 @@ export default function () {
         </CacheProvider>
       </AlertProvider>
     </PaperProvider>
-  );
+  )
 }

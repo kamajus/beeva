@@ -1,8 +1,8 @@
-import TextFieldArea from './TextFieldArea';
-import TextFieldContainer from './TextFieldContainer';
-import TextFieldInput from './TextFieldInput';
-import TextFieldLabel from './TextFieldLabel';
-import TextFieldRoot from './TextFieldRoot';
+import TextFieldArea from './TextFieldArea'
+import TextFieldContainer from './TextFieldContainer'
+import TextFieldInput from './TextFieldInput'
+import TextFieldLabel from './TextFieldLabel'
+import TextFieldRoot from './TextFieldRoot'
 
 const TextField = {
   Root: TextFieldRoot,
@@ -10,6 +10,6 @@ const TextField = {
   Container: TextFieldContainer,
   Input: TextFieldInput,
   Area: TextFieldArea,
-};
+}
 
-export default TextField;
+export default TextField

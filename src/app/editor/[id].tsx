@@ -1,29 +1,29 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { EventArg } from '@react-navigation/native';
-import clsx from 'clsx';
-import * as ImagePicker from 'expo-image-picker';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { ScrollView, Text, View } from 'react-native';
-import CurrencyInput from 'react-native-currency-input';
-import { HelperText, RadioButton } from 'react-native-paper';
-import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup'
+import { EventArg } from '@react-navigation/native'
+import clsx from 'clsx'
+import * as ImagePicker from 'expo-image-picker'
+import { useLocalSearchParams, useNavigation } from 'expo-router'
+import React, { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { ScrollView, Text, View } from 'react-native'
+import CurrencyInput from 'react-native-currency-input'
+import { HelperText, RadioButton } from 'react-native-paper'
+import * as yup from 'yup'
 
-import GaleryGrid from '../../components/GaleryGrid';
-import Header from '../../components/Header';
-import SearchPlace from '../../components/SearchPlace';
-import TextField from '../../components/TextField';
-import { supabase } from '../../config/supabase';
-import Constants from '../../constants';
-import { useAlert } from '../../hooks/useAlert';
-import { useSupabase } from '../../hooks/useSupabase';
-import { useResidenceStore } from '../../store/ResidenceStore';
+import GaleryGrid from '../../components/GaleryGrid'
+import Header from '../../components/Header'
+import SearchPlace from '../../components/SearchPlace'
+import TextField from '../../components/TextField'
+import { supabase } from '../../config/supabase'
+import Constants from '../../constants'
+import { useAlert } from '../../hooks/useAlert'
+import { useSupabase } from '../../hooks/useSupabase'
+import { useResidenceStore } from '../../store/ResidenceStore'
 
 interface FormData {
-  price: number;
-  description?: string;
-  location?: string;
+  price: number
+  description?: string
+  location?: string
 }
 
 const schema = yup.object({
@@ -44,18 +44,18 @@ const schema = yup.object({
     .required('A localização é obrigatória')
     .min(3, 'A localização deve ter pelo menos 3 caracteres')
     .max(150, 'A localização não pode ter mais de 150 caracteres'),
-});
+})
 
 export default function Editor() {
-  const navigation = useNavigation();
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const navigation = useNavigation()
+  const { id } = useLocalSearchParams<{ id?: string }>()
 
-  const cachedResidences = useResidenceStore((state) => state.cachedResidences);
-  const [forceExiting, setForceExiting] = useState(false);
+  const cachedResidences = useResidenceStore((state) => state.cachedResidences)
+  const [forceExiting, setForceExiting] = useState(false)
 
   const [defaultData, setDefaultData] = useState(
     cachedResidences.find(({ residence: r }) => r.id === id),
-  );
+  )
 
   const {
     handleSubmit,
@@ -69,7 +69,7 @@ export default function Editor() {
       location: defaultData?.residence.location || '',
       price: defaultData?.residence.price || 0,
     },
-  });
+  })
 
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>(
     defaultData?.residence.photos
@@ -80,26 +80,28 @@ export default function Editor() {
           assetId: uri,
         }))
       : [],
-  );
+  )
 
-  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([])
   const [cover, setCover] = useState<string | null | undefined>(
     defaultData?.residence.cover || undefined,
-  );
-  const [price, setPrice] = useState<number | null>(defaultData?.residence.price || 0);
-  const [kind, setKind] = useState(defaultData?.residence.kind || 'apartment');
-  const [state, setState] = useState(defaultData?.residence.state || 'rent');
-  const { uploadResidencesImage, handleCallNotification } = useSupabase();
+  )
+  const [price, setPrice] = useState<number | null>(
+    defaultData?.residence.price || 0,
+  )
+  const [kind, setKind] = useState(defaultData?.residence.kind || 'apartment')
+  const [state, setState] = useState(defaultData?.residence.state || 'rent')
+  const { uploadResidencesImage, handleCallNotification } = useSupabase()
 
-  const [isPhotoChaged, setPhotoChanged] = useState(false);
-  const alert = useAlert();
+  const [isPhotoChaged, setPhotoChanged] = useState(false)
+  const alert = useAlert()
 
   async function onSubmit(formData: FormData) {
-    const hasSelectedImages = images.length > 0;
-    const isCoverChanged = defaultData?.residence.cover !== cover;
-    const isStateDifferent = defaultData?.residence.state !== state;
-    const isKindDifferent = defaultData?.residence.kind !== kind;
-    const hasDeletedImages = imagesToDelete.length > 0;
+    const hasSelectedImages = images.length > 0
+    const isCoverChanged = defaultData?.residence.cover !== cover
+    const isStateDifferent = defaultData?.residence.state !== state
+    const isKindDifferent = defaultData?.residence.kind !== kind
+    const hasDeletedImages = imagesToDelete.length > 0
 
     if (
       hasSelectedImages &&
@@ -112,20 +114,23 @@ export default function Editor() {
         isPhotoChaged)
     ) {
       if (isDirty || isKindDifferent || isStateDifferent || isCoverChanged) {
-        await updateResidenceData(formData);
+        await updateResidenceData(formData)
       }
 
       if (hasDeletedImages) {
-        await removeDeletedImages();
+        await removeDeletedImages()
       }
 
       if (isPhotoChaged && id && cover) {
-        await uploadResidencesImage(id, cover, images);
+        await uploadResidencesImage(id, cover, images)
       }
 
-      setForceExiting(true);
-      navigation.goBack();
-      handleCallNotification('Residência respostado', 'A residência foi respostada com sucesso.');
+      setForceExiting(true)
+      navigation.goBack()
+      handleCallNotification(
+        'Residência respostado',
+        'A residência foi respostada com sucesso.',
+      )
     } else {
       if (!hasSelectedImages) {
         alert.showAlert(
@@ -133,14 +138,14 @@ export default function Editor() {
           'Não selecionaste nenhuma foto da residência.',
           'Ok',
           () => {},
-        );
+        )
       } else if (!cover) {
         alert.showAlert(
           'Erro a realizar postagem',
           'Escolha uma fotografia para ser a foto de capa da sua residência.',
           'Ok',
           () => {},
-        );
+        )
       }
     }
   }
@@ -156,7 +161,7 @@ export default function Editor() {
         state,
         kind,
       })
-      .eq('id', id);
+      .eq('id', id)
 
     if (error) {
       alert.showAlert(
@@ -164,7 +169,7 @@ export default function Editor() {
         'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
         'Ok',
         () => {},
-      );
+      )
     } else if (defaultData) {
       setDefaultData({
         residence: {
@@ -176,13 +181,13 @@ export default function Editor() {
           state,
           kind,
         },
-      });
+      })
 
       reset({
         description,
         location,
-        price: price ? price : undefined,
-      });
+        price: price || undefined,
+      })
     }
   }
 
@@ -192,26 +197,28 @@ export default function Editor() {
         `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
         '',
       ),
-    );
+    )
 
-    setImages(images.filter((image) => !imagesToDelete.includes(image.uri)));
+    setImages(images.filter((image) => !imagesToDelete.includes(image.uri)))
 
     const residences = cachedResidences.map(({ residence }) => {
       if (residence.id === id && residence.photos) {
-        const photos = residence.photos.filter((image) => !imagesToDelete.includes(image));
-        return { ...residence, photos };
+        const photos = residence.photos.filter(
+          (image) => !imagesToDelete.includes(image),
+        )
+        return { ...residence, photos }
       }
-      return residence;
-    });
+      return residence
+    })
 
-    await supabase.storage.from('residences').remove(filesToRemove);
+    await supabase.storage.from('residences').remove(filesToRemove)
 
     await supabase
       .from('residences')
       .update({ photos: residences.find((r) => r.id === id)?.photos })
-      .eq('id', id);
+      .eq('id', id)
 
-    setImagesToDelete([]);
+    setImagesToDelete([])
   }
 
   useEffect(() => {
@@ -220,25 +227,26 @@ export default function Editor() {
       true,
       {
         action: Readonly<{
-          type: string;
-          payload?: object | undefined;
-          source?: string | undefined;
-          target?: string | undefined;
-        }>;
+          type: string
+          payload?: object | undefined
+          source?: string | undefined
+          target?: string | undefined
+        }>
       }
-    >;
+    >
 
     function handleBeforeRemove(e: beforeRemoveEventType) {
-      e.preventDefault();
+      e.preventDefault()
 
       const hasSelectedImages =
-        defaultData?.residence.photos && defaultData?.residence.photos?.length > images.length;
-      const isCoverChanged = defaultData?.residence.cover !== cover;
-      const isStateDifferent = defaultData?.residence.state !== state;
-      const isKindDifferent = defaultData?.residence.kind !== kind;
-      const hasDeletedImages = imagesToDelete.length > 0;
+        defaultData?.residence.photos &&
+        defaultData?.residence.photos?.length > images.length
+      const isCoverChanged = defaultData?.residence.cover !== cover
+      const isStateDifferent = defaultData?.residence.state !== state
+      const isKindDifferent = defaultData?.residence.kind !== kind
+      const hasDeletedImages = imagesToDelete.length > 0
 
-      if (forceExiting) return;
+      if (forceExiting) return
 
       if (
         !isSubmitting &&
@@ -249,8 +257,8 @@ export default function Editor() {
         !hasDeletedImages &&
         !hasSelectedImages
       ) {
-        navigation.dispatch(e.data.action);
-        return;
+        navigation.dispatch(e.data.action)
+        return
       }
 
       alert.showAlert(
@@ -260,14 +268,14 @@ export default function Editor() {
         () => navigation.dispatch(e.data.action),
         'Não',
         () => {},
-      );
+      )
     }
 
-    navigation.addListener('beforeRemove', handleBeforeRemove);
+    navigation.addListener('beforeRemove', handleBeforeRemove)
     return () => {
-      navigation.removeListener('beforeRemove', handleBeforeRemove);
-    };
-  }, [isDirty, defaultData, isSubmitting, forceExiting]);
+      navigation.removeListener('beforeRemove', handleBeforeRemove)
+    }
+  }, [isDirty, defaultData, isSubmitting, forceExiting])
 
   return (
     <View className="relative bg-white">
@@ -287,7 +295,8 @@ export default function Editor() {
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Preço</TextField.Label>
-                    <TextField.Container error={errors.price?.message !== undefined}>
+                    <TextField.Container
+                      error={errors.price?.message !== undefined}>
                       <CurrencyInput
                         value={price}
                         onChangeValue={setPrice}
@@ -299,7 +308,7 @@ export default function Editor() {
                         className="flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium"
                         placeholder="Quanto está custando? (em kz)"
                         onChangeText={() => {
-                          onChange(String(price));
+                          onChange(String(price))
                         }}
                         onBlur={onBlur}
                         editable={!isSubmitting}
@@ -362,7 +371,8 @@ export default function Editor() {
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Descrição</TextField.Label>
-                    <TextField.Container error={errors.description?.message !== undefined}>
+                    <TextField.Container
+                      error={errors.description?.message !== undefined}>
                       <TextField.Area
                         placeholder="Quais são as carateristicas dela???"
                         value={value}
@@ -458,7 +468,8 @@ export default function Editor() {
           </View>
 
           <View className="mb-6">
-            <TextField.Label style={{ display: images.length > 0 ? 'flex' : 'none' }}>
+            <TextField.Label
+              style={{ display: images.length > 0 ? 'flex' : 'none' }}>
               Galeria
             </TextField.Label>
             <GaleryGrid
@@ -481,5 +492,5 @@ export default function Editor() {
         onPress={handleSubmit(onSubmit)}
       />
     </View>
-  );
+  )
 }

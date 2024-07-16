@@ -1,19 +1,19 @@
-import clsx from 'clsx';
-import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
+import clsx from 'clsx'
+import { FlatList, Pressable, ScrollView, Text, View } from 'react-native'
 
-import { ResidenceTypes } from '../assets/@types';
-import Constants from '../constants';
+import { ResidenceTypes } from '../assets/@types'
+import Constants from '../constants'
 
 interface FilterProps {
-  kind?: ResidenceTypes;
-  setKind?: React.Dispatch<React.SetStateAction<ResidenceTypes>>;
-  paddingHorizontal: number;
+  kind?: ResidenceTypes
+  setKind?: React.Dispatch<React.SetStateAction<ResidenceTypes>>
+  paddingHorizontal: number
 }
 
 export default function Filter(props: FilterProps) {
   function onButtonActive(value: ResidenceTypes) {
     if (props?.setKind) {
-      props?.setKind(value);
+      props?.setKind(value)
     }
   }
 
@@ -28,10 +28,15 @@ export default function Filter(props: FilterProps) {
           horizontal
           renderItem={({ item }) => (
             <Pressable
-              className={clsx('mr-2 py-4 px-5 border-t-transparent rounded-md bg-[#f5f5f5]', {
-                'bg-primary': props.kind === item.value,
-                'mr-0': Constants.categories[Constants.categories.length - 1] === item,
-              })}
+              className={clsx(
+                'mr-2 py-4 px-5 border-t-transparent rounded-md bg-[#f5f5f5]',
+                {
+                  'bg-primary': props.kind === item.value,
+                  'mr-0':
+                    Constants.categories[Constants.categories.length - 1] ===
+                    item,
+                },
+              )}
               onPress={() => onButtonActive(item.value)}>
               <Text
                 className={clsx('font-poppins-medium text-black text-sm', {
@@ -39,7 +44,7 @@ export default function Filter(props: FilterProps) {
                 })}>
                 {Constants.categories.map((categorie) => {
                   if (categorie.value === item.value) {
-                    return `${categorie.emoji} ${categorie.name}`;
+                    return `${categorie.emoji} ${categorie.name}`
                   }
                 })}
               </Text>
@@ -48,5 +53,5 @@ export default function Filter(props: FilterProps) {
         />
       </View>
     </ScrollView>
-  );
+  )
 }

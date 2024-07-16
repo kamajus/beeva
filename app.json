@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.adjpro.kubata"
+      "bundleIdentifier": "com.carlosmateus.kubata"
     },
     "android": {
       "intentFilters": [
@@ -44,7 +44,7 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.adjpro.kubata",
+      "package": "com.carlosmateus.kubata",
       "versionCode": 4
     },
     "web": {},
@@ -62,7 +62,8 @@
           "icon": "./src/assets/images/icon.png",
           "color": "#ffffff"
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

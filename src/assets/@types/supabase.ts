@@ -1,203 +1,209 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   public: {
     Tables: {
       favorites: {
         Row: {
-          created_at: string;
-          id: string;
-          residence_id: string | null;
-          user_id: string | null;
-        };
+          created_at: string
+          id: string
+          residence_id: string | null
+          user_id: string | null
+        }
         Insert: {
-          created_at?: string;
-          id?: string;
-          residence_id?: string | null;
-          user_id?: string | null;
-        };
+          created_at?: string
+          id?: string
+          residence_id?: string | null
+          user_id?: string | null
+        }
         Update: {
-          created_at?: string;
-          id?: string;
-          residence_id?: string | null;
-          user_id?: string | null;
-        };
+          created_at?: string
+          id?: string
+          residence_id?: string | null
+          user_id?: string | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'favorites_residence_id_fkey';
-            columns: ['residence_id'];
-            isOneToOne: false;
-            referencedRelation: 'residences';
-            referencedColumns: ['id'];
+            foreignKeyName: 'favorites_residence_id_fkey'
+            columns: ['residence_id']
+            isOneToOne: false
+            referencedRelation: 'residences'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: 'public_favorites_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'users';
-            referencedColumns: ['id'];
+            foreignKeyName: 'public_favorites_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
-        ];
-      };
+        ]
+      }
       notifications: {
         Row: {
-          created_at: string;
-          description: string;
-          id: string;
-          title: string;
-          type: Database['public']['Enums']['notification_type'];
-          user_id: string;
-          was_readed: boolean;
-        };
+          created_at: string
+          description: string
+          id: string
+          title: string
+          type: Database['public']['Enums']['notification_type']
+          user_id: string
+          was_readed: boolean
+        }
         Insert: {
-          created_at?: string;
-          description: string;
-          id?: string;
-          title: string;
-          type: Database['public']['Enums']['notification_type'];
-          user_id: string;
-          was_readed?: boolean;
-        };
+          created_at?: string
+          description: string
+          id?: string
+          title: string
+          type: Database['public']['Enums']['notification_type']
+          user_id: string
+          was_readed?: boolean
+        }
         Update: {
-          created_at?: string;
-          description?: string;
-          id?: string;
-          title?: string;
-          type?: Database['public']['Enums']['notification_type'];
-          user_id?: string;
-          was_readed?: boolean;
-        };
+          created_at?: string
+          description?: string
+          id?: string
+          title?: string
+          type?: Database['public']['Enums']['notification_type']
+          user_id?: string
+          was_readed?: boolean
+        }
         Relationships: [
           {
-            foreignKeyName: 'public_notifications_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'users';
-            referencedColumns: ['id'];
+            foreignKeyName: 'public_notifications_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
-        ];
-      };
+        ]
+      }
       residences: {
         Row: {
-          approval_status: boolean;
-          cover: string | null;
-          created_at: string;
-          description: string | null;
-          id: string;
-          kind: Database['public']['Enums']['residence_kind'];
-          location: string;
-          owner_id: string;
-          photos: string[] | null;
-          price: number;
-          state: Database['public']['Enums']['residence_state'];
-        };
+          approval_status: boolean
+          cover: string | null
+          created_at: string
+          description: string | null
+          id: string
+          kind: Database['public']['Enums']['residence_kind']
+          location: string
+          owner_id: string
+          photos: string[] | null
+          price: number
+          state: Database['public']['Enums']['residence_state']
+        }
         Insert: {
-          approval_status?: boolean;
-          cover?: string | null;
-          created_at?: string;
-          description?: string | null;
-          id?: string;
-          kind: Database['public']['Enums']['residence_kind'];
-          location: string;
-          owner_id: string;
-          photos?: string[] | null;
-          price: number;
-          state: Database['public']['Enums']['residence_state'];
-        };
+          approval_status?: boolean
+          cover?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: Database['public']['Enums']['residence_kind']
+          location: string
+          owner_id: string
+          photos?: string[] | null
+          price: number
+          state: Database['public']['Enums']['residence_state']
+        }
         Update: {
-          approval_status?: boolean;
-          cover?: string | null;
-          created_at?: string;
-          description?: string | null;
-          id?: string;
-          kind?: Database['public']['Enums']['residence_kind'];
-          location?: string;
-          owner_id?: string;
-          photos?: string[] | null;
-          price?: number;
-          state?: Database['public']['Enums']['residence_state'];
-        };
+          approval_status?: boolean
+          cover?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: Database['public']['Enums']['residence_kind']
+          location?: string
+          owner_id?: string
+          photos?: string[] | null
+          price?: number
+          state?: Database['public']['Enums']['residence_state']
+        }
         Relationships: [
           {
-            foreignKeyName: 'public_residences_owner_id_fkey';
-            columns: ['owner_id'];
-            isOneToOne: false;
-            referencedRelation: 'users';
-            referencedColumns: ['id'];
+            foreignKeyName: 'public_residences_owner_id_fkey'
+            columns: ['owner_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
-        ];
-      };
+        ]
+      }
       users: {
         Row: {
-          created_at: string;
-          first_name: string;
-          id: string;
-          last_name: string;
-          phone: number | null;
-          photo_url: string | null;
-        };
+          created_at: string
+          first_name: string
+          id: string
+          last_name: string
+          phone: number | null
+          photo_url: string | null
+        }
         Insert: {
-          created_at?: string;
-          first_name: string;
-          id?: string;
-          last_name: string;
-          phone?: number | null;
-          photo_url?: string | null;
-        };
+          created_at?: string
+          first_name: string
+          id?: string
+          last_name: string
+          phone?: number | null
+          photo_url?: string | null
+        }
         Update: {
-          created_at?: string;
-          first_name?: string;
-          id?: string;
-          last_name?: string;
-          phone?: number | null;
-          photo_url?: string | null;
-        };
-        Relationships: [];
-      };
-    };
+          created_at?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          phone?: number | null
+          photo_url?: string | null
+        }
+        Relationships: []
+      }
+    }
     Views: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Functions: {
       deleteUser: {
-        Args: Record<PropertyKey, never>;
-        Returns: undefined;
-      };
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       get_residences_by_location: {
         Args: {
-          place: string;
-        };
+          place: string
+        }
         Returns: {
-          approval_status: boolean;
-          cover: string | null;
-          created_at: string;
-          description: string | null;
-          id: string;
-          kind: Database['public']['Enums']['residence_kind'];
-          location: string;
-          owner_id: string;
-          photos: string[] | null;
-          price: number;
-          state: Database['public']['Enums']['residence_state'];
-        }[];
-      };
+          approval_status: boolean
+          cover: string | null
+          created_at: string
+          description: string | null
+          id: string
+          kind: Database['public']['Enums']['residence_kind']
+          location: string
+          owner_id: string
+          photos: string[] | null
+          price: number
+          state: Database['public']['Enums']['residence_state']
+        }[]
+      }
       verify_user_password: {
         Args: {
-          password: string;
-        };
-        Returns: boolean;
-      };
-    };
+          password: string
+        }
+        Returns: boolean
+      }
+    }
     Enums: {
-      notification_type: 'congratulations' | 'successful';
-      residence_kind: 'apartment' | 'villa' | 'land' | 'others';
-      residence_state: 'sell' | 'rent';
-    };
+      notification_type: 'congratulations' | 'successful'
+      residence_kind: 'apartment' | 'villa' | 'land' | 'others'
+      residence_state: 'sell' | 'rent'
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
 
 export type Tables<
   PublicTableNameOrOptions extends
@@ -210,7 +216,7 @@ export type Tables<
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
       Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
-      Row: infer R;
+      Row: infer R
     }
     ? R
     : never
@@ -218,52 +224,58 @@ export type Tables<
         Database['public']['Views'])
     ? (Database['public']['Tables'] &
         Database['public']['Views'])[PublicTableNameOrOptions] extends {
-        Row: infer R;
+        Row: infer R
       }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
-  PublicTableNameOrOptions extends keyof Database['public']['Tables'] | { schema: keyof Database },
+  PublicTableNameOrOptions extends
+    | keyof Database['public']['Tables']
+    | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Insert: infer I;
+      Insert: infer I
     }
     ? I
     : never
   : PublicTableNameOrOptions extends keyof Database['public']['Tables']
     ? Database['public']['Tables'][PublicTableNameOrOptions] extends {
-        Insert: infer I;
+        Insert: infer I
       }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
-  PublicTableNameOrOptions extends keyof Database['public']['Tables'] | { schema: keyof Database },
+  PublicTableNameOrOptions extends
+    | keyof Database['public']['Tables']
+    | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
   ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Update: infer U;
+      Update: infer U
     }
     ? U
     : never
   : PublicTableNameOrOptions extends keyof Database['public']['Tables']
     ? Database['public']['Tables'][PublicTableNameOrOptions] extends {
-        Update: infer U;
+        Update: infer U
       }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
-  PublicEnumNameOrOptions extends keyof Database['public']['Enums'] | { schema: keyof Database },
+  PublicEnumNameOrOptions extends
+    | keyof Database['public']['Enums']
+    | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
     ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
     : never = never,
@@ -271,4 +283,4 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
   : PublicEnumNameOrOptions extends keyof Database['public']['Enums']
     ? Database['public']['Enums'][PublicEnumNameOrOptions]
-    : never;
+    : never

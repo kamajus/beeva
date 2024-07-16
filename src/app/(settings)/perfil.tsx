@@ -1,27 +1,34 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import { decode } from 'base64-arraybuffer';
-import clsx from 'clsx';
-import * as FileSystem from 'expo-file-system';
-import * as ImagePicker from 'expo-image-picker';
-import { useNavigation } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { Dimensions, Pressable, ScrollView, Text, View, KeyboardAvoidingView } from 'react-native';
-import { Avatar, Button, HelperText } from 'react-native-paper';
-import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup'
+import { decode } from 'base64-arraybuffer'
+import clsx from 'clsx'
+import * as FileSystem from 'expo-file-system'
+import * as ImagePicker from 'expo-image-picker'
+import { useNavigation } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { useForm, Controller } from 'react-hook-form'
+import {
+  Dimensions,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+  KeyboardAvoidingView,
+} from 'react-native'
+import { Avatar, Button, HelperText } from 'react-native-paper'
+import * as yup from 'yup'
 
-import Header from '../../components/Header';
-import TextField from '../../components/TextField';
-import { supabase } from '../../config/supabase';
-import Constants from '../../constants';
-import { useAlert } from '../../hooks/useAlert';
-import { useSupabase } from '../../hooks/useSupabase';
+import Header from '../../components/Header'
+import TextField from '../../components/TextField'
+import { supabase } from '../../config/supabase'
+import Constants from '../../constants'
+import { useAlert } from '../../hooks/useAlert'
+import { useSupabase } from '../../hooks/useSupabase'
 
 interface FormData {
-  firstName?: string;
-  lastName: string;
-  email?: string;
-  phone?: number;
+  firstName?: string
+  lastName: string
+  email?: string
+  phone?: number
 }
 
 const schema = yup.object({
@@ -31,24 +38,30 @@ const schema = yup.object({
     .min(2, 'O nome deve ter pelo menos 2 caracteres')
     .max(50, 'O nome deve ter no máximo 50 caracteres')
     .trim()
-    .matches(/^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/, 'A expressão introduzida está inválida'),
+    .matches(
+      /^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/,
+      'A expressão introduzida está inválida',
+    ),
   lastName: yup
     .string()
     .required('O campo de sobrenome é obrigatório')
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
     .max(50, 'O sobrenome deve ter no máximo 50 caracteres')
     .trim()
-    .matches(/^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/, 'A expressão introduzida está inválida'),
+    .matches(
+      /^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/,
+      'A expressão introduzida está inválida',
+    ),
   email: yup
     .string()
     .email('Preencha com um e-mail válido')
     .required('O e-mail é obrigatório')
     .trim(),
   phone: yup.number(),
-});
+})
 
 export default function Perfil() {
-  const { user, setUser, session } = useSupabase();
+  const { user, setUser, session } = useSupabase()
 
   const {
     handleSubmit,
@@ -63,37 +76,37 @@ export default function Perfil() {
       email: session?.user.email,
       phone: user?.phone || undefined,
     },
-  });
+  })
 
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
-  const { height } = Dimensions.get('screen');
-  const [forceExiting, setForceExiting] = useState(false);
+  const { height } = Dimensions.get('screen')
+  const [forceExiting, setForceExiting] = useState(false)
 
-  const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset[]>([]);
-  const [isPhotoChanged, setPhotoChanged] = useState(false);
+  const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset[]>([])
+  const [isPhotoChanged, setPhotoChanged] = useState(false)
 
-  const alert = useAlert();
+  const alert = useAlert()
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       aspect: [4, 3],
       quality: 1,
-    });
+    })
 
     if (!result.canceled) {
-      setPhoto(result.assets);
-      setPhotoChanged(true);
+      setPhoto(result.assets)
+      setPhotoChanged(true)
     }
-  };
+  }
 
   async function updatePerfil(data: {
-    first_name: string | undefined;
-    last_name: string | undefined;
-    email: string | undefined;
-    phone: number | undefined;
-    photo_url?: string;
+    first_name: string | undefined
+    last_name: string | undefined
+    email: string | undefined
+    phone: number | undefined
+    photo_url?: string
   }) {
     const { error } = await supabase
       .from('users')
@@ -103,7 +116,7 @@ export default function Perfil() {
         phone: data.phone,
         photo_url: data.photo_url,
       })
-      .eq('id', user?.id);
+      .eq('id', user?.id)
 
     if (session?.user.email !== data.email) {
       alert.showAlert(
@@ -111,11 +124,11 @@ export default function Perfil() {
         'Por favor, confirme o e-mail que foi enviado para você. Após a confirmação, seu endereço de e-mail será atualizado.',
         'Ok',
         () => {},
-      );
+      )
 
       supabase.auth.updateUser({
         email: data.email,
-      });
+      })
     }
 
     if (error) {
@@ -124,9 +137,9 @@ export default function Perfil() {
         'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
         'Ok',
         () => {},
-      );
+      )
 
-      console.log(error);
+      console.log(error)
     }
 
     if (setUser && user) {
@@ -138,7 +151,7 @@ export default function Perfil() {
         photo_url: data.photo_url
           ? data.photo_url + '?timestamp=' + new Date().getTime()
           : user.photo_url + '?timestamp=' + new Date().getTime(),
-      });
+      })
     }
 
     reset({
@@ -146,10 +159,10 @@ export default function Perfil() {
       lastName: data.last_name,
       email: session?.user.email,
       phone: data.phone,
-    });
+    })
 
-    setForceExiting(true);
-    navigation.goBack();
+    setForceExiting(true)
+    navigation.goBack()
   }
 
   const onSubmit = async (data: FormData) => {
@@ -157,22 +170,25 @@ export default function Perfil() {
       if (isPhotoChanged) {
         const base64 = await FileSystem.readAsStringAsync(photo[0].uri, {
           encoding: 'base64',
-        });
+        })
 
         await supabase.storage
           .from('avatars')
-          .upload(`${user?.id}`, decode(base64), { contentType: 'image/png', upsert: true })
+          .upload(`${user?.id}`, decode(base64), {
+            contentType: 'image/png',
+            upsert: true,
+          })
           .then(async () => {
-            setPhotoChanged(false);
-            const photo_url = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/avatars/${user?.id}`;
+            setPhotoChanged(false)
+            const photoUrl = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/avatars/${user?.id}`
 
             await updatePerfil({
               first_name: data.firstName,
               last_name: data.lastName,
               email: data.email,
               phone: data.phone,
-              photo_url,
-            });
+              photo_url: photoUrl,
+            })
           })
           .catch((error) => {
             alert.showAlert(
@@ -180,29 +196,29 @@ export default function Perfil() {
               'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
               'Ok',
               () => {},
-            );
-            console.log(error);
-          });
+            )
+            console.log(error)
+          })
       } else {
         await updatePerfil({
           first_name: data.firstName,
           last_name: data.lastName,
           email: data.email,
           phone: data.phone,
-        });
+        })
       }
     }
-  };
+  }
 
   useEffect(
     () =>
       navigation.addListener('beforeRemove', (e) => {
-        if (forceExiting) return;
+        if (forceExiting) return
         if (!isSubmitting && !isDirty && !isPhotoChanged) {
-          return;
+          return
         }
 
-        e.preventDefault();
+        e.preventDefault()
 
         alert.showAlert(
           'Descartar alterações?',
@@ -211,10 +227,10 @@ export default function Perfil() {
           () => navigation.dispatch(e.data.action),
           'Não sair',
           () => {},
-        );
+        )
       }),
-    [navigation, isDirty, isPhotoChanged, isSubmitting],
-  );
+    [navigation, isDirty, isPhotoChanged, isSubmitting, forceExiting, alert],
+  )
 
   return (
     <View style={{ height }} className="bg-white">
@@ -226,11 +242,16 @@ export default function Perfil() {
           <View className="m-auto flex items-center justify-center">
             {user?.photo_url || photo.length > 0 ? (
               <View>
-                <Pressable onPress={pickImage} className="rounded-full border-2 border-[#393939]">
+                <Pressable
+                  onPress={pickImage}
+                  className="rounded-full border-2 border-[#393939]">
                   <Avatar.Image
                     size={150}
                     source={{
-                      uri: photo.length === 0 ? `${user?.photo_url}` : photo[0].uri,
+                      uri:
+                        photo.length === 0
+                          ? `${user?.photo_url}`
+                          : photo[0].uri,
                       cache: 'reload',
                     }}
                   />
@@ -253,7 +274,9 @@ export default function Perfil() {
               </View>
             ) : (
               <View>
-                <Pressable onPress={pickImage} className="rounded-full border-2 border-[#393939]">
+                <Pressable
+                  onPress={pickImage}
+                  className="rounded-full border-2 border-[#393939]">
                   <Avatar.Text
                     size={150}
                     label={String(user?.first_name[0])}
@@ -296,7 +319,8 @@ export default function Perfil() {
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Nome</TextField.Label>
-                    <TextField.Container error={errors.firstName?.message !== undefined}>
+                    <TextField.Container
+                      error={errors.firstName?.message !== undefined}>
                       <TextField.Input
                         placeholder="Degite o teu nome"
                         value={value}
@@ -329,7 +353,8 @@ export default function Perfil() {
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Sobrenome</TextField.Label>
-                    <TextField.Container error={errors.lastName?.message !== undefined}>
+                    <TextField.Container
+                      error={errors.lastName?.message !== undefined}>
                       <TextField.Input
                         placeholder="Degite o teu sobrenome"
                         value={value}
@@ -362,7 +387,8 @@ export default function Perfil() {
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Email</TextField.Label>
-                    <TextField.Container error={errors.email?.message !== undefined}>
+                    <TextField.Container
+                      error={errors.email?.message !== undefined}>
                       <TextField.Input
                         placeholder="Degite o endereço de email"
                         value={value}
@@ -400,7 +426,8 @@ export default function Perfil() {
                   <View>
                     <TextField.Root>
                       <TextField.Label>Telefone</TextField.Label>
-                      <TextField.Container error={errors.phone?.message !== undefined}>
+                      <TextField.Container
+                        error={errors.phone?.message !== undefined}>
                         <TextField.Input
                           placeholder="Degite o número de telefone"
                           value={value ? String(value) : ''}
@@ -441,5 +468,5 @@ export default function Perfil() {
         loading={isSubmitting}
       />
     </View>
-  );
+  )
 }

@@ -8,5 +8,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "src/components/TextField"  ]
+, "src/components/TextField", "tailwind.config.js"  ]
 }

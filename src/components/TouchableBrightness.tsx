@@ -1,24 +1,24 @@
-import clsx from 'clsx';
-import { router } from 'expo-router';
-import React, { ReactNode, useState } from 'react';
-import { View, TouchableWithoutFeedback } from 'react-native';
+import clsx from 'clsx'
+import { router } from 'expo-router'
+import React, { ReactNode, useState } from 'react'
+import { View, TouchableWithoutFeedback } from 'react-native'
 
 interface TouchableBrightnessProps {
-  children: ReactNode;
-  href?: string;
-  onPress?: () => void;
+  children: ReactNode
+  href?: string
+  onPress?: () => void
 }
 
 export default function TouchableBrightness(props: TouchableBrightnessProps) {
-  const [isPressed, setIsPressed] = useState(false);
+  const [isPressed, setIsPressed] = useState(false)
 
   const handlePressIn = () => {
-    setIsPressed(true);
-  };
+    setIsPressed(true)
+  }
 
   const handlePressOut = () => {
-    setIsPressed(false);
-  };
+    setIsPressed(false)
+  }
 
   return (
     <TouchableWithoutFeedback
@@ -26,11 +26,11 @@ export default function TouchableBrightness(props: TouchableBrightnessProps) {
       onPressOut={handlePressOut}
       onPress={() => {
         if (props.href) {
-          router.push(props.href);
+          router.push(props.href)
         }
 
         if (props.onPress) {
-          props.onPress();
+          props.onPress()
         }
       }}>
       <View
@@ -40,5 +40,5 @@ export default function TouchableBrightness(props: TouchableBrightnessProps) {
         {props.children}
       </View>
     </TouchableWithoutFeedback>
-  );
+  )
 }
