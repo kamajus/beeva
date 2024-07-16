@@ -1,39 +1,39 @@
-import clsx from 'clsx';
-import { Link, useLocalSearchParams, router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Text, ScrollView, StyleSheet, Dimensions, View } from 'react-native';
-import { OtpInput } from 'react-native-otp-entry';
-import { Button, HelperText } from 'react-native-paper';
+import clsx from 'clsx'
+import { Link, useLocalSearchParams, router } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { Text, ScrollView, StyleSheet, Dimensions, View } from 'react-native'
+import { OtpInput } from 'react-native-otp-entry'
+import { Button, HelperText } from 'react-native-paper'
 
-import { supabase } from '../../config/supabase';
-import Constants from '../../constants';
+import { supabase } from '../../config/supabase'
+import Constants from '../../constants'
 
-const { width } = Dimensions.get('window');
-const inputWidth = width - width * 0.16;
+const { width } = Dimensions.get('window')
+const inputWidth = width - width * 0.16
 
 export default function Confirmation() {
-  const { email } = useLocalSearchParams();
-  const [code, setCode] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const { email } = useLocalSearchParams()
+  const [code, setCode] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
 
-  const [counter, setCounter] = useState(180);
+  const [counter, setCounter] = useState(180)
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (counter > 0) {
-        setCounter(counter - 1);
+        setCounter(counter - 1)
       } else {
-        clearInterval(intervalId);
+        clearInterval(intervalId)
       }
-    }, 1000);
+    }, 1000)
 
-    return () => clearInterval(intervalId);
-  }, [counter]);
+    return () => clearInterval(intervalId)
+  }, [counter])
 
   async function signInWithOtp() {
-    setLoading(true);
-    setError(false);
+    setLoading(true)
+    setError(false)
 
     await supabase.auth
       .verifyOtp({
@@ -51,19 +51,19 @@ export default function Confirmation() {
                 'Bem-vindo à plataforma onde seus sonhos de moradia se tornam realidade! 🏡✨',
               type: 'congratulations',
             },
-          ]);
-          router.replace('/(root)/home');
+          ])
+          router.replace('/(root)/home')
         } else {
-          setError(true);
+          setError(true)
         }
       })
       .catch(() => {
-        setError(true);
-      });
+        setError(true)
+      })
   }
 
-  const minutes = Math.floor(counter / 60);
-  const seconds = counter % 60;
+  const minutes = Math.floor(counter / 60)
+  const seconds = counter % 60
 
   return (
     <View className="bg-white h-full">
@@ -94,18 +94,20 @@ export default function Confirmation() {
             })}
             onPress={() => {
               if (counter === 0) {
-                supabase.auth.resend({ email: String(email), type: 'signup' });
-                setCounter(180);
+                supabase.auth.resend({ email: String(email), type: 'signup' })
+                setCounter(180)
               }
             }}>
             {counter !== 0
-              ? `Reenviar código: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
-                  2,
-                  '0',
-                )}`
+              ? `Reenviar código: ${String(minutes).padStart(2, '0')}:${String(
+                  seconds,
+                ).padStart(2, '0')}`
               : 'Reenviar código'}
           </Text>
-          <HelperText className="p-0 m-0" type="error" visible={error !== false}>
+          <HelperText
+            className="p-0 m-0"
+            type="error"
+            visible={error !== false}>
             O código está incorrecto.
           </HelperText>
 
@@ -127,7 +129,7 @@ export default function Confirmation() {
         </View>
       </ScrollView>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -168,4 +170,4 @@ const styles = StyleSheet.create({
   pinCodeTextStyle: {
     fontFamily: 'poppins-semibold',
   },
-});
+})

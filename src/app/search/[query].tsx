@@ -1,87 +1,87 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { ScrollView, Text, View, ActivityIndicator } from 'react-native';
-import { SheetProvider } from 'react-native-actions-sheet';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useNavigation, useLocalSearchParams } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { ScrollView, Text, View, ActivityIndicator } from 'react-native'
+import { SheetProvider } from 'react-native-actions-sheet'
 
-import { Residence, ResidenceTypes } from '../../assets/@types';
-import NoData from '../../assets/images/no-data';
-import Header from '../../components/Header';
-import HomeCard from '../../components/HomeCard';
-import { supabase } from '../../config/supabase';
-import Constants from '../../constants';
-import { useCache } from '../../hooks/useCache';
+import { Residence, ResidenceTypes } from '../../assets/@types'
+import NoData from '../../assets/images/no-data'
+import Header from '../../components/Header'
+import HomeCard from '../../components/HomeCard'
+import { supabase } from '../../config/supabase'
+import Constants from '../../constants'
+import { useCache } from '../../hooks/useCache'
 
 export default function Search() {
-  const navigation = useNavigation();
-  const { query } = useLocalSearchParams<{ query: string }>();
-  const [residences, setResidences] = useState<Residence[]>();
-  const [loading, setLoading] = useState(false);
-  const { filter, setFilter } = useCache();
+  const navigation = useNavigation()
+  const { query } = useLocalSearchParams<{ query: string }>()
+  const [residences, setResidences] = useState<Residence[]>()
+  const [loading, setLoading] = useState(false)
+  const { filter, setFilter } = useCache()
 
   const addItemToHistory = async (newItem: string) => {
     try {
       // Get the 'history' array from AsyncStorage
-      const history = await AsyncStorage.getItem('history');
+      const history = await AsyncStorage.getItem('history')
 
       // Initialize a new array or use an empty array if 'history' doesn't exist yet
-      const historyArray = history ? JSON.parse(history) : [];
+      const historyArray = history ? JSON.parse(history) : []
 
       // Check if the newItem already exists in the array
-      const indexOfItem = historyArray.indexOf(newItem);
+      const indexOfItem = historyArray.indexOf(newItem)
 
       if (indexOfItem === -1) {
         // If the item doesn't exist in the array, add it to the first position
-        historyArray.unshift(newItem);
+        historyArray.unshift(newItem)
 
         // Limit the size of the array and remove the last item if necessary
-        const maxSize = 10; // Set the desired maximum size
+        const maxSize = 10 // Set the desired maximum size
         if (historyArray.length > maxSize) {
-          historyArray.pop(); // Remove the last item
+          historyArray.pop() // Remove the last item
         }
 
         // Save the updated array back to AsyncStorage
-        await AsyncStorage.setItem('history', JSON.stringify(historyArray));
+        await AsyncStorage.setItem('history', JSON.stringify(historyArray))
       } else {
         // If the item already exists, move it to the first position
-        historyArray.splice(indexOfItem, 1);
-        historyArray.unshift(newItem);
+        historyArray.splice(indexOfItem, 1)
+        historyArray.unshift(newItem)
 
         // Save the updated array back to AsyncStorage
-        await AsyncStorage.setItem('history', JSON.stringify(historyArray));
+        await AsyncStorage.setItem('history', JSON.stringify(historyArray))
       }
     } catch (error) {
-      console.error('Error adding item to history:', error);
+      console.error('Error adding item to history:', error)
     }
-  };
+  }
 
   useEffect(() => {
     navigation.addListener('beforeRemove', (e) => {
-      e.preventDefault();
+      e.preventDefault()
       setFilter({
         kind: 'all',
-      });
+      })
 
-      navigation.navigate('home'); // Error in argument but still working (under review)
-    });
+      navigation.navigate('home') // Error in argument but still working (under review)
+    })
 
     async function fetchData() {
-      setLoading(true);
+      setLoading(true)
       const { data, error } = await supabase.rpc('get_residences_by_location', {
         place: query,
-      });
+      })
 
       if (data) {
-        setResidences(filterResidences({ ...filter, residences: data }));
+        setResidences(filterResidences({ ...filter, residences: data }))
       } else {
-        console.log(error);
+        console.log(error)
       }
-      setLoading(false);
+      setLoading(false)
     }
 
-    fetchData();
-    addItemToHistory(query);
-  }, [query, filter]);
+    fetchData()
+    addItemToHistory(query)
+  }, [query, filter])
 
   function filterResidences({
     kind,
@@ -90,20 +90,23 @@ export default function Search() {
     minPrice,
     residences,
   }: {
-    kind?: ResidenceTypes | undefined;
-    state?: 'sell' | 'rent' | undefined;
-    minPrice?: number | undefined;
-    maxPrice?: number | undefined;
-    residences: Residence[];
+    kind?: ResidenceTypes | undefined
+    state?: 'sell' | 'rent' | undefined
+    minPrice?: number | undefined
+    maxPrice?: number | undefined
+    residences: Residence[]
   }) {
     return residences?.filter((residence) => {
-      const meetsResidenceType = kind && kind !== 'all' ? residence.kind === kind : true;
-      const meetsSaleType = state ? residence.state === state : true;
-      const meetsMinPrice = minPrice ? residence.price >= minPrice : true;
-      const meetsMaxPrice = maxPrice ? residence.price <= maxPrice : true;
+      const meetsResidenceType =
+        kind && kind !== 'all' ? residence.kind === kind : true
+      const meetsSaleType = state ? residence.state === state : true
+      const meetsMinPrice = minPrice ? residence.price >= minPrice : true
+      const meetsMaxPrice = maxPrice ? residence.price <= maxPrice : true
 
-      return meetsResidenceType && meetsSaleType && meetsMinPrice && meetsMaxPrice;
-    });
+      return (
+        meetsResidenceType && meetsSaleType && meetsMinPrice && meetsMaxPrice
+      )
+    })
   }
 
   return (
@@ -123,7 +126,11 @@ export default function Search() {
                   </Text>
                   <View>
                     {residences?.map((residence) => (
-                      <HomeCard.Card key={residence.id} {...residence} cardType="search" />
+                      <HomeCard.Card
+                        key={residence.id}
+                        {...residence}
+                        cardType="search"
+                      />
                     ))}
                   </View>
 
@@ -140,11 +147,15 @@ export default function Search() {
             </View>
           ) : (
             <View className="h-2/3 flex items-center justify-center">
-              <ActivityIndicator animating color={Constants.colors.primary} size={40} />
+              <ActivityIndicator
+                animating
+                color={Constants.colors.primary}
+                size={40}
+              />
             </View>
           )}
         </View>
       </View>
     </SheetProvider>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import clsx from 'clsx';
-import { Link } from 'expo-router';
-import { useCallback, useState } from 'react';
+import clsx from 'clsx'
+import { Link } from 'expo-router'
+import { useCallback, useState } from 'react'
 import {
   View,
   ScrollView,
@@ -9,37 +9,43 @@ import {
   Dimensions,
   RefreshControl,
   StatusBar,
-} from 'react-native';
-import { IconButton, Searchbar } from 'react-native-paper';
+} from 'react-native'
+import { IconButton, Searchbar } from 'react-native-paper'
 
-import { RESIDENCE_DATA } from '../../assets/data';
-import Filter from '../../components/Filter';
-import HomeCard from '../../components/HomeCard';
-import Constants from '../../constants';
-import { useCache } from '../../hooks/useCache';
+import { RESIDENCE_DATA } from '../../assets/data'
+import Filter from '../../components/Filter'
+import HomeCard from '../../components/HomeCard'
+import Constants from '../../constants'
+import { useCache } from '../../hooks/useCache'
 
 export default function House() {
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(false)
 
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
+    setRefreshing(true)
     setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+      setRefreshing(false)
+    }, 2000)
+  }, [])
 
-  const { width } = Dimensions.get('window');
-  const { notifications } = useCache();
+  const { width } = Dimensions.get('window')
+  const { notifications } = useCache()
 
   return (
     <ScrollView
       className="bg-white"
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-      <View style={{ marginTop: Constants.customHeaderDistance / 2 }} className="mt-[7%] bg-white">
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
+      <View
+        style={{ marginTop: Constants.customHeaderDistance / 2 }}
+        className="mt-[7%] bg-white">
         <View className="p-4">
           <View className="flex flex-row justify-between items-center mb-4">
-            <Text className="font-poppins-bold text-2xl">Encontre uma acomodação perfeita</Text>
+            <Text className="font-poppins-bold text-2xl">
+              Encontre uma acomodação perfeita
+            </Text>
             <View className="relative">
               <Link href="/notification">
                 <IconButton icon="bell" iconColor={Constants.colors.primary} />
@@ -48,13 +54,20 @@ export default function House() {
                 className={clsx(
                   'absolute bottom-6 left-6 bg-[#e83f5b] rounded-full flex justify-center items-center w-5 h-5',
                   {
-                    hidden: notifications.filter((item) => !item.was_readed).length === 0,
+                    hidden:
+                      notifications.filter((item) => !item.was_readed)
+                        .length === 0,
                   },
                 )}>
                 <Text
-                  className={clsx('font-poppins-semibold text-[10px] text-center text-white', {
-                    hidden: notifications.filter((item) => !item.was_readed).length >= 10,
-                  })}>
+                  className={clsx(
+                    'font-poppins-semibold text-[10px] text-center text-white',
+                    {
+                      hidden:
+                        notifications.filter((item) => !item.was_readed)
+                          .length >= 10,
+                    },
+                  )}>
                   {notifications.filter((item) => !item.was_readed).length}
                 </Text>
               </View>
@@ -89,7 +102,9 @@ export default function House() {
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
-            renderItem={({ item }) => <HomeCard.Card {...item} cardType="big" />}
+            renderItem={({ item }) => (
+              <HomeCard.Card {...item} cardType="big" />
+            )}
           />
         </HomeCard.Root>
 
@@ -101,7 +116,9 @@ export default function House() {
             data={RESIDENCE_DATA}
             className="mt-5 w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
-            renderItem={({ item }) => <HomeCard.Card {...item} cardType="small" />}
+            renderItem={({ item }) => (
+              <HomeCard.Card {...item} cardType="small" />
+            )}
           />
         </HomeCard.Root>
 
@@ -112,7 +129,9 @@ export default function House() {
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
-            renderItem={({ item }) => <HomeCard.Card {...item} cardType="small" />}
+            renderItem={({ item }) => (
+              <HomeCard.Card {...item} cardType="small" />
+            )}
           />
         </HomeCard.Root>
 
@@ -123,11 +142,13 @@ export default function House() {
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
-            renderItem={({ item }) => <HomeCard.Card {...item} cardType="small" />}
+            renderItem={({ item }) => (
+              <HomeCard.Card {...item} cardType="small" />
+            )}
           />
         </HomeCard.Root>
       </View>
       <StatusBar backgroundColor="#fff" barStyle="dark-content" />
     </ScrollView>
-  );
+  )
 }

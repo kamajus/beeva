@@ -1,28 +1,28 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import clsx from 'clsx';
-import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { ScrollView, Text, View } from 'react-native';
-import CurrencyInput from 'react-native-currency-input';
-import { HelperText, RadioButton } from 'react-native-paper';
-import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup'
+import clsx from 'clsx'
+import * as ImagePicker from 'expo-image-picker'
+import { router } from 'expo-router'
+import React, { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { ScrollView, Text, View } from 'react-native'
+import CurrencyInput from 'react-native-currency-input'
+import { HelperText, RadioButton } from 'react-native-paper'
+import * as yup from 'yup'
 
-import { Residence, ResidenceTypes } from '../../assets/@types';
-import GaleryGrid from '../../components/GaleryGrid';
-import Header from '../../components/Header';
-import SearchPlace from '../../components/SearchPlace';
-import TextField from '../../components/TextField';
-import { supabase } from '../../config/supabase';
-import Constants from '../../constants';
-import { useAlert } from '../../hooks/useAlert';
-import { useSupabase } from '../../hooks/useSupabase';
+import { Residence, ResidenceTypes } from '../../assets/@types'
+import GaleryGrid from '../../components/GaleryGrid'
+import Header from '../../components/Header'
+import SearchPlace from '../../components/SearchPlace'
+import TextField from '../../components/TextField'
+import { supabase } from '../../config/supabase'
+import Constants from '../../constants'
+import { useAlert } from '../../hooks/useAlert'
+import { useSupabase } from '../../hooks/useSupabase'
 
 interface FormData {
-  price: number;
-  description?: string;
-  location?: string;
+  price: number
+  description?: string
+  location?: string
 }
 
 const schema = yup.object({
@@ -43,7 +43,7 @@ const schema = yup.object({
     .required('A localização é obrigatória')
     .min(3, 'A localização deve ter pelo menos 3 caracteres')
     .max(150, 'A localização não pode ter mais de 150 caracteres'),
-});
+})
 
 export default function Editor() {
   const {
@@ -53,18 +53,18 @@ export default function Editor() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
-  });
+  })
 
-  const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([]);
+  const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([])
 
-  const [cover, setCover] = useState<string | null>();
-  const [price, setPrice] = useState<number | null>(0);
-  const [kind, setKind] = useState<ResidenceTypes>('apartment');
-  const [state, setState] = useState<'rent' | 'sell'>('rent');
-  const { uploadResidencesImage } = useSupabase();
-  const alert = useAlert();
+  const [cover, setCover] = useState<string | null>()
+  const [price, setPrice] = useState<number | null>(0)
+  const [kind, setKind] = useState<ResidenceTypes>('apartment')
+  const [state, setState] = useState<'rent' | 'sell'>('rent')
+  const { uploadResidencesImage } = useSupabase()
+  const alert = useAlert()
 
-  const { session } = useSupabase();
+  const { session } = useSupabase()
 
   async function onSubmit(formData: FormData) {
     if (images.length !== 0 && cover && session) {
@@ -81,10 +81,10 @@ export default function Editor() {
           },
         ])
         .select('*')
-        .single<Residence>();
+        .single<Residence>()
 
       if (!error) {
-        await uploadResidencesImage(data.id, `${cover}`, images);
+        await uploadResidencesImage(data.id, `${cover}`, images)
         await supabase.from('notifications').insert([
           {
             user_id: session.user.id,
@@ -92,18 +92,18 @@ export default function Editor() {
             description: 'A sua residência foi postada com sucesso.',
             type: 'successful',
           },
-        ]);
+        ])
 
-        setImages([]);
-        reset();
-        router.replace(`/(root)/home`);
+        setImages([])
+        reset()
+        router.replace(`/(root)/home`)
       } else {
         alert.showAlert(
           'Erro a realizar postagem',
           'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
           'Ok',
           () => {},
-        );
+        )
       }
     } else {
       if (images.length === 0) {
@@ -112,14 +112,14 @@ export default function Editor() {
           'Não selecionaste nenhuma foto da residência.',
           'Ok',
           () => {},
-        );
+        )
       } else {
         alert.showAlert(
           'Erro a realizar postagem',
           'Escolha uma fotografia para ser a foto de capa da sua residência.',
           'Ok',
           () => {},
-        );
+        )
       }
     }
   }
@@ -142,7 +142,8 @@ export default function Editor() {
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Preço</TextField.Label>
-                    <TextField.Container error={errors.price?.message !== undefined}>
+                    <TextField.Container
+                      error={errors.price?.message !== undefined}>
                       <CurrencyInput
                         value={price}
                         onChangeValue={setPrice}
@@ -154,7 +155,7 @@ export default function Editor() {
                         className="flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium"
                         placeholder="Quanto está custando? (em kz)"
                         onChangeText={() => {
-                          onChange(String(price));
+                          onChange(String(price))
                         }}
                         onBlur={onBlur}
                         editable={!isSubmitting}
@@ -217,7 +218,8 @@ export default function Editor() {
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Descrição</TextField.Label>
-                    <TextField.Container error={errors.description?.message !== undefined}>
+                    <TextField.Container
+                      error={errors.description?.message !== undefined}>
                       <TextField.Area
                         placeholder="Quais são as carateristicas dela???"
                         value={value}
@@ -313,7 +315,8 @@ export default function Editor() {
           </View>
 
           <View className="mb-6">
-            <TextField.Label style={{ display: images.length > 0 ? 'flex' : 'none' }}>
+            <TextField.Label
+              style={{ display: images.length > 0 ? 'flex' : 'none' }}>
               Galeria
             </TextField.Label>
             <GaleryGrid
@@ -333,5 +336,5 @@ export default function Editor() {
         onPress={handleSubmit(onSubmit)}
       />
     </View>
-  );
+  )
 }

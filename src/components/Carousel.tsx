@@ -1,15 +1,20 @@
-import Carousel from 'pinar';
-import React from 'react';
-import { Image, StyleProp, View, ViewStyle } from 'react-native';
+import Carousel from 'pinar'
+import React from 'react'
+import { Image, StyleProp, View, ViewStyle } from 'react-native'
 
 interface CarouselProps {
-  autoplay?: boolean;
-  loop?: boolean;
-  style?: StyleProp<ViewStyle>;
-  photos?: string[] | null;
+  autoplay?: boolean
+  loop?: boolean
+  style?: StyleProp<ViewStyle>
+  photos?: string[] | null
 }
 
-export default function CustomCarousel({ photos, style, autoplay, loop }: CarouselProps) {
+export default function CustomCarousel({
+  photos,
+  style,
+  autoplay,
+  loop,
+}: CarouselProps) {
   return (
     <Carousel
       style={style}
@@ -24,5 +29,5 @@ export default function CustomCarousel({ photos, style, autoplay, loop }: Carous
         <View />
       )}
     </Carousel>
-  );
+  )
 }

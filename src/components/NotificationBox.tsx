@@ -1,21 +1,21 @@
-import clsx from 'clsx';
-import { Text, View } from 'react-native';
-import { SheetProvider } from 'react-native-actions-sheet';
-import { Icon } from 'react-native-paper';
+import clsx from 'clsx'
+import { Text, View } from 'react-native'
+import { SheetProvider } from 'react-native-actions-sheet'
+import { Icon } from 'react-native-paper'
 
-import PublishedSince from './PublishedSince';
-import TouchableBrightness from './TouchableBrightness';
-import { Notification } from '../assets/@types';
-import Constants from '../constants';
+import PublishedSince from './PublishedSince'
+import TouchableBrightness from './TouchableBrightness'
+import { Notification } from '../assets/@types'
+import Constants from '../constants'
 
 interface NotificationIcons {
-  [key: string]: string;
+  [key: string]: string
 }
 
 const notificationIcons: NotificationIcons = {
   congratulations: 'party-popper',
   successful: 'emoticon-happy',
-};
+}
 
 export default function NotificationBox(props: Notification) {
   return (
@@ -54,5 +54,5 @@ export default function NotificationBox(props: Notification) {
         </TouchableBrightness>
       </SheetProvider>
     </View>
-  );
+  )
 }

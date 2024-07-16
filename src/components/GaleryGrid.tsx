@@ -1,20 +1,20 @@
-import clsx from 'clsx';
-import * as ImagePicker from 'expo-image-picker';
-import { Dispatch, SetStateAction } from 'react';
-import { FlatList, Image, Pressable, View } from 'react-native';
-import { Button, IconButton } from 'react-native-paper';
+import clsx from 'clsx'
+import * as ImagePicker from 'expo-image-picker'
+import { Dispatch, SetStateAction } from 'react'
+import { FlatList, Image, Pressable, View } from 'react-native'
+import { Button, IconButton } from 'react-native-paper'
 
-import Constants from '../constants';
+import Constants from '../constants'
 
 interface GaleryProps {
-  images: ImagePicker.ImagePickerAsset[];
-  cover: string | null | undefined;
-  setCover: Dispatch<React.SetStateAction<string | null | undefined>>;
-  setImages: Dispatch<SetStateAction<ImagePicker.ImagePickerAsset[]>>;
-  setImagesToDelete?: Dispatch<React.SetStateAction<string[]>>;
-  imagesToDelete?: string[];
-  disabled?: boolean;
-  setPhotoChanged?: Dispatch<React.SetStateAction<boolean>>;
+  images: ImagePicker.ImagePickerAsset[]
+  cover: string | null | undefined
+  setCover: Dispatch<React.SetStateAction<string | null | undefined>>
+  setImages: Dispatch<SetStateAction<ImagePicker.ImagePickerAsset[]>>
+  setImagesToDelete?: Dispatch<React.SetStateAction<string[]>>
+  imagesToDelete?: string[]
+  disabled?: boolean
+  setPhotoChanged?: Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function Galery({
@@ -34,16 +34,16 @@ export default function Galery({
       quality: 1,
       allowsMultipleSelection: true,
       selectionLimit: images?.length ? 5 - images?.length : 5,
-    });
+    })
 
     if (!result.canceled) {
       if (!images || images.length === 0) {
-        setCover(result.assets[0].uri);
+        setCover(result.assets[0].uri)
       }
-      setImages([...images, ...result.assets]);
+      setImages([...images, ...result.assets])
 
       if (setPhotoChanged) {
-        setPhotoChanged(true);
+        setPhotoChanged(true)
       }
     }
   }
@@ -58,7 +58,7 @@ export default function Galery({
             <Pressable
               className="relative mb-4"
               onLongPress={() => {
-                setImages(images.filter((other) => other !== item));
+                setImages(images.filter((other) => other !== item))
 
                 if (imagesToDelete && setImagesToDelete) {
                   if (
@@ -66,12 +66,12 @@ export default function Galery({
                       `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
                     )
                   ) {
-                    setImagesToDelete([...imagesToDelete, item.uri]);
+                    setImagesToDelete([...imagesToDelete, item.uri])
                   }
                 }
 
                 if (cover === item.uri) {
-                  setCover(undefined);
+                  setCover(undefined)
                 }
               }}>
               <Image
@@ -94,7 +94,7 @@ export default function Galery({
                   hidden: disabled,
                 })}
                 onPress={() => {
-                  setCover(item.uri);
+                  setCover(item.uri)
                 }}
               />
             </Pressable>
@@ -121,5 +121,5 @@ export default function Galery({
           : 'Adicionar fotografias'}
       </Button>
     </View>
-  );
+  )
 }

@@ -1,16 +1,22 @@
-import React, { createContext, useState, ReactNode, Dispatch, SetStateAction } from 'react';
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from 'react'
 
-import CustomAlert from '../components/CustomAlert';
+import CustomAlert from '../components/CustomAlert'
 
 interface AlertObject {
-  title: string;
-  message: string;
-  valueOption1: string;
-  functionOption1: () => void;
-  valueOption2?: string;
-  functionOption2?: () => void;
-  alertVisible: boolean;
-  setAlertVisible: Dispatch<SetStateAction<boolean>>;
+  title: string
+  message: string
+  valueOption1: string
+  functionOption1: () => void
+  valueOption2?: string
+  functionOption2?: () => void
+  alertVisible: boolean
+  setAlertVisible: Dispatch<SetStateAction<boolean>>
 }
 
 interface AlertContextProps {
@@ -21,22 +27,22 @@ interface AlertContextProps {
     functionOption1: () => void,
     valueOption2?: string,
     functionOption2?: () => void,
-  ) => void;
-  hideAlert: () => void;
+  ) => void
+  hideAlert: () => void
 }
 
 export const AlertContext = createContext<AlertContextProps>({
   hideAlert: () => {},
   showAlert: () => {},
-});
+})
 
 interface AlertProviderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertObject, setAlertObject] = useState<AlertObject>();
+  const [alertVisible, setAlertVisible] = useState(false)
+  const [alertObject, setAlertObject] = useState<AlertObject>()
 
   const showAlert = (
     title: string,
@@ -55,18 +61,18 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
       functionOption2,
       alertVisible,
       setAlertVisible,
-    });
-    setAlertVisible(true);
-  };
+    })
+    setAlertVisible(true)
+  }
 
   const hideAlert = () => {
-    setAlertVisible(false);
-  };
+    setAlertVisible(false)
+  }
 
   return (
     <AlertContext.Provider value={{ showAlert, hideAlert }}>
       {children}
       {alertVisible && <CustomAlert {...alertObject} />}
     </AlertContext.Provider>
-  );
-};
+  )
+}

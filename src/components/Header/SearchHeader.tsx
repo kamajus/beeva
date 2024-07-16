@@ -1,16 +1,16 @@
-import Constants from 'expo-constants';
-import { router } from 'expo-router';
-import { View } from 'react-native';
-import { SheetManager } from 'react-native-actions-sheet';
-import { IconButton } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/Feather';
+import Constants from 'expo-constants'
+import { router } from 'expo-router'
+import { View } from 'react-native'
+import { SheetManager } from 'react-native-actions-sheet'
+import { IconButton } from 'react-native-paper'
+import Icon from 'react-native-vector-icons/Feather'
 
-import TextField from '../TextField';
+import TextField from '../TextField'
 
-import '../ActionSheet';
+import '../ActionSheet'
 
 interface SearchHeaderProps {
-  value: string;
+  value: string
 }
 
 export default function SearchHeader({ value }: SearchHeaderProps) {
@@ -21,7 +21,12 @@ export default function SearchHeader({ value }: SearchHeaderProps) {
         className="w-full py-4 px-4 flex justify-center items-center flex-row">
         <TextField.Root>
           <TextField.Container disableFocus>
-            <Icon name="arrow-left" color="#000" size={25} onPress={router.back} />
+            <Icon
+              name="arrow-left"
+              color="#000"
+              size={25}
+              onPress={router.back}
+            />
             <TextField.Input
               value={value}
               keyboardType="web-search"
@@ -40,5 +45,5 @@ export default function SearchHeader({ value }: SearchHeaderProps) {
         />
       </View>
     </View>
-  );
+  )
 }

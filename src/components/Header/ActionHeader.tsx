@@ -1,18 +1,22 @@
-import ExpoConstants from 'expo-constants';
-import { router } from 'expo-router';
-import { Text, View } from 'react-native';
-import { IconButton } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/Feather';
+import ExpoConstants from 'expo-constants'
+import { router } from 'expo-router'
+import { Text, View } from 'react-native'
+import { IconButton } from 'react-native-paper'
+import Icon from 'react-native-vector-icons/Feather'
 
-import Constants from '../../constants';
+import Constants from '../../constants'
 
 interface ActionHeaderProps {
-  title: string;
-  onPress?: () => void;
-  loading?: boolean;
+  title: string
+  onPress?: () => void
+  loading?: boolean
 }
 
-export default function ActionHeader({ title, onPress, loading }: ActionHeaderProps) {
+export default function ActionHeader({
+  title,
+  onPress,
+  loading,
+}: ActionHeaderProps) {
   return (
     <View
       style={{ top: ExpoConstants.statusBarHeight }}
@@ -29,5 +33,5 @@ export default function ActionHeader({ title, onPress, loading }: ActionHeaderPr
         onPress={onPress}
       />
     </View>
-  );
+  )
 }

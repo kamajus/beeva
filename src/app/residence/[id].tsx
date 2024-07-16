@@ -1,124 +1,135 @@
-import clsx from 'clsx';
-import { useLocalSearchParams, Link, router } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
-import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native';
-import { Avatar, IconButton } from 'react-native-paper';
+import clsx from 'clsx'
+import { useLocalSearchParams, Link, router } from 'expo-router'
+import { useCallback, useEffect, useState } from 'react'
+import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native'
+import { Avatar, IconButton } from 'react-native-paper'
 
-import { CachedResidence, Residence } from '../../assets/@types';
-import Carousel from '../../components/Carousel';
-import Header from '../../components/Header';
-import PublishedSince from '../../components/PublishedSince';
-import { supabase } from '../../config/supabase';
-import Constants from '../../constants';
-import { useAlert } from '../../hooks/useAlert';
-import useMoneyFormat from '../../hooks/useMoneyFormat';
-import { useSupabase } from '../../hooks/useSupabase';
-import { useResidenceStore } from '../../store/ResidenceStore';
+import { CachedResidence, Residence } from '../../assets/@types'
+import Carousel from '../../components/Carousel'
+import Header from '../../components/Header'
+import PublishedSince from '../../components/PublishedSince'
+import { supabase } from '../../config/supabase'
+import Constants from '../../constants'
+import { useAlert } from '../../hooks/useAlert'
+import useMoneyFormat from '../../hooks/useMoneyFormat'
+import { useSupabase } from '../../hooks/useSupabase'
+import { useResidenceStore } from '../../store/ResidenceStore'
 
 export default function ResidenceDetail() {
-  const [refreshing, setRefreshing] = useState(false);
-  const cachedResidences = useResidenceStore((state) => state.cachedResidences);
-  const pushResidence = useResidenceStore((state) => state.pushResidence);
-  const removeResidence = useResidenceStore((state) => state.removeResidence);
+  const [refreshing, setRefreshing] = useState(false)
+  const cachedResidences = useResidenceStore((state) => state.cachedResidences)
+  const pushResidence = useResidenceStore((state) => state.pushResidence)
+  const removeResidence = useResidenceStore((state) => state.removeResidence)
 
   const onRefresh = useCallback(() => {
-    setRefreshing(true);
+    setRefreshing(true)
     setTimeout(() => {
-      setRefreshing(false);
-      getResidence();
-    }, 2000);
-  }, []);
+      setRefreshing(false)
+      getResidence()
+    }, 2000)
+  }, [])
 
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const money = useMoneyFormat();
+  const { id } = useLocalSearchParams<{ id: string }>()
+  const money = useMoneyFormat()
 
-  const { handleCallNotification, getUserById, user } = useSupabase();
+  const { handleCallNotification, getUserById, user } = useSupabase()
   const [cachedData, setCachedData] = useState<CachedResidence | undefined>(
     cachedResidences.find((r) => r.residence.id === id),
-  );
+  )
 
-  const alert = useAlert();
-  const [showDescription, setShowDescription] = useState(false);
+  const alert = useAlert()
+  const [showDescription, setShowDescription] = useState(false)
 
   async function getResidence() {
     const { data: residenceData } = await supabase
       .from('residences')
       .select('*')
       .eq('id', id)
-      .single<Residence>();
+      .single<Residence>()
 
     if (residenceData) {
       if (residenceData.owner_id === user?.id) {
         setCachedData({
           residence: residenceData,
           user,
-        });
+        })
 
-        pushResidence(residenceData, user);
+        pushResidence(residenceData, user)
       } else {
         await getUserById(residenceData.owner_id).then(async (userData) => {
           if (userData) {
             setCachedData({
               residence: residenceData,
               user: userData,
-            });
+            })
 
-            pushResidence(residenceData, userData);
+            pushResidence(residenceData, userData)
           }
-        });
+        })
       }
     }
   }
 
   async function deleteResidence() {
     if (cachedData?.residence?.photos) {
-      const { error } = await supabase.from('residences').delete().eq('id', id);
+      const { error } = await supabase.from('residences').delete().eq('id', id)
 
       const filesToRemove = cachedData.residence?.photos.map(
         (image) => `${user?.id}/${id}/${image}`,
-      );
+      )
 
       if (filesToRemove) {
-        await supabase.storage.from('residences').remove(filesToRemove);
+        await supabase.storage.from('residences').remove(filesToRemove)
       }
 
       if (!error) {
-        router.replace('/home');
-        removeResidence(id);
-        handleCallNotification('Residência eliminada', 'A residência foi eliminada com sucesso');
+        router.replace('/home')
+        removeResidence(id)
+        handleCallNotification(
+          'Residência eliminada',
+          'A residência foi eliminada com sucesso',
+        )
       } else {
         alert.showAlert(
           'Erro na postagem',
           'Não foi possível eliminar a residência, tente mais tarde.',
           'Ok',
           () => {},
-        );
+        )
       }
     }
   }
 
   useEffect(() => {
-    getResidence();
-  }, []);
+    getResidence()
+  }, [])
 
   useEffect(() => {
-    setCachedData(cachedResidences.find((r) => r.residence.id === id));
-  }, [cachedResidences]);
+    setCachedData(cachedResidences.find((r) => r.residence.id === id))
+  }, [cachedResidences])
 
   return (
     <ScrollView
       className="flex-1 bg-white relative w-full"
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <Carousel photos={cachedData?.residence.photos} style={{ height: 640 }} />
       <View className="px-4 bg-white flex mt-7">
         <View className="flex flex-row items-center justify-between">
           <View className="flex gap-x-3 flex-row">
             <>
               {cachedData?.user?.photo_url ? (
-                <Avatar.Image size={50} source={{ uri: cachedData?.user.photo_url }} />
+                <Avatar.Image
+                  size={50}
+                  source={{ uri: cachedData?.user.photo_url }}
+                />
               ) : (
-                <Avatar.Text size={50} label={String(cachedData?.user?.first_name[0] || '...')} />
+                <Avatar.Text
+                  size={50}
+                  label={String(cachedData?.user?.first_name[0] || '...')}
+                />
               )}
             </>
             <View className="">
@@ -152,18 +163,26 @@ export default function ResidenceDetail() {
                       () => deleteResidence(),
                       'Cancelar',
                       () => {},
-                    );
+                    )
                   }}
                 />
                 {cachedData?.residence && (
                   <Link href={`/editor/${cachedData?.residence.id}`}>
-                    <IconButton icon="pencil-outline" mode="outlined" iconColor="#000" />
+                    <IconButton
+                      icon="pencil-outline"
+                      mode="outlined"
+                      iconColor="#000"
+                    />
                   </Link>
                 )}
               </>
             ) : (
               <>
-                <IconButton icon="message-processing-outline" mode="outlined" iconColor="#000" />
+                <IconButton
+                  icon="message-processing-outline"
+                  mode="outlined"
+                  iconColor="#000"
+                />
                 <IconButton icon="phone" mode="outlined" iconColor="#000" />
               </>
             )}
@@ -189,12 +208,14 @@ export default function ResidenceDetail() {
         </View>
 
         <View className="mt-7">
-          <Text className="font-poppins-regular text-xs text-gray-400">Tipo</Text>
+          <Text className="font-poppins-regular text-xs text-gray-400">
+            Tipo
+          </Text>
           <Text className="font-poppins-medium">
             {cachedData?.residence
               ? Constants.categories.map((categorie) => {
                   if (categorie.value === cachedData.residence.kind) {
-                    return `${categorie.emoji} ${categorie.name}`;
+                    return `${categorie.emoji} ${categorie.name}`
                   }
                 })
               : '...'}
@@ -202,7 +223,9 @@ export default function ResidenceDetail() {
         </View>
 
         <View className="mt-7">
-          <Text className="font-poppins-regular text-xs text-gray-400">Data da postagem</Text>
+          <Text className="font-poppins-regular text-xs text-gray-400">
+            Data da postagem
+          </Text>
           <PublishedSince
             className="font-poppins-medium"
             date={String(cachedData?.residence?.created_at)}
@@ -210,10 +233,14 @@ export default function ResidenceDetail() {
         </View>
 
         <View className="mt-7">
-          <Text className="font-poppins-regular text-xs text-gray-400">Localização</Text>
+          <Text className="font-poppins-regular text-xs text-gray-400">
+            Localização
+          </Text>
 
           <Text className="font-poppins-medium text-gray-600 mt-2 mb-2">
-            {cachedData?.residence?.location ? cachedData.residence?.location : '...'}
+            {cachedData?.residence?.location
+              ? cachedData.residence?.location
+              : '...'}
           </Text>
         </View>
 
@@ -224,7 +251,7 @@ export default function ResidenceDetail() {
               cachedData?.residence?.description &&
               cachedData.residence?.description.length > 100
             ) {
-              setShowDescription(!showDescription);
+              setShowDescription(!showDescription)
             }
           }}>
           <Text className="font-poppins-semibold text-lg">Descrição</Text>
@@ -238,7 +265,8 @@ export default function ResidenceDetail() {
           <Text
             className={clsx('text-primary text-xs font-poppins-medium', {
               hidden: !(
-                cachedData?.residence?.description && cachedData.residence?.description.length > 100
+                cachedData?.residence?.description &&
+                cachedData.residence?.description.length > 100
               ),
             })}>
             {showDescription ? ' - ver menos' : ' ver mais +'}
@@ -253,5 +281,5 @@ export default function ResidenceDetail() {
         />
       )}
     </ScrollView>
-  );
+  )
 }

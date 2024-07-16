@@ -47,4 +47,4 @@ export const RESIDENCE_DATA = [
     description:
       'Esta casa espaçosa em Benguela é perfeita para uma família grande. Possui cinco quartos, um jardim amplo e bem cuidado, uma piscina privativa e uma área de churrasco. A localização oferece fácil acesso a escolas, lojas e outros serviços essenciais.',
   },
-];
+]

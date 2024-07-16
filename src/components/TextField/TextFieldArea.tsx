@@ -1,6 +1,6 @@
-import { TextInputProps } from 'react-native';
+import { TextInputProps } from 'react-native'
 
-import TextFieldInput from './TextFieldInput';
+import TextFieldInput from './TextFieldInput'
 
 export default function TextFieldArea(props: TextInputProps) {
   return (
@@ -14,5 +14,5 @@ export default function TextFieldArea(props: TextInputProps) {
       }}
       {...props}
     />
-  );
+  )
 }
