@@ -13,7 +13,7 @@ import { placeApi } from '../config/axios'
 interface DropDownProps {
   setValue: React.Dispatch<React.SetStateAction<string>>
   dataSource: string[]
-  updateValue: (...event: any[]) => void
+  updateValue: (...event: string[]) => void
   onPress: () => void
 }
 
@@ -21,9 +21,13 @@ interface SearchSelectProps {
   value?: string
   placeholder: string
   onBlur: () => void
-  onChange: (...event: any[]) => void
+  onChange: (...event: string[]) => void
   editable?: boolean
   error?: boolean
+}
+
+interface Place {
+  display_name: string
 }
 
 const DropDownItem = ({
@@ -35,7 +39,7 @@ const DropDownItem = ({
   item: string
   onPress: () => void
   setValue: React.Dispatch<React.SetStateAction<string>>
-  updateValue: (...event: any[]) => void
+  updateValue: (...event: string[]) => void
 }) => (
   <View style={{ width: '100%', paddingLeft: 4, paddingTop: 4 }}>
     <TouchableBrightness
@@ -121,7 +125,7 @@ const SearchSelect = (props: SearchSelectProps) => {
         )
         .then((res) => {
           const places: string[] = res.data.map(
-            (item: any) => item.display_name,
+            (item: Place) => item.display_name,
           )
           setDataSource(places)
         })

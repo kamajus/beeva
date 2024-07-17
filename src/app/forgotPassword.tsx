@@ -2,12 +2,13 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import clsx from 'clsx'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, View } from 'react-native'
-import { Button, HelperText, TextInput } from 'react-native-paper'
+import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
+import Button from '../components/Button'
 import Header from '../components/Header'
+import TextField from '../components/TextField'
 import { supabase } from '../config/supabase'
-import Constants from '../constants'
 import { useAlert } from '../hooks/useAlert'
 
 interface FormData {
@@ -68,25 +69,23 @@ export default function Confirmation() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field: { onChange, value, onBlur } }) => (
                 <View>
-                  <TextInput
-                    mode="outlined"
-                    label="E-mail"
-                    style={{
-                      fontSize: 15,
-                      textTransform: 'lowercase',
-                    }}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                    outlineColor="transparent"
-                    inputMode="email"
-                    keyboardType="email-address"
-                    activeOutlineColor={Constants.colors.primary}
-                    autoCapitalize="none"
-                    error={errors.email?.message !== undefined}
-                  />
+                  <TextField.Root>
+                    <TextField.Label isRequired>E-mail</TextField.Label>
+                    <TextField.Container
+                      error={errors.email?.message !== undefined}>
+                      <TextField.Input
+                        placeholder="E-mail"
+                        value={value}
+                        onChangeText={onChange}
+                        inputMode="email"
+                        keyboardType="email-address"
+                        onBlur={onBlur}
+                      />
+                    </TextField.Container>
+                  </TextField.Root>
+
                   <HelperText
                     className={clsx('p-0 m-0 mt-2', {
                       hidden: errors.email?.message === undefined,
@@ -101,20 +100,10 @@ export default function Confirmation() {
           </View>
 
           <Button
-            style={{
-              height: 58,
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: 10,
-            }}
-            mode="contained"
-            buttonColor={Constants.colors.primary}
-            textColor="white"
-            uppercase={false}
             loading={isSubmitting}
-            onPress={handleSubmit(onSubmit)}>
-            Continuar
-          </Button>
+            onPress={handleSubmit(onSubmit)}
+            title="Continuar"
+          />
         </View>
       </ScrollView>
     </View>

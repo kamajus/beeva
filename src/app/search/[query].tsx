@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
 
-import { Residence, ResidenceTypes } from '../../assets/@types'
+import { IResidence, IResidenceEnum } from '../../assets/@types'
 import NoData from '../../assets/images/no-data'
 import Header from '../../components/Header'
 import HomeCard from '../../components/HomeCard'
@@ -15,7 +15,7 @@ import { useCache } from '../../hooks/useCache'
 export default function Search() {
   const navigation = useNavigation()
   const { query } = useLocalSearchParams<{ query: string }>()
-  const [residences, setResidences] = useState<Residence[]>()
+  const [residences, setResidences] = useState<IResidence[]>()
   const [loading, setLoading] = useState(false)
   const { filter, setFilter } = useCache()
 
@@ -80,8 +80,8 @@ export default function Search() {
     }
 
     fetchData()
-    addItemToHistory(query)
-  }, [query, filter])
+    if (query) addItemToHistory(query)
+  }, [query, filter, navigation, setFilter])
 
   function filterResidences({
     kind,
@@ -90,11 +90,11 @@ export default function Search() {
     minPrice,
     residences,
   }: {
-    kind?: ResidenceTypes | undefined
+    kind?: IResidenceEnum | undefined
     state?: 'sell' | 'rent' | undefined
     minPrice?: number | undefined
     maxPrice?: number | undefined
-    residences: Residence[]
+    residences: IResidence[]
   }) {
     return residences?.filter((residence) => {
       const meetsResidenceType =
@@ -112,7 +112,7 @@ export default function Search() {
   return (
     <SheetProvider>
       <View className="w-full h-full bg-white ">
-        <Header.Search value={query} />
+        <Header.Search value={query || ''} />
 
         <View>
           {!loading ? (

@@ -10,12 +10,13 @@ import {
   RefreshControl,
   StatusBar,
 } from 'react-native'
-import { IconButton, Searchbar } from 'react-native-paper'
+import { Searchbar } from 'react-native-paper'
 
 import { RESIDENCE_DATA } from '../../assets/data'
 import Filter from '../../components/Filter'
 import HomeCard from '../../components/HomeCard'
-import Constants from '../../constants'
+import IconButton from '../../components/IconButton'
+import constants from '../../constants'
 import { useCache } from '../../hooks/useCache'
 
 export default function House() {
@@ -39,7 +40,7 @@ export default function House() {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
       <View
-        style={{ marginTop: Constants.customHeaderDistance / 2 }}
+        style={{ marginTop: constants.customHeaderDistance / 2 }}
         className="mt-[7%] bg-white">
         <View className="p-4">
           <View className="flex flex-row justify-between items-center mb-4">
@@ -47,8 +48,8 @@ export default function House() {
               Encontre uma acomodação perfeita
             </Text>
             <View className="relative">
-              <Link href="/notification">
-                <IconButton icon="bell" iconColor={Constants.colors.primary} />
+              <Link href="/notification" asChild>
+                <IconButton name="Bell" color={constants.colors.primary} />
               </Link>
               <View
                 className={clsx(
@@ -78,7 +79,7 @@ export default function House() {
             <Searchbar
               style={{
                 shadowColor: 'transparent',
-                backgroundColor: Constants.colors.input,
+                backgroundColor: constants.colors.input,
                 flex: 1,
                 width: width - 32, // Total screen width minus horizontal margin
               }}

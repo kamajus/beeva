@@ -5,14 +5,14 @@ import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, View, Text } from 'react-native'
 import ActionSheet, { SheetProps } from 'react-native-actions-sheet'
-import { Button, HelperText } from 'react-native-paper'
+import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
 import { supabase } from '../../config/supabase'
-import Constants from '../../constants'
 import { useAlert } from '../../hooks/useAlert'
 import { useCache } from '../../hooks/useCache'
 import { useResidenceStore } from '../../store/ResidenceStore'
+import Button from '../Button'
 import TextField from '../TextField'
 
 interface FormData {
@@ -142,20 +142,11 @@ export default function DeleteActionSheet(props: SheetProps) {
           </View>
 
           <Button
-            style={{
-              height: 58,
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: 10,
-            }}
-            mode="contained"
-            buttonColor={Constants.colors.alert}
-            textColor="white"
-            uppercase={false}
             loading={loading}
-            onPress={handleSubmit(onSubmit)}>
-            Continuar
-          </Button>
+            onPress={handleSubmit(onSubmit)}
+            className="bg-alert"
+            title="Continuar"
+          />
         </View>
       </ScrollView>
     </ActionSheet>

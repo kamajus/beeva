@@ -1,11 +1,11 @@
 import ExpoConstants from 'expo-constants'
 
-import { ResidenceTypes } from '../assets/@types'
+import { IResidenceEnum } from '../assets/@types'
 
-type Categories = { name: string; value: ResidenceTypes; emoji: string }[]
+type Categories = { name: string; value: IResidenceEnum; emoji: string }[]
 
 const colors = {
-  primary: '#6B0088',
+  primary: '#A60067',
   input: '#f9f9f9',
   alert: '#EF4444',
 }

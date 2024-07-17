@@ -9,7 +9,7 @@ import { AlertProvider } from '../contexts/AlertProvider'
 import CacheProvider from '../contexts/CacheProvider'
 import { SupabaseProvider } from '../contexts/SupabaseProvider'
 
-export default function () {
+export default function RootLayout() {
   const fontConfig = {
     android: {
       regular: {

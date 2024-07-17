@@ -3,8 +3,9 @@ import { Link, useLocalSearchParams, router } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Text, ScrollView, StyleSheet, Dimensions, View } from 'react-native'
 import { OtpInput } from 'react-native-otp-entry'
-import { Button, HelperText } from 'react-native-paper'
+import { HelperText } from 'react-native-paper'
 
+import Button from '../../components/Button'
 import { supabase } from '../../config/supabase'
 import Constants from '../../constants'
 
@@ -111,21 +112,7 @@ export default function Confirmation() {
             O código está incorrecto.
           </HelperText>
 
-          <Button
-            style={{
-              height: 58,
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: 10,
-            }}
-            mode="contained"
-            buttonColor={Constants.colors.primary}
-            textColor="white"
-            uppercase={false}
-            loading={loading}
-            onPress={signInWithOtp}>
-            Verificar
-          </Button>
+          <Button loading={loading} onPress={signInWithOtp} title="Verificar" />
         </View>
       </ScrollView>
     </View>

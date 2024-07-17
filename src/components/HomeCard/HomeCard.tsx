@@ -2,15 +2,16 @@ import clsx from 'clsx'
 import { router } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Pressable, Text, View, Image } from 'react-native'
-import { IconButton } from 'react-native-paper'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
-import { Residence } from '../../assets/@types'
-import useMoneyFormat from '../../hooks/useMoneyFormat'
+import { IResidence } from '../../assets/@types'
+import constants from '../../constants'
+import { formatMoney } from '../../functions/format'
 import { useSupabase } from '../../hooks/useSupabase'
 import { useResidenceStore } from '../../store/ResidenceStore'
+import IconButton from '../IconButton'
 
-interface HomeCardProps extends Residence {
+interface HomeCardProps extends IResidence {
   cardType: 'search' | 'big' | 'small'
 }
 
@@ -22,19 +23,19 @@ export default function HomeCard(props: HomeCardProps) {
   const [favorite, setFavorite] = useState(
     cachedResidences.some(({ residence: r }) => r.id === props.id),
   )
-  const money = useMoneyFormat()
 
   useEffect(() => {
     residenceIsFavorite(props.id).then((data) => {
       setFavorite(data)
     })
-  }, [])
+  }, [props.id, residenceIsFavorite])
 
   return (
     <View className="mb-2">
       <Pressable onPress={() => router.push(`/residence/${props.id}`)}>
         <Image
           source={{ uri: String(props.cover) }}
+          alt={props.description || ''}
           className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
             'mt-0 w-[272px] h-[220px] mr-2': props.cardType === 'big',
             'mt-0 w-[172px] h-[190px] mr-2': props.cardType === 'small',
@@ -55,17 +56,23 @@ export default function HomeCard(props: HomeCardProps) {
           className={clsx('font-poppins-semibold text-sm', {
             'text-base': props.cardType === 'search',
           })}>
-          {money.format(props.price)}
+          {formatMoney(props.price)}
         </Text>
       </View>
 
       <IconButton
-        icon={favorite ? 'bookmark' : 'bookmark-outline'}
-        mode="outlined"
-        iconColor={favorite ? '#fd6963' : '#000'}
+        name="Bookmark"
+        color={favorite ? constants.colors.primary : '#000'}
+        fill={
+          props.owner_id !== user?.id
+            ? favorite
+              ? constants.colors.primary
+              : 'transparent'
+            : 'transparent'
+        }
         disabled={props.owner_id === user?.id}
         containerColor="#fff"
-        className={clsx('absolute top-0.5 right-2.5', {
+        className={clsx('absolute top-[4px] right-3', {
           'absolute top-6 right-1': props.cardType === 'search',
         })}
         onPress={() => {

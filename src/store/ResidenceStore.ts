@@ -1,13 +1,13 @@
 import { create } from 'zustand'
 
-import { CachedResidence, Residence, User } from '../assets/@types'
+import { ICachedResidence, IResidence, IUser } from '../assets/@types'
 
 interface ResidenceState {
-  favoritesResidences: Residence[]
-  userResidences: Residence[]
-  cachedResidences: CachedResidence[]
-  addToResidences: (item: Residence, type: 'user' | 'favorites') => void
-  pushResidence: (item: Residence, user?: User) => void
+  favoritesResidences: IResidence[]
+  userResidences: IResidence[]
+  cachedResidences: ICachedResidence[]
+  addToResidences: (item: IResidence, type: 'user' | 'favorites') => void
+  pushResidence: (item: IResidence, user?: IUser) => void
   removeResidence: (id: string) => void
   resetResidenceCache: () => void
 }

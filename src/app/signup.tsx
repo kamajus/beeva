@@ -5,12 +5,12 @@ import { Eye, EyeOff } from 'lucide-react-native'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, Text, View, Linking, TouchableOpacity } from 'react-native'
-import { Button, HelperText } from 'react-native-paper'
+import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
+import Button from '../components/Button'
 import TextField from '../components/TextField'
 import { supabase } from '../config/supabase'
-import Constants from '../constants'
 import { useAlert } from '../hooks/useAlert'
 import { useSupabase } from '../hooks/useSupabase'
 
@@ -301,20 +301,10 @@ export default function SignIn() {
           </Text>
 
           <Button
-            style={{
-              height: 58,
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: 10,
-            }}
-            mode="contained"
-            buttonColor={Constants.colors.primary}
-            textColor="white"
-            uppercase={false}
             loading={isSubmitting}
-            onPress={handleSubmit(onSubmit)}>
-            Continuar
-          </Button>
+            onPress={handleSubmit(onSubmit)}
+            title="Continuar"
+          />
 
           <View className="flex justify-center items-center flex-row gap-2 w-full mt-5">
             <Text className="font-poppins-medium text-gray-700">

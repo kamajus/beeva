@@ -1,5 +1,6 @@
 import ExpoContants from 'expo-constants'
 import { useRouter } from 'expo-router'
+import { ChevronRight, ExternalLink, LogOut } from 'lucide-react-native'
 import { useState } from 'react'
 import {
   ScrollView,
@@ -9,8 +10,8 @@ import {
   ActivityIndicator,
   Linking,
 } from 'react-native'
-import { Avatar, Icon } from 'react-native-paper'
 
+import Avatar from '../../components/Avatar'
 import Header from '../../components/Header'
 import TouchableBrightness from '../../components/TouchableBrightness'
 import Constants from '../../constants'
@@ -56,7 +57,7 @@ export default function Settings() {
                 </Text>
               </View>
             </View>
-            <Icon source="chevron-right" size={30} />
+            <ChevronRight color="#000" size={30} />
           </View>
         </TouchableBrightness>
 
@@ -65,7 +66,7 @@ export default function Settings() {
             style={{ width }}
             className="px-4 py-6 flex-row justify-between items-center">
             <Text className="text-base font-poppins-medium">Residências</Text>
-            <Icon source="chevron-right" size={30} />
+            <ChevronRight color="#000" size={30} />
           </View>
         </TouchableBrightness>
 
@@ -74,7 +75,7 @@ export default function Settings() {
             style={{ width }}
             className="px-4 py-6 flex-row justify-between items-center">
             <Text className="text-base font-poppins-medium">Segurança</Text>
-            <Icon source="chevron-right" size={30} />
+            <ChevronRight color="#000" size={30} />
           </View>
         </TouchableBrightness>
 
@@ -88,7 +89,7 @@ export default function Settings() {
             <Text className="text-base font-poppins-medium">
               Termos e privacidade
             </Text>
-            <Icon source="open-in-new" size={30} />
+            <ExternalLink color="#000" size={30} />
           </View>
         </TouchableBrightness>
 
@@ -116,7 +117,7 @@ export default function Settings() {
                 Terminar sessão
               </Text>
               {!exiting ? (
-                <Icon source="logout" color="#E54D2E" size={30} />
+                <LogOut color="#E54D2E" size={30} />
               ) : (
                 <ActivityIndicator
                   animating

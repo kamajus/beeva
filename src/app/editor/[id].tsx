@@ -275,7 +275,19 @@ export default function Editor() {
     return () => {
       navigation.removeListener('beforeRemove', handleBeforeRemove)
     }
-  }, [isDirty, defaultData, isSubmitting, forceExiting])
+  }, [
+    isDirty,
+    defaultData,
+    isSubmitting,
+    forceExiting,
+    navigation,
+    images.length,
+    cover,
+    state,
+    kind,
+    imagesToDelete.length,
+    alert,
+  ])
 
   return (
     <View className="relative bg-white">
