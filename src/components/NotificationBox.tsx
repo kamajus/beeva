@@ -3,10 +3,10 @@ import { icons } from 'lucide-react-native'
 import { Text, View } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
 
-import PublishedSince from './PublishedSince'
-import TouchableBrightness from './TouchableBrightness'
 import { INotification } from '@/assets/@types'
-import contants from '../constants'
+import PublishedSince from '@/components/PublishedSince'
+import TouchableBrightness from '@/components/TouchableBrightness'
+import contants from '@/constants'
 
 interface NotificationIcons {
   [key: string]: keyof typeof icons

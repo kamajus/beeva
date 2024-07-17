@@ -42,7 +42,7 @@ interface AlertProviderProps {
 
 export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
   const [alertVisible, setAlertVisible] = useState(false)
-  const [alertObject, setAlertObject] = useState<AlertObject>()
+  const [alertObject, setAlertObject] = useState<AlertObject | null>(null)
 
   const showAlert = (
     title: string,
@@ -59,7 +59,7 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
       functionOption1,
       valueOption2,
       functionOption2,
-      alertVisible,
+      alertVisible: true,
       setAlertVisible,
     })
     setAlertVisible(true)

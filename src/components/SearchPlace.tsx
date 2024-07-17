@@ -6,9 +6,9 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native'
 
-import TextField from './TextField'
-import TouchableBrightness from './TouchableBrightness'
-import { placeApi } from '../config/axios'
+import TextField from '@/components/TextField'
+import TouchableBrightness from '@/components/TouchableBrightness'
+import { placeApi } from '@/config/axios'
 
 interface DropDownProps {
   setValue: React.Dispatch<React.SetStateAction<string>>

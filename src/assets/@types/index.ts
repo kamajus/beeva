@@ -1,4 +1,4 @@
-import { Database } from './supabase'
+import { Database } from '@/assets/@types/supabase'
 
 export type IResidenceEnum = 'apartment' | 'land' | 'others' | 'villa' | 'all'
 export type IResidence = Database['public']['Tables']['residences']['Row']

@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Text,
   TouchableOpacity,
+  TextStyle,
 } from 'react-native'
 import { twMerge } from 'tailwind-merge'
 
@@ -10,6 +11,7 @@ interface IButton extends TouchableOpacityProps {
   title: string
   loading?: boolean
   onPress: () => void
+  labelStyle?: TextStyle
 }
 
 export default function Button({
@@ -17,6 +19,7 @@ export default function Button({
   onPress,
   loading,
   className,
+  labelStyle,
   ...props
 }: IButton) {
   return (
@@ -30,7 +33,11 @@ export default function Button({
       {loading ? (
         <ActivityIndicator size={25} color="#fff" />
       ) : (
-        <Text className="text-white font-poppins-semibold">{title}</Text>
+        <Text
+          className={twMerge('text-white font-poppins-semibold')}
+          style={labelStyle}>
+          {title}
+        </Text>
       )}
     </TouchableOpacity>
   )
