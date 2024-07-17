@@ -5,11 +5,11 @@ import { ScrollView, View } from 'react-native'
 import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
-import Button from '../components/Button'
-import Header from '../components/Header'
-import TextField from '../components/TextField'
-import { supabase } from '../config/supabase'
-import { useAlert } from '../hooks/useAlert'
+import Button from '@/components/Button'
+import Header from '@/components/Header'
+import TextField from '@/components/TextField'
+import { supabase } from '@/config/supabase'
+import { useAlert } from '@/hooks/useAlert'
 
 interface FormData {
   email: string

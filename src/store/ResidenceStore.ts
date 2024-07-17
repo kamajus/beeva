@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-import { ICachedResidence, IResidence, IUser } from '../assets/@types'
+import { ICachedResidence, IResidence, IUser } from '@/assets/@types'
 
 interface ResidenceState {
   favoritesResidences: IResidence[]

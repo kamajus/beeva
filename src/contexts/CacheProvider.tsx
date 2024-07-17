@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react'
 
-import { IResidenceEnum, Notification } from '../assets/@types'
+import { IResidenceEnum, Notification } from '@/assets/@types'
 
 type CacheContextType = {
   notifications: Notification[]

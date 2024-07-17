@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
 
-import Constants from '../../constants'
+import Constants from '@/constants'
 
 interface HomeRootProps {
   children: ReactNode

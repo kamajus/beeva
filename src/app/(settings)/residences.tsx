@@ -8,16 +8,16 @@ import {
   View,
 } from 'react-native'
 
-import { IResidence, IFavorite } from '../../assets/@types'
-import NoData from '../../assets/images/no-data'
-import NoFavorite from '../../assets/images/no-favorite'
-import GaleryItem from '../../components/GaleryItem'
-import Header from '../../components/Header'
-import LoadScreen from '../../components/LoadScreen'
-import { supabase } from '../../config/supabase'
-import Constants from '../../constants'
-import { useSupabase } from '../../hooks/useSupabase'
-import { useResidenceStore } from '../../store/ResidenceStore'
+import { IResidence, IFavorite } from '@/assets/@types'
+import NoData from '@/assets/images/no-data'
+import NoFavorite from '@/assets/images/no-favorite'
+import GaleryItem from '@/components/GaleryItem'
+import Header from '@/components/Header'
+import LoadScreen from '@/components/LoadScreen'
+import { supabase } from '@/config/supabase'
+import Constants from '@/constants'
+import { useSupabase } from '@/hooks/useSupabase'
+import { useResidenceStore } from '@/store/ResidenceStore'
 
 export default function Favorites() {
   const userResidences = useResidenceStore((state) => state.userResidences)

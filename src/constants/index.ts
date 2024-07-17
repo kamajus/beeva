@@ -1,6 +1,6 @@
 import ExpoConstants from 'expo-constants'
 
-import { IResidenceEnum } from '../assets/@types'
+import { IResidenceEnum } from '@/assets/@types'
 
 type Categories = { name: string; value: IResidenceEnum; emoji: string }[]
 

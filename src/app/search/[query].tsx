@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react'
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
 
-import { IResidence, IResidenceEnum } from '../../assets/@types'
-import NoData from '../../assets/images/no-data'
-import Header from '../../components/Header'
-import HomeCard from '../../components/HomeCard'
-import { supabase } from '../../config/supabase'
-import Constants from '../../constants'
-import { useCache } from '../../hooks/useCache'
+import { IResidence, IResidenceEnum } from '@/assets/@types'
+import NoData from '@/assets/images/no-data'
+import Header from '@/components/Header'
+import HomeCard from '@/components/HomeCard'
+import { supabase } from '@/config/supabase'
+import Constants from '@/constants'
+import { useCache } from '@/hooks/useCache'
 
 export default function Search() {
   const navigation = useNavigation()

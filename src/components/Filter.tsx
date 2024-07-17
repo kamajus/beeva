@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native'
 
-import { IResidenceEnum } from '../assets/@types'
+import { IResidenceEnum } from '@/assets/@types'
 import Constants from '../constants'
 
 interface FilterProps {
