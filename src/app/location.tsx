@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { KeyboardAvoidingView, ScrollView, Text, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
@@ -23,7 +23,7 @@ export default function LocationSearch() {
     }[]
   >([])
 
-  async function getData() {
+  const getData = useCallback(async () => {
     await placeApi
       .get(
         `/search?featureType&countrycodes=AO&limit=15&format=json&q=${searchQuery}`,
@@ -34,16 +34,16 @@ export default function LocationSearch() {
           value: string
         }[] = []
 
-        res.data.map((value: any) => {
+        for (const value of res.data) {
           history.push({
             origin: 'search',
             value: value.display_name,
           })
-        })
+        }
 
         setDataSource(history)
       })
-  }
+  }, [searchQuery])
 
   async function getHistoric() {
     const history = await AsyncStorage.getItem('history')
@@ -53,14 +53,15 @@ export default function LocationSearch() {
         origin: 'history'
         value: string
       }[] = []
-      Array(JSON.parse(history)).map((value) => {
-        value.map((i: string) => {
+
+      for (const value of Array(JSON.parse(history))) {
+        for (const i of value) {
           data.push({
             origin: 'history',
             value: i,
           })
-        })
-      })
+        }
+      }
 
       setHistoricSearch(data)
     }
@@ -74,7 +75,7 @@ export default function LocationSearch() {
     if (searchQuery.length > 0) {
       getData()
     }
-  }, [searchQuery])
+  }, [getData, searchQuery])
 
   return (
     <View className="w-full bg-white">

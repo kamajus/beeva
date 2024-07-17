@@ -9,7 +9,7 @@ import CurrencyInput from 'react-native-currency-input'
 import { HelperText, RadioButton } from 'react-native-paper'
 import * as yup from 'yup'
 
-import { Residence, ResidenceTypes } from '../../assets/@types'
+import { IResidence, IResidenceEnum } from '../../assets/@types'
 import GaleryGrid from '../../components/GaleryGrid'
 import Header from '../../components/Header'
 import SearchPlace from '../../components/SearchPlace'
@@ -59,7 +59,7 @@ export default function Editor() {
 
   const [cover, setCover] = useState<string | null>()
   const [price, setPrice] = useState<number | null>(0)
-  const [kind, setKind] = useState<ResidenceTypes>('apartment')
+  const [kind, setKind] = useState<IResidenceEnum>('apartment')
   const [state, setState] = useState<'rent' | 'sell'>('rent')
   const { uploadResidencesImage } = useSupabase()
   const alert = useAlert()
@@ -81,10 +81,10 @@ export default function Editor() {
           },
         ])
         .select('*')
-        .single<Residence>()
+        .single<IResidence>()
 
       if (!error) {
-        await uploadResidencesImage(data.id, `${cover}`, images)
+        await uploadResidencesImage(data.id, cover, images)
         await supabase.from('notifications').insert([
           {
             user_id: session.user.id,
@@ -98,6 +98,7 @@ export default function Editor() {
         reset()
         router.replace(`/(root)/home`)
       } else {
+        console.log(error)
         alert.showAlert(
           'Erro a realizar postagem',
           'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',

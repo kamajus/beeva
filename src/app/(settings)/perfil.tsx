@@ -14,13 +14,16 @@ import {
   View,
   KeyboardAvoidingView,
 } from 'react-native'
-import { Avatar, Button, HelperText } from 'react-native-paper'
+import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
+import Avatar from '../../components/Avatar'
+import Button from '../../components/Button'
 import Header from '../../components/Header'
 import TextField from '../../components/TextField'
 import { supabase } from '../../config/supabase'
 import Constants from '../../constants'
+import { formatPhotoUrl } from '../../functions/format'
 import { useAlert } from '../../hooks/useAlert'
 import { useSupabase } from '../../hooks/useSupabase'
 
@@ -82,6 +85,7 @@ export default function Perfil() {
 
   const { height } = Dimensions.get('screen')
   const [forceExiting, setForceExiting] = useState(false)
+  const [allowExiting, setAllowExiting] = useState(true)
 
   const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset[]>([])
   const [isPhotoChanged, setPhotoChanged] = useState(false)
@@ -108,6 +112,7 @@ export default function Perfil() {
     phone: number | undefined
     photo_url?: string
   }) {
+    setAllowExiting(false)
     const { error } = await supabase
       .from('users')
       .update({
@@ -138,8 +143,6 @@ export default function Perfil() {
         'Ok',
         () => {},
       )
-
-      console.log(error)
     }
 
     if (setUser && user) {
@@ -149,8 +152,8 @@ export default function Perfil() {
         last_name: data.last_name || user.last_name,
         phone: data.phone || user.phone,
         photo_url: data.photo_url
-          ? data.photo_url + '?timestamp=' + new Date().getTime()
-          : user.photo_url + '?timestamp=' + new Date().getTime(),
+          ? formatPhotoUrl(data.photo_url)
+          : formatPhotoUrl(`${user.photo_url}`),
       })
     }
 
@@ -162,43 +165,44 @@ export default function Perfil() {
     })
 
     setForceExiting(true)
+    setAllowExiting(true)
     navigation.goBack()
   }
 
   const onSubmit = async (data: FormData) => {
-    if (isDirty || isPhotoChanged) {
+    if ((isDirty || isPhotoChanged) && user?.id) {
       if (isPhotoChanged) {
         const base64 = await FileSystem.readAsStringAsync(photo[0].uri, {
           encoding: 'base64',
         })
 
-        await supabase.storage
+        const { error } = await supabase.storage
           .from('avatars')
-          .upload(`${user?.id}`, decode(base64), {
+          .upload(user.id, decode(base64), {
             contentType: 'image/png',
             upsert: true,
           })
-          .then(async () => {
-            setPhotoChanged(false)
-            const photoUrl = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/avatars/${user?.id}`
 
-            await updatePerfil({
-              first_name: data.firstName,
-              last_name: data.lastName,
-              email: data.email,
-              phone: data.phone,
-              photo_url: photoUrl,
-            })
+        if (!error && data) {
+          const photoUrl = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/avatars/${user.id}`
+
+          await updatePerfil({
+            first_name: data.firstName,
+            last_name: data.lastName,
+            email: data.email,
+            phone: data.phone,
+            photo_url: photoUrl,
           })
-          .catch((error) => {
-            alert.showAlert(
-              'Erro a atualizar informações',
-              'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
-              'Ok',
-              () => {},
-            )
-            console.log(error)
-          })
+        }
+
+        if (error) {
+          alert.showAlert(
+            'Erro a atualizar informações',
+            'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
+            'Ok',
+            () => {},
+          )
+        }
       } else {
         await updatePerfil({
           first_name: data.firstName,
@@ -213,23 +217,34 @@ export default function Perfil() {
   useEffect(
     () =>
       navigation.addListener('beforeRemove', (e) => {
-        if (forceExiting) return
-        if (!isSubmitting && !isDirty && !isPhotoChanged) {
-          return
+        if (allowExiting) {
+          if (forceExiting) return
+
+          if (!isSubmitting && !isDirty && !isPhotoChanged) {
+            return
+          }
+
+          e.preventDefault()
+
+          alert.showAlert(
+            'Descartar alterações?',
+            'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',
+            'Descartar',
+            () => navigation.dispatch(e.data.action),
+            'Não sair',
+            () => {},
+          )
         }
-
-        e.preventDefault()
-
-        alert.showAlert(
-          'Descartar alterações?',
-          'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',
-          'Descartar',
-          () => navigation.dispatch(e.data.action),
-          'Não sair',
-          () => {},
-        )
       }),
-    [navigation, isDirty, isPhotoChanged, isSubmitting, forceExiting, alert],
+    [
+      navigation,
+      isDirty,
+      isPhotoChanged,
+      isSubmitting,
+      forceExiting,
+      alert,
+      allowExiting,
+    ],
   )
 
   return (
@@ -252,59 +267,30 @@ export default function Perfil() {
                         photo.length === 0
                           ? `${user?.photo_url}`
                           : photo[0].uri,
-                      cache: 'reload',
                     }}
                   />
                 </Pressable>
+
                 <Button
-                  style={{
-                    height: 56,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    backgroundColor: Constants.colors.primary,
-                    borderRadius: 28,
-                    marginTop: 10,
-                  }}
+                  loading={isSubmitting}
                   onPress={pickImage}
-                  mode="contained"
-                  textColor="white"
-                  uppercase={false}>
-                  Modificar
-                </Button>
+                  className="rounded-full"
+                  title="Modificar"
+                />
               </View>
             ) : (
               <View>
                 <Pressable
                   onPress={pickImage}
                   className="rounded-full border-2 border-[#393939]">
-                  <Avatar.Text
-                    size={150}
-                    label={String(user?.first_name[0])}
-                    color="#fff"
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: '#212121',
-                    }}
-                  />
+                  <Avatar.Text size={150} label={String(user?.first_name[0])} />
                 </Pressable>
 
                 <Button
-                  style={{
-                    height: 56,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    backgroundColor: '#212121',
-                    borderRadius: 28,
-                    marginTop: 10,
-                  }}
                   onPress={pickImage}
-                  mode="contained"
-                  textColor="white"
-                  uppercase={false}>
-                  Modificar
-                </Button>
+                  className="rounded-full"
+                  title="Modificar"
+                />
               </View>
             )}
           </View>

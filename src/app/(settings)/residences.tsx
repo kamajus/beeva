@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native'
 
-import { Residence, Favorite } from '../../assets/@types'
+import { IResidence, IFavorite } from '../../assets/@types'
 import NoData from '../../assets/images/no-data'
 import NoFavorite from '../../assets/images/no-favorite'
 import GaleryItem from '../../components/GaleryItem'
@@ -33,13 +33,12 @@ export default function Favorites() {
   const [loadingResidences, setLoadingResidences] = useState(false)
   const [loadingFavorites, setLoadingFavorites] = useState(false)
 
-  async function getResidences() {
+  const getResidences = useCallback(async () => {
     const { data: residencesData } = await supabase
       .from('residences')
       .select('*')
-
       .eq('owner_id', user?.id)
-      .returns<Residence[]>()
+      .returns<IResidence[]>()
 
     if (residencesData) {
       residencesData.map((residence) => {
@@ -47,14 +46,14 @@ export default function Favorites() {
         return residence
       })
     }
-  }
+  }, [user?.id, addToResidences])
 
-  async function getFavorites() {
+  const getFavorites = useCallback(async () => {
     const { data: favoritesData } = await supabase
       .from('favorites')
       .select('*')
       .eq('user_id', user?.id)
-      .returns<Favorite[]>()
+      .returns<IFavorite[]>()
 
     if (favoritesData) {
       favoritesData.map(async (item) => {
@@ -67,7 +66,7 @@ export default function Favorites() {
         addToResidences(favorite, 'favorites')
       })
     }
-  }
+  }, [user?.id, addToResidences])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
@@ -82,7 +81,7 @@ export default function Favorites() {
         setLoadingResidences(false)
       })()
     }, 1000)
-  }, [])
+  }, [getFavorites, getResidences])
 
   useEffect(() => {
     setLoadingFavorites(true)
@@ -93,7 +92,7 @@ export default function Favorites() {
       setLoadingFavorites(false)
       setLoadingResidences(false)
     })()
-  }, [])
+  }, [getFavorites, getResidences])
 
   return (
     <View style={{ height }} className="relative bg-white">

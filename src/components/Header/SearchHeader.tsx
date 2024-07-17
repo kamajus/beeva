@@ -2,12 +2,11 @@ import Constants from 'expo-constants'
 import { router } from 'expo-router'
 import { View } from 'react-native'
 import { SheetManager } from 'react-native-actions-sheet'
-import { IconButton } from 'react-native-paper'
 import Icon from 'react-native-vector-icons/Feather'
 
-import TextField from '../TextField'
-
 import '../ActionSheet'
+import IconButton from '../IconButton'
+import TextField from '../TextField'
 
 interface SearchHeaderProps {
   value: string
@@ -37,11 +36,9 @@ export default function SearchHeader({ value }: SearchHeaderProps) {
         </TextField.Root>
 
         <IconButton
+          name="SlidersHorizontal"
+          size={20}
           onPress={() => SheetManager.show('search-sheet')}
-          icon="tune"
-          mode="outlined"
-          iconColor="#000"
-          containerColor="#fff"
         />
       </View>
     </View>

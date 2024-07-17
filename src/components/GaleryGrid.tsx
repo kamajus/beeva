@@ -2,9 +2,9 @@ import clsx from 'clsx'
 import * as ImagePicker from 'expo-image-picker'
 import { Dispatch, SetStateAction } from 'react'
 import { FlatList, Image, Pressable, View } from 'react-native'
-import { Button, IconButton } from 'react-native-paper'
 
-import Constants from '../constants'
+import Button from './Button'
+import IconButton from './IconButton'
 
 interface GaleryProps {
   images: ImagePicker.ImagePickerAsset[]
@@ -40,6 +40,7 @@ export default function Galery({
       if (!images || images.length === 0) {
         setCover(result.assets[0].uri)
       }
+
       setImages([...images, ...result.assets])
 
       if (setPhotoChanged) {
@@ -74,6 +75,7 @@ export default function Galery({
                   setCover(undefined)
                 }
               }}>
+              {/* eslint-disable-next-line jsx-a11y/alt-text */}
               <Image
                 key={item.uri}
                 source={{ uri: item.uri }}
@@ -86,16 +88,17 @@ export default function Galery({
               />
 
               <IconButton
-                icon="star"
-                mode="outlined"
-                iconColor={cover === item.uri ? '#ffcb0c' : 'lightgray'}
-                containerColor="#fff"
-                className={clsx('absolute top-[1px] right-2', {
-                  hidden: disabled,
-                })}
+                name="Star"
+                size={18}
                 onPress={() => {
                   setCover(item.uri)
                 }}
+                className={clsx('absolute top-[4px] right-3', {
+                  hidden: disabled,
+                })}
+                containerColor="#fff"
+                color={cover === item.uri ? '#ffcb0c' : 'lightgray'}
+                fill={cover === item.uri ? '#ffcb0c' : 'lightgray'}
               />
             </Pressable>
           )}
@@ -103,23 +106,16 @@ export default function Galery({
       )}
 
       <Button
-        labelStyle={{
-          textTransform: 'capitalize',
-        }}
-        style={{
-          height: 56,
-          backgroundColor: Constants.colors.primary,
-        }}
+        onPress={pickImage}
         className={clsx('flex items-center justify-center', {
           hidden: disabled || images.length >= 5,
         })}
-        icon="camera"
-        mode="contained"
-        onPress={pickImage}>
-        {images && images?.length > 0
-          ? `(${images.length}) Adicicionar mais fotos`
-          : 'Adicionar fotografias'}
-      </Button>
+        title={
+          images && images?.length > 0
+            ? `(${images.length}) Adicicionar mais fotos`
+            : 'Adicionar fotografias'
+        }
+      />
     </View>
   )
 }

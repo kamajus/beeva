@@ -1,11 +1,11 @@
+import { Lock, X } from 'lucide-react-native'
 import { ScrollView, Text, View, Dimensions } from 'react-native'
 import { SheetManager, SheetProvider } from 'react-native-actions-sheet'
-import { Icon } from 'react-native-paper'
 
 import Header from '../../components/Header'
 import TouchableBrightness from '../../components/TouchableBrightness'
 import { supabase } from '../../config/supabase'
-import Constants from '../../constants'
+import constants from '../../constants'
 import { useAlert } from '../../hooks/useAlert'
 import { useSupabase } from '../../hooks/useSupabase'
 
@@ -63,11 +63,7 @@ export default function Settings() {
               <Text className="text-base font-poppins-medium">
                 Alterar a sua palavra-passe
               </Text>
-              <Icon
-                source="shield-key"
-                size={30}
-                color={Constants.colors.primary}
-              />
+              <Lock size={30} color="#000" />
             </View>
           </TouchableBrightness>
 
@@ -81,7 +77,7 @@ export default function Settings() {
               <Text className="text-base font-poppins-medium">
                 Eliminar sua conta
               </Text>
-              <Icon source="close" size={30} color="#E54D2E" />
+              <X size={30} color={constants.colors.alert} />
             </View>
           </TouchableBrightness>
         </ScrollView>

@@ -5,18 +5,20 @@ import ActionSheet, {
   SheetManager,
 } from 'react-native-actions-sheet'
 import CurrencyInput from 'react-native-currency-input'
-import { Button, IconButton, RadioButton } from 'react-native-paper'
+import { RadioButton } from 'react-native-paper'
 
-import { ResidenceTypes } from '../../assets/@types'
+import { IResidenceEnum } from '../../assets/@types'
 import Constants from '../../constants'
 import { useCache } from '../../hooks/useCache'
+import Button from '../Button'
 import Filter from '../Filter'
+import IconButton from '../IconButton'
 import TextField from '../TextField'
 
 export default function SearchActionSheet(props: SheetProps) {
   const { filter, setFilter } = useCache()
 
-  const [kind, setKind] = useState<ResidenceTypes>(
+  const [kind, setKind] = useState<IResidenceEnum>(
     filter.kind ? filter.kind : 'all',
   )
   const [state, setState] = useState<'sell' | 'rent' | undefined>(filter.state)
@@ -32,7 +34,7 @@ export default function SearchActionSheet(props: SheetProps) {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View className="flex flex-row items-center gap-x-1 px-2 py-4 border-b border-b-gray-300">
           <IconButton
-            icon="close"
+            name="X"
             size={20}
             onPress={() => SheetManager.hide('search-sheet')}
           />
@@ -107,41 +109,21 @@ export default function SearchActionSheet(props: SheetProps) {
 
         <View className="flex flex-row justify-between items-center px-4 gap-x-2">
           <Button
-            style={{
-              height: 58,
-              display: 'flex',
-              justifyContent: 'center',
-              flex: 2,
-              marginTop: 10,
-            }}
-            mode="text"
-            buttonColor={Constants.colors.alert}
-            textColor="white"
             onPress={() => {
               setFilter({
                 kind: 'all',
               })
-
-              // Reset
               setMaxPrice(undefined)
               setMinPrice(undefined)
               setState(undefined)
               setKind('all')
               SheetManager.hide('search-sheet')
             }}
-            uppercase={false}>
-            Remover filtros
-          </Button>
+            className="bg-alert flex-1"
+            title="Remover filtros"
+          />
+
           <Button
-            style={{
-              height: 58,
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: 10,
-            }}
-            mode="contained"
-            buttonColor={Constants.colors.primary}
-            textColor="white"
             onPress={() => {
               setFilter({
                 kind,
@@ -151,9 +133,9 @@ export default function SearchActionSheet(props: SheetProps) {
               })
               SheetManager.hide('search-sheet')
             }}
-            uppercase={false}>
-            Aplicar
-          </Button>
+            className="bg-primary flex-1"
+            title="Aplicar"
+          />
         </View>
       </ScrollView>
     </ActionSheet>

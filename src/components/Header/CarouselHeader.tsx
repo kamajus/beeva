@@ -1,13 +1,13 @@
 import Constants from 'expo-constants'
 import { useRouter } from 'expo-router'
+import { ArrowLeft, Share } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { View, Dimensions } from 'react-native'
-import { IconButton } from 'react-native-paper'
-import IconFeather from 'react-native-vector-icons/Feather'
-import Icon from 'react-native-vector-icons/Ionicons'
 
+import constants from '../../constants'
 import { useSupabase } from '../../hooks/useSupabase'
 import { useResidenceStore } from '../../store/ResidenceStore'
+import IconButton from '../IconButton'
 
 interface CarouselHeaderProps {
   owner_id: string
@@ -30,34 +30,30 @@ export default function CarouselHeader(props: CarouselHeaderProps) {
     residenceIsFavorite(props.residence_id).then((data) => {
       setFavorite(data)
     })
-  }, [])
+  }, [props.residence_id, residenceIsFavorite])
 
   return (
     <View
       style={{ width, marginTop: Constants.statusBarHeight + 20 }}
       className="absolute flex px-4 flex-row justify-between items-center">
-      <IconFeather
-        name="arrow-left"
-        color="#fff"
-        size={25}
-        onPress={() => router.back()}
-      />
+      <ArrowLeft color="#fff" size={25} onPress={() => router.back()} />
+
       <View className="flex gap-x-2 flex-row items-center">
         <IconButton
-          icon={
+          name="Bookmark"
+          color={
             props.owner_id !== user?.id
               ? favorite
-                ? 'bookmark'
-                : 'bookmark-outline'
-              : 'bookmark-outline'
-          }
-          mode="outlined"
-          iconColor={
-            props.owner_id !== user?.id
-              ? favorite
-                ? '#fd6963'
+                ? constants.colors.primary
                 : '#fff'
               : '#fff'
+          }
+          fill={
+            props.owner_id !== user?.id
+              ? favorite
+                ? constants.colors.primary
+                : 'transparent'
+              : 'transparent'
           }
           containerColor={
             props.owner_id !== user?.id
@@ -79,7 +75,7 @@ export default function CarouselHeader(props: CarouselHeaderProps) {
             }
           }}
         />
-        <Icon name="share-social-outline" size={24} color="#fff" />
+        <Share size={24} color="#fff" />
       </View>
     </View>
   )

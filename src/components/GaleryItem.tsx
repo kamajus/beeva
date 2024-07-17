@@ -15,6 +15,7 @@ export default function GaleryItem({ activeted, id, image }: GaleryItemProps) {
         params: { id },
       }}>
       <View key={id} className="relative h-28 w-28">
+        {/* eslint-disable-next-line jsx-a11y/alt-text */}
         <Image
           source={{ uri: String(image) }}
           className="h-full w-full rounded-lg"

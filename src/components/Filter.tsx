@@ -1,17 +1,17 @@
 import clsx from 'clsx'
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native'
 
-import { ResidenceTypes } from '../assets/@types'
+import { IResidenceEnum } from '../assets/@types'
 import Constants from '../constants'
 
 interface FilterProps {
-  kind?: ResidenceTypes
-  setKind?: React.Dispatch<React.SetStateAction<ResidenceTypes>>
+  kind?: IResidenceEnum
+  setKind?: React.Dispatch<React.SetStateAction<IResidenceEnum>>
   paddingHorizontal: number
 }
 
 export default function Filter(props: FilterProps) {
-  function onButtonActive(value: ResidenceTypes) {
+  function onButtonActive(value: IResidenceEnum) {
     if (props?.setKind) {
       props?.setKind(value)
     }
@@ -42,11 +42,9 @@ export default function Filter(props: FilterProps) {
                 className={clsx('font-poppins-medium text-black text-sm', {
                   'text-white': props.kind === item.value,
                 })}>
-                {Constants.categories.map((categorie) => {
-                  if (categorie.value === item.value) {
-                    return `${categorie.emoji} ${categorie.name}`
-                  }
-                })}
+                {Constants.categories
+                  .filter((categorie) => categorie.value === item.value)
+                  .map((categorie) => `${categorie.emoji} ${categorie.name}`)}
               </Text>
             </Pressable>
           )}
