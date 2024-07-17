@@ -2,12 +2,12 @@ import { Lock, X } from 'lucide-react-native'
 import { ScrollView, Text, View, Dimensions } from 'react-native'
 import { SheetManager, SheetProvider } from 'react-native-actions-sheet'
 
-import Header from '../../components/Header'
-import TouchableBrightness from '../../components/TouchableBrightness'
-import { supabase } from '../../config/supabase'
-import constants from '../../constants'
-import { useAlert } from '../../hooks/useAlert'
-import { useSupabase } from '../../hooks/useSupabase'
+import Header from '@/components/Header'
+import TouchableBrightness from '@/components/TouchableBrightness'
+import { supabase } from '@/config/supabase'
+import constants from '@/constants'
+import { useAlert } from '@/hooks/useAlert'
+import { useSupabase } from '@/hooks/useSupabase'
 
 export default function Settings() {
   const { width } = Dimensions.get('screen')

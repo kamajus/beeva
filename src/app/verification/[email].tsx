@@ -5,9 +5,9 @@ import { Text, ScrollView, StyleSheet, Dimensions, View } from 'react-native'
 import { OtpInput } from 'react-native-otp-entry'
 import { HelperText } from 'react-native-paper'
 
-import Button from '../../components/Button'
-import { supabase } from '../../config/supabase'
-import Constants from '../../constants'
+import Button from '@/components/Button'
+import { supabase } from '@/config/supabase'
+import Constants from '@/constants'
 
 const { width } = Dimensions.get('window')
 const inputWidth = width - width * 0.16

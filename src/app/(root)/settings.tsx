@@ -11,14 +11,14 @@ import {
   Linking,
 } from 'react-native'
 
-import Avatar from '../../components/Avatar'
-import Header from '../../components/Header'
-import TouchableBrightness from '../../components/TouchableBrightness'
-import Constants from '../../constants'
-import { useAlert } from '../../hooks/useAlert'
-import { useCache } from '../../hooks/useCache'
-import { useSupabase } from '../../hooks/useSupabase'
-import { useResidenceStore } from '../../store/ResidenceStore'
+import Avatar from '@/components/Avatar'
+import Header from '@/components/Header'
+import TouchableBrightness from '@/components/TouchableBrightness'
+import Constants from '@/constants'
+import { useAlert } from '@/hooks/useAlert'
+import { useCache } from '@/hooks/useCache'
+import { useSupabase } from '@/hooks/useSupabase'
+import { useResidenceStore } from '@/store/ResidenceStore'
 
 export default function Settings() {
   const { width } = Dimensions.get('screen')

@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react'
 import { Pressable, Text, View, Image } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
-import { IResidence } from '../../assets/@types'
-import constants from '../../constants'
-import { formatMoney } from '../../functions/format'
-import { useSupabase } from '../../hooks/useSupabase'
-import { useResidenceStore } from '../../store/ResidenceStore'
+import { IResidence } from '../@/assets/@types'
+import constants from '@/constants'
+import { formatMoney } from '@/functions/format'
+import { useSupabase } from '@/hooks/useSupabase'
+import { useResidenceStore } from '@/store/ResidenceStore'
 import IconButton from '../IconButton'
 
 interface HomeCardProps extends IResidence {

@@ -7,13 +7,13 @@ import ActionSheet, {
 import CurrencyInput from 'react-native-currency-input'
 import { RadioButton } from 'react-native-paper'
 
-import { IResidenceEnum } from '../../assets/@types'
-import Constants from '../../constants'
-import { useCache } from '../../hooks/useCache'
-import Button from '../Button'
-import Filter from '../Filter'
-import IconButton from '../IconButton'
-import TextField from '../TextField'
+import { IResidenceEnum } from '@/assets/@types'
+import Button from '@/components/Button'
+import Filter from '@/components/Filter'
+import IconButton from '@/components/IconButton'
+import TextField from '@/components/TextField'
+import Constants from '@/constants'
+import { useCache } from '@/hooks/useCache'
 
 export default function SearchActionSheet(props: SheetProps) {
   const { filter, setFilter } = useCache()

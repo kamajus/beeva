@@ -8,11 +8,11 @@ import { ScrollView, Text, View, Linking, TouchableOpacity } from 'react-native'
 import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
-import Button from '../components/Button'
-import TextField from '../components/TextField'
-import { supabase } from '../config/supabase'
-import { useAlert } from '../hooks/useAlert'
-import { useSupabase } from '../hooks/useSupabase'
+import Button from '@/components/Button'
+import TextField from '@/components/TextField'
+import { supabase } from '@/config/supabase'
+import { useAlert } from '@/hooks/useAlert'
+import { useSupabase } from '@/hooks/useSupabase'
 
 interface FormData {
   firstName: string

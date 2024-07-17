@@ -4,10 +4,10 @@ import { ArrowLeft, Share } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { View, Dimensions } from 'react-native'
 
-import constants from '../../constants'
-import { useSupabase } from '../../hooks/useSupabase'
-import { useResidenceStore } from '../../store/ResidenceStore'
-import IconButton from '../IconButton'
+import IconButton from '@/components/IconButton'
+import constants from '@/constants'
+import { useSupabase } from '@/hooks/useSupabase'
+import { useResidenceStore } from '@/store/ResidenceStore'
 
 interface CarouselHeaderProps {
   owner_id: string

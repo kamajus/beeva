@@ -2,13 +2,13 @@ import clsx from 'clsx'
 import { useCallback, useState } from 'react'
 import { RefreshControl, ScrollView, View, Text } from 'react-native'
 
-import { INotification } from '../assets/@types'
-import NoNotification from '../assets/images/no-notification'
-import Header from '../components/Header'
-import NotificationBox from '../components/NotificationBox'
-import { supabase } from '../config/supabase'
-import { useCache } from '../hooks/useCache'
-import { useSupabase } from '../hooks/useSupabase'
+import { INotification } from '@/assets/@types'
+import NoNotification from '@/assets/images/no-notification'
+import Header from '@/components/Header'
+import NotificationBox from '@/components/NotificationBox'
+import { supabase } from '@/config/supabase'
+import { useCache } from '@/hooks/useCache'
+import { useSupabase } from '@/hooks/useSupabase'
 
 export default function Notification() {
   const { user } = useSupabase()

@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router'
 import { Home, PlusCircle, SettingsIcon } from 'lucide-react-native'
 
-import Constants from '../../constants'
+import constants from '@/constants'
 
 export default function HomeLayout() {
   return (
@@ -12,7 +12,7 @@ export default function HomeLayout() {
           height: 70,
           paddingBottom: 10,
         },
-        tabBarActiveTintColor: Constants.colors.primary,
+        tabBarActiveTintColor: constants.colors.primary,
         tabBarInactiveTintColor: '#212121',
         tabBarHideOnKeyboard: true,
         tabBarLabelStyle: {

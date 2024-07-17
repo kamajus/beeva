@@ -1,6 +1,6 @@
 import { TextInput, TextInputProps } from 'react-native'
 
-import Constants from '../../constants'
+import Constants from '@/constants'
 
 export default function TextFieldInput(props: TextInputProps) {
   return (

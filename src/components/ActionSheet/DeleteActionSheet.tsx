@@ -8,12 +8,12 @@ import ActionSheet, { SheetProps } from 'react-native-actions-sheet'
 import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
-import { supabase } from '../../config/supabase'
-import { useAlert } from '../../hooks/useAlert'
-import { useCache } from '../../hooks/useCache'
-import { useResidenceStore } from '../../store/ResidenceStore'
-import Button from '../Button'
-import TextField from '../TextField'
+import Button from '@/components/Button'
+import TextField from '@/components/TextField'
+import { supabase } from '@/config/supabase'
+import { useAlert } from '@/hooks/useAlert'
+import { useCache } from '@/hooks/useCache'
+import { useResidenceStore } from '@/store/ResidenceStore'
 
 interface FormData {
   password: string

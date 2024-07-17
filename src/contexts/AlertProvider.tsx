@@ -6,7 +6,7 @@ import React, {
   SetStateAction,
 } from 'react'
 
-import CustomAlert from '../components/CustomAlert'
+import CustomAlert from '@/components/CustomAlert'
 
 interface AlertObject {
   title: string

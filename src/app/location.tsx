@@ -3,9 +3,9 @@ import { useEffect, useState, useCallback } from 'react'
 import { KeyboardAvoidingView, ScrollView, Text, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
-import Header from '../components/Header'
-import TouchableBrightness from '../components/TouchableBrightness'
-import { placeApi } from '../config/axios'
+import Header from '@/components/Header'
+import TouchableBrightness from '@/components/TouchableBrightness'
+import { placeApi } from '@/config/axios'
 
 export default function LocationSearch() {
   const [dataSource, setDataSource] = useState<

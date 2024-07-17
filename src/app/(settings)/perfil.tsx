@@ -17,15 +17,15 @@ import {
 import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
-import Avatar from '../../components/Avatar'
-import Button from '../../components/Button'
-import Header from '../../components/Header'
-import TextField from '../../components/TextField'
-import { supabase } from '../../config/supabase'
-import Constants from '../../constants'
-import { formatPhotoUrl } from '../../functions/format'
-import { useAlert } from '../../hooks/useAlert'
-import { useSupabase } from '../../hooks/useSupabase'
+import Avatar from '@/components/Avatar'
+import Button from '@/components/Button'
+import Header from '@/components/Header'
+import TextField from '@/components/TextField'
+import { supabase } from '@/config/supabase'
+import Constants from '@/constants'
+import { formatPhotoUrl } from '@/functions/format'
+import { useAlert } from '@/hooks/useAlert'
+import { useSupabase } from '@/hooks/useSupabase'
 
 interface FormData {
   firstName?: string

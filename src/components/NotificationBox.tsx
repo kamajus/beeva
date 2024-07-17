@@ -5,7 +5,7 @@ import { SheetProvider } from 'react-native-actions-sheet'
 
 import PublishedSince from './PublishedSince'
 import TouchableBrightness from './TouchableBrightness'
-import { INotification } from '../assets/@types'
+import { INotification } from '@/assets/@types'
 import contants from '../constants'
 
 interface NotificationIcons {
