@@ -1,6 +1,6 @@
 import { ActivityIndicator, View } from 'react-native'
 
-import Constants from '../constants'
+import Constants from '@/constants'
 
 export default function LoadScreen() {
   return (

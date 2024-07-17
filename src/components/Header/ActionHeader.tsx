@@ -3,8 +3,8 @@ import { router } from 'expo-router'
 import { ArrowLeft } from 'lucide-react-native'
 import { Text, View } from 'react-native'
 
+import IconButton from '@/components/IconButton'
 import Constants from '@/constants'
-import IconButton from '../IconButton'
 
 interface ActionHeaderProps {
   title: string

@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react'
 import { Pressable, Text, View, Image } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
-import { IResidence } from '../@/assets/@types'
+import { IResidence } from '@/assets/@types'
+import IconButton from '@/components/IconButton'
 import constants from '@/constants'
 import { formatMoney } from '@/functions/format'
 import { useSupabase } from '@/hooks/useSupabase'
 import { useResidenceStore } from '@/store/ResidenceStore'
-import IconButton from '../IconButton'
 
 interface HomeCardProps extends IResidence {
   cardType: 'search' | 'big' | 'small'

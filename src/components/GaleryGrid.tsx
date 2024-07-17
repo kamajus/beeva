@@ -3,8 +3,8 @@ import * as ImagePicker from 'expo-image-picker'
 import { Dispatch, SetStateAction } from 'react'
 import { FlatList, Image, Pressable, View } from 'react-native'
 
-import Button from './Button'
-import IconButton from './IconButton'
+import Button from '@/components/Button'
+import IconButton from '@/components/IconButton'
 
 interface GaleryProps {
   images: ImagePicker.ImagePickerAsset[]
