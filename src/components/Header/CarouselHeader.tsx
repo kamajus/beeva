@@ -1,6 +1,6 @@
 import Constants from 'expo-constants'
 import { useRouter } from 'expo-router'
-import { ArrowLeft, Share } from 'lucide-react-native'
+import { ArrowLeft } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { View, Dimensions } from 'react-native'
 
@@ -36,7 +36,7 @@ export default function CarouselHeader(props: ICarouselHeader) {
     <View
       style={{ width, marginTop: Constants.statusBarHeight + 20 }}
       className="absolute flex px-4 flex-row justify-between items-center">
-      <ArrowLeft color="#fff" size={25} onPress={() => router.back()} />
+      <ArrowLeft color="#ffffff" size={25} onPress={() => router.back()} />
 
       <View className="flex gap-x-2 flex-row items-center">
         <IconButton
@@ -45,20 +45,13 @@ export default function CarouselHeader(props: ICarouselHeader) {
             props.owner_id !== user?.id
               ? favorite
                 ? constants.colors.primary
-                : '#fff'
-              : '#fff'
+                : '#ffffff'
+              : '#ffffff'
           }
           fill={
             props.owner_id !== user?.id
               ? favorite
                 ? constants.colors.primary
-                : 'transparent'
-              : 'transparent'
-          }
-          containerColor={
-            props.owner_id !== user?.id
-              ? favorite
-                ? '#fff'
                 : 'transparent'
               : 'transparent'
           }
@@ -74,8 +67,10 @@ export default function CarouselHeader(props: ICarouselHeader) {
               handleFavorite(props.residence_id, favorite)
             }
           }}
+          className="bg-transparent"
         />
-        <Share size={24} color="#fff" />
+
+        <IconButton name="Share2" color="#ffffff" className="bg-transparent" />
       </View>
     </View>
   )

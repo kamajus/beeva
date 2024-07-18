@@ -31,7 +31,7 @@ export default function Button({
       onPress={onPress}
       {...props}>
       {loading ? (
-        <ActivityIndicator size={25} color="#fff" />
+        <ActivityIndicator size={25} color="#ffffff" />
       ) : (
         <Text
           className={twMerge('text-white font-poppins-semibold')}

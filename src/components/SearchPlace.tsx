@@ -85,7 +85,7 @@ const DropDown = ({
         width: '100%',
         backgroundColor: 'white',
         borderRadius: 8,
-        shadowColor: '#000',
+        shadowColor: '#000000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,

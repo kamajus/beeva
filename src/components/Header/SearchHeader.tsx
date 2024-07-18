@@ -32,7 +32,7 @@ export default function SearchHeader({ value, filter }: ISearchHeader) {
         className="w-full py-4 px-4 flex justify-center items-center flex-row">
         <TextField.Root>
           <TextField.Container disableFocus>
-            <ArrowLeft color="#000" size={25} onPress={router.back} />
+            <ArrowLeft color="#000000" size={25} onPress={router.back} />
             <TextField.Input
               value={value}
               keyboardType="web-search"

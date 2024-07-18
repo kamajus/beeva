@@ -4,6 +4,8 @@ import { MapPinned } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Pressable, Text, View, Image } from 'react-native'
 
+import SkeletonComponent from '../Skeleton'
+
 import { IResidence } from '@/assets/@types'
 import IconButton from '@/components/IconButton'
 import constants from '@/constants'
@@ -33,14 +35,23 @@ export default function HomeCard(props: IHomeCard) {
   return (
     <View className="mb-2">
       <Pressable onPress={() => router.push(`/residence/${props.id}`)}>
-        <Image
-          source={{ uri: String(props.cover) }}
-          alt={props.description || ''}
-          className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
-            'mt-0 w-[272px] h-[220px] mr-2': props.cardType === 'big',
-            'mt-0 w-[172px] h-[190px] mr-2': props.cardType === 'small',
-          })}
-        />
+        {props.cover ? (
+          <Image
+            source={{ uri: String(props.cover) }}
+            alt={props.description || ''}
+            className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
+              'mt-0 w-[272px] h-[220px] mr-2': props.cardType === 'big',
+              'mt-0 w-[172px] h-[190px] mr-2': props.cardType === 'small',
+            })}
+          />
+        ) : (
+          <SkeletonComponent
+            className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
+              'mt-0 w-[272px] h-[220px] mr-2': props.cardType === 'big',
+              'mt-0 w-[172px] h-[190px] mr-2': props.cardType === 'small',
+            })}
+          />
+        )}
       </Pressable>
 
       <View className="w-full gap-1 mt-2">
@@ -62,7 +73,7 @@ export default function HomeCard(props: IHomeCard) {
 
       <IconButton
         name="Bookmark"
-        color={favorite ? constants.colors.primary : '#000'}
+        color={favorite ? constants.colors.primary : '#000000'}
         fill={
           props.owner_id !== user?.id
             ? favorite
@@ -70,8 +81,7 @@ export default function HomeCard(props: IHomeCard) {
               : 'transparent'
             : 'transparent'
         }
-        disabled={props.owner_id === user?.id}
-        containerColor="#fff"
+        disabled={props.owner_id === user?.id || props.owner_id === undefined}
         className={clsx('absolute top-[4px] right-3', {
           'absolute top-6 right-1': props.cardType === 'search',
         })}

@@ -10,7 +10,7 @@ import Header from '@/components/Header'
 import IconButton from '@/components/IconButton'
 import PublishedSince from '@/components/PublishedSince'
 import { supabase } from '@/config/supabase'
-import Constants from '@/constants'
+import constants from '@/constants'
 import { formatMoney } from '@/functions/format'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
@@ -119,7 +119,7 @@ export default function ResidenceDetail() {
       <View className="px-4 bg-white flex mt-7">
         <View className="flex flex-row items-center justify-between">
           <View className="flex gap-x-3 flex-row">
-            <>
+            <View>
               {cachedData?.user?.photo_url ? (
                 <Avatar.Image
                   size={50}
@@ -131,8 +131,8 @@ export default function ResidenceDetail() {
                   label={String(cachedData?.user?.first_name[0] || '...')}
                 />
               )}
-            </>
-            <View className="">
+            </View>
+            <View>
               <Text className="font-poppins-medium text-base">
                 {cachedData?.user
                   ? `${cachedData.user.first_name} ${cachedData.user.last_name}`
@@ -172,8 +172,11 @@ export default function ResidenceDetail() {
               </>
             ) : (
               <>
-                <IconButton name="MessageSquare" />
-                <IconButton name="Phone" />
+                <IconButton
+                  name="MessageSquare"
+                  disabled={!cachedData?.residence}
+                />
+                <IconButton name="Phone" disabled={!cachedData?.residence} />
               </>
             )}
           </View>
@@ -203,7 +206,7 @@ export default function ResidenceDetail() {
           </Text>
           <Text className="font-poppins-medium">
             {cachedData?.residence
-              ? Constants.categories
+              ? constants.categories
                   .filter(
                     (categorie) =>
                       categorie.value === cachedData.residence.kind,
@@ -247,11 +250,12 @@ export default function ResidenceDetail() {
           }}>
           <Text className="font-poppins-semibold text-lg">Descrição</Text>
           <Text className="font-poppins-regular text-gray-600">
-            {cachedData?.residence?.description &&
-            cachedData.residence?.description.length > 100 &&
-            !showDescription
-              ? `${cachedData.residence?.description.slice(0, 100)}...`
-              : cachedData?.residence?.description}
+            {cachedData?.residence?.description
+              ? cachedData.residence?.description.length > 100 &&
+                !showDescription
+                ? `${cachedData.residence?.description.slice(0, 100)}...`
+                : cachedData?.residence?.description
+              : '...'}
           </Text>
           <Text
             className={clsx('text-primary text-xs font-poppins-medium', {

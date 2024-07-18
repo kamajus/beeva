@@ -30,7 +30,7 @@ export default function LocationHeader({
             disableFocus>
             <Icon
               name="arrow-left"
-              color="#000"
+              color="#000000"
               size={25}
               onPress={router.back}
             />

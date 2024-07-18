@@ -20,7 +20,7 @@ export default function NormalHeader({
       style={{ marginTop: Constants.statusBarHeight, width }}
       className="bg-white py-4 px-4 flex gap-x-4 flex-row items-center border-b-[.5px] border-b-gray-300">
       {showIcon && (
-        <Icon name="arrow-left" color="#000" size={25} onPress={back} />
+        <Icon name="arrow-left" color="#000000" size={25} onPress={back} />
       )}
       <Text className="font-poppins-semibold text-xl">{title}</Text>
     </View>
