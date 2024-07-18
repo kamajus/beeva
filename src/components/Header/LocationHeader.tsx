@@ -8,7 +8,7 @@ import TextField from '../TextField'
 
 import '../ActionSheet'
 
-interface LocationHeaderProps {
+interface ILocationHeader {
   setSearchQuery: Dispatch<SetStateAction<string>>
   searchQuery: string
 }
@@ -16,7 +16,7 @@ interface LocationHeaderProps {
 export default function LocationHeader({
   setSearchQuery,
   searchQuery,
-}: LocationHeaderProps) {
+}: ILocationHeader) {
   return (
     <View>
       <View

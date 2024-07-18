@@ -4,13 +4,13 @@ import { FlatList, Pressable, ScrollView, Text, View } from 'react-native'
 import { IResidenceEnum } from '@/assets/@types'
 import Constants from '@/constants'
 
-interface FilterProps {
+interface IFilter {
   kind?: IResidenceEnum
   setKind?: React.Dispatch<React.SetStateAction<IResidenceEnum>>
   paddingHorizontal: number
 }
 
-export default function Filter(props: FilterProps) {
+export default function Filter(props: IFilter) {
   function onButtonActive(value: IResidenceEnum) {
     if (props?.setKind) {
       props?.setKind(value)

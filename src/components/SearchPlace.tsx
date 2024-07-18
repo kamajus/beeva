@@ -21,7 +21,7 @@ interface SearchSelectProps {
   value?: string
   placeholder: string
   onBlur: () => void
-  onChange: (...event: string[]) => void
+  onChangeText: (...event: string[]) => void
   editable?: boolean
   error?: boolean
 }
@@ -114,8 +114,9 @@ const SearchSelect = (props: SearchSelectProps) => {
   const [value, setValue] = useState(props.value ? `${props.value}` : '')
 
   const onSearch = (text: string) => {
-    props.onChange(text)
+    props.onChangeText(text)
     setValue(text)
+
     if (text) {
       setSearching(true)
 
@@ -129,9 +130,7 @@ const SearchSelect = (props: SearchSelectProps) => {
           )
           setDataSource(places)
         })
-        .catch((error) => {
-          console.error(error)
-        })
+        .catch(() => {})
     } else {
       setSearching(false)
     }
@@ -151,7 +150,6 @@ const SearchSelect = (props: SearchSelectProps) => {
           <TextField.Container error={props.error}>
             <TextField.Input
               placeholder={props.placeholder}
-              onChange={props.onChange}
               onChangeText={onSearch}
               editable={props.editable}
               value={value}
@@ -160,7 +158,7 @@ const SearchSelect = (props: SearchSelectProps) => {
           {searching && (
             <DropDown
               onPress={() => setSearching(false)}
-              updateValue={props.onChange}
+              updateValue={props.onChangeText}
               setValue={setValue}
               dataSource={dataSource}
             />

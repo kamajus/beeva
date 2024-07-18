@@ -8,11 +8,11 @@ import PublishedSince from '@/components/PublishedSince'
 import TouchableBrightness from '@/components/TouchableBrightness'
 import contants from '@/constants'
 
-interface NotificationIcons {
+interface INotificationIcons {
   [key: string]: keyof typeof icons
 }
 
-const notificationIcons: NotificationIcons = {
+const notificationIcons: INotificationIcons = {
   congratulations: 'PartyPopper',
   successful: 'Smile',
 }

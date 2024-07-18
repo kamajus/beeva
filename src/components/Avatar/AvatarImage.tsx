@@ -1,8 +1,9 @@
 /* eslint-disable jsx-a11y/alt-text */
+
 import { Image, ImageProps } from 'react-native'
 import { twMerge } from 'tailwind-merge'
 
-interface AvatarImageProps extends ImageProps {
+interface IAvatarImage extends ImageProps {
   size?: number
   className?: string
 }
@@ -11,7 +12,7 @@ export default function AvatarImage({
   className,
   size,
   ...props
-}: AvatarImageProps) {
+}: IAvatarImage) {
   return (
     <Image
       width={size}

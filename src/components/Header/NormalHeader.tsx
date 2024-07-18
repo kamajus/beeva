@@ -3,11 +3,11 @@ import { useRouter } from 'expo-router'
 import { Dimensions, Text, View } from 'react-native'
 import Icon from 'react-native-vector-icons/Feather'
 
-interface NormalHeaderProps {
+interface INormalHeader {
   title: string
 }
 
-export default function NormalHeader({ title }: NormalHeaderProps) {
+export default function NormalHeader({ title }: INormalHeader) {
   const { width } = Dimensions.get('screen')
   const { back } = useRouter()
 

@@ -15,7 +15,7 @@ import { useAlert } from '@/hooks/useAlert'
 import { useCache } from '@/hooks/useCache'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
-interface FormData {
+interface IFormData {
   password: string
 }
 
@@ -49,7 +49,7 @@ export default function DeleteActionSheet(props: SheetProps) {
   const [loading, setLoading] = useState(false)
   const alert = useAlert()
 
-  async function onSubmit({ password }: FormData) {
+  async function onSubmit({ password }: IFormData) {
     setLoading(true)
 
     const verifyResponse = await supabase.rpc('verify_user_password', {

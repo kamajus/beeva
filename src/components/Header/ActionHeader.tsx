@@ -6,7 +6,7 @@ import { Text, View } from 'react-native'
 import IconButton from '@/components/IconButton'
 import Constants from '@/constants'
 
-interface ActionHeaderProps {
+interface IActionHeader {
   title: string
   onPress?: () => void
   loading?: boolean
@@ -16,7 +16,7 @@ export default function ActionHeader({
   title,
   onPress,
   loading,
-}: ActionHeaderProps) {
+}: IActionHeader) {
   return (
     <View
       style={{ top: ExpoConstants.statusBarHeight }}

@@ -1,26 +1,27 @@
 import clsx from 'clsx'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
+import { SearchIcon } from 'lucide-react-native'
 import { useCallback, useState } from 'react'
 import {
   View,
   ScrollView,
   FlatList,
   Text,
-  Dimensions,
   RefreshControl,
   StatusBar,
 } from 'react-native'
-import { Searchbar } from 'react-native-paper'
 
 import { RESIDENCE_DATA } from '@/assets/data'
 import Filter from '@/components/Filter'
 import HomeCard from '@/components/HomeCard'
 import IconButton from '@/components/IconButton'
+import TextField from '@/components/TextField'
 import constants from '@/constants'
 import { useCache } from '@/hooks/useCache'
 
 export default function House() {
   const [refreshing, setRefreshing] = useState(false)
+  const router = useRouter()
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
@@ -29,7 +30,6 @@ export default function House() {
     }, 2000)
   }, [])
 
-  const { width } = Dimensions.get('window')
   const { notifications } = useCache()
 
   return (
@@ -75,25 +75,19 @@ export default function House() {
             </View>
           </View>
 
-          <Link href="/location">
-            <Searchbar
-              style={{
-                shadowColor: 'transparent',
-                backgroundColor: constants.colors.input,
-                flex: 1,
-                width: width - 32, // Total screen width minus horizontal margin
-              }}
-              inputStyle={{
-                height: 58,
-                fontSize: 15,
-                alignSelf: 'stretch',
-                fontFamily: 'poppins-medium',
-              }}
-              placeholder="Procurar por casas..."
-              value=""
-              editable={false}
-            />
-          </Link>
+          <TextField.Root>
+            <TextField.Container disableFocus>
+              <SearchIcon color="#000" size={25} />
+              <TextField.Input
+                value=""
+                keyboardType="web-search"
+                placeholder="Procurar por casas..."
+                onPress={() => {
+                  router.navigate('/location')
+                }}
+              />
+            </TextField.Container>
+          </TextField.Root>
         </View>
 
         <HomeCard.Root title="Em alta" icon="fire" iconColor="#E25822">
