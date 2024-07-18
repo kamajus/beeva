@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { useCallback, useEffect, useState } from 'react'
 import {
   Dimensions,
@@ -8,9 +7,8 @@ import {
   View,
 } from 'react-native'
 
-import { IResidence, IFavorite } from '@/assets/@types'
+import { IResidence } from '@/assets/@types'
 import NoData from '@/assets/images/no-data'
-import NoFavorite from '@/assets/images/no-favorite'
 import GaleryItem from '@/components/GaleryItem'
 import Header from '@/components/Header'
 import LoadScreen from '@/components/LoadScreen'
@@ -21,9 +19,6 @@ import { useResidenceStore } from '@/store/ResidenceStore'
 
 export default function Favorites() {
   const userResidences = useResidenceStore((state) => state.userResidences)
-  const favoritesResidences = useResidenceStore(
-    (state) => state.favoritesResidences,
-  )
   const addToResidences = useResidenceStore((state) => state.addToResidences)
 
   const { user } = useSupabase()
@@ -48,26 +43,6 @@ export default function Favorites() {
     }
   }, [user?.id, addToResidences])
 
-  const getFavorites = useCallback(async () => {
-    const { data: favoritesData } = await supabase
-      .from('favorites')
-      .select('*')
-      .eq('user_id', user?.id)
-      .returns<IFavorite[]>()
-
-    if (favoritesData) {
-      favoritesData.map(async (item) => {
-        const { data: favorite } = await supabase
-          .from('residences')
-          .select('*')
-          .eq('id', item.residence_id)
-          .single()
-
-        addToResidences(favorite, 'favorites')
-      })
-    }
-  }, [user?.id, addToResidences])
-
   const onRefresh = useCallback(() => {
     setRefreshing(true)
     setTimeout(() => {
@@ -76,23 +51,21 @@ export default function Favorites() {
       setLoadingResidences(true)
       ;(async function () {
         await getResidences()
-        await getFavorites()
         setLoadingFavorites(false)
         setLoadingResidences(false)
       })()
     }, 1000)
-  }, [getFavorites, getResidences])
+  }, [getResidences])
 
   useEffect(() => {
     setLoadingFavorites(true)
     setLoadingResidences(true)
     ;(async function () {
       await getResidences()
-      await getFavorites()
       setLoadingFavorites(false)
       setLoadingResidences(false)
     })()
-  }, [getFavorites, getResidences])
+  }, [getResidences])
 
   return (
     <View style={{ height }} className="relative bg-white">
@@ -102,9 +75,6 @@ export default function Favorites() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
-          <Text className="text-black text-lg font-poppins-semibold">
-            Postadas por mim
-          </Text>
           <View className="mt-2 flex-1 flex-row flex-wrap">
             {userResidences.length > 0 ? (
               userResidences.map(({ id, cover }) => (
@@ -118,35 +88,15 @@ export default function Favorites() {
                 </View>
               ))
             ) : (
-              <View className="w-full flex justify-center items-center">
-                <NoData />
-                <Text className="font-poppins-medium text-gray-400 text-center">
-                  Você não tem nehuma residência!
-                </Text>
-              </View>
-            )}
-          </View>
-          <Text className="mt-4 text-[#212121] text-lg font-poppins-semibold">
-            Guardados por mim
-          </Text>
-          <View className={clsx('mt-2 flex-1 flex-row flex-wrap')}>
-            {favoritesResidences.length > 0 ? (
-              favoritesResidences.map(({ id, cover }) => (
-                <View key={id} className="mr-3 mt-3">
-                  <GaleryItem
-                    image={cover}
-                    id={id}
-                    key={id}
-                    activeted={false}
-                  />
+              <View
+                style={{ height: height - 74 - Constants.customHeaderDistance }}
+                className="w-full flex-1 flex items-center justify-center">
+                <View className="flex items-center justify-center">
+                  <NoData />
+                  <Text className="font-poppins-medium text-gray-400 text-center">
+                    Você não tem nehuma residência.
+                  </Text>
                 </View>
-              ))
-            ) : (
-              <View className="w-full flex justify-center items-center">
-                <NoFavorite />
-                <Text className="font-poppins-medium text-gray-400 text-center">
-                  Você não tem nehuma guardada.
-                </Text>
               </View>
             )}
           </View>
