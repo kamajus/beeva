@@ -57,7 +57,7 @@ export default function Settings() {
                 </Text>
               </View>
             </View>
-            <ChevronRight color="#000" size={30} />
+            <ChevronRight color="#000000" size={30} />
           </View>
         </TouchableBrightness>
 
@@ -68,7 +68,7 @@ export default function Settings() {
             <Text className="text-base font-poppins-medium">
               Minhas residências
             </Text>
-            <ChevronRight color="#000" size={30} />
+            <ChevronRight color="#000000" size={30} />
           </View>
         </TouchableBrightness>
 
@@ -77,7 +77,7 @@ export default function Settings() {
             style={{ width }}
             className="px-4 py-6 flex-row justify-between items-center">
             <Text className="text-base font-poppins-medium">Segurança</Text>
-            <ChevronRight color="#000" size={30} />
+            <ChevronRight color="#000000" size={30} />
           </View>
         </TouchableBrightness>
 
@@ -91,7 +91,7 @@ export default function Settings() {
             <Text className="text-base font-poppins-medium">
               Termos e privacidade
             </Text>
-            <ExternalLink color="#000" size={30} />
+            <ExternalLink color="#000000" size={30} />
           </View>
         </TouchableBrightness>
 

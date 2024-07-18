@@ -63,7 +63,7 @@ export default function Settings() {
               <Text className="text-base font-poppins-medium">
                 Alterar a sua palavra-passe
               </Text>
-              <Lock size={30} color="#000" />
+              <Lock size={30} color="#000000" />
             </View>
           </TouchableBrightness>
 

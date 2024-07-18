@@ -15,7 +15,7 @@ export default function TextFieldContainer(props: TextFieldContainerProps) {
       className={clsx(
         'w-full px-2 flex-row items-center bg-input border-2 border-input rounded',
         {
-          'focus:border-[#BA1A1A]': props.error && !props.disableFocus,
+          'focus:border-alert': props.error && !props.disableFocus,
           'focus:border-primary': !props.error && !props.disableFocus,
         },
       )}

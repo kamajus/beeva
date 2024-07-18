@@ -6,11 +6,12 @@ import {
 } from 'react-native'
 import { twMerge } from 'tailwind-merge'
 
+import { hexToRGBA } from '@/functions'
+
 interface IButton extends TouchableOpacityProps {
   name: keyof typeof icons
   size?: number
   color?: string
-  containerColor?: string
   fill?: string
   loading?: boolean | undefined
 }
@@ -18,10 +19,10 @@ export default function IconButton({
   name,
   size = 25,
   fill = 'transparent',
-  containerColor = 'transparent',
-  color = '#000',
+  color = '#000000',
   loading,
   className,
+  disabled,
   ...props
 }: IButton) {
   const LucideIcon = icons[name]
@@ -29,14 +30,27 @@ export default function IconButton({
   return (
     <TouchableOpacity
       className={twMerge(
-        `p-[10px] rounded-full bg-[${containerColor}]`,
+        'p-[10px] rounded-full bg-white disabled:bg-transparent',
         className,
       )}
-      {...props}>
+      {...props}
+      disabled={disabled}>
       {loading ? (
         <ActivityIndicator size={size} color={color} />
       ) : (
-        <LucideIcon color={color} fill={fill} size={size} />
+        <LucideIcon
+          color={
+            disabled && color && color !== 'transparent'
+              ? hexToRGBA(color, 0.5)
+              : color
+          }
+          fill={
+            disabled && fill && fill !== 'transparent'
+              ? hexToRGBA(fill, 0.5)
+              : fill
+          }
+          size={size}
+        />
       )}
     </TouchableOpacity>
   )

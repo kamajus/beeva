@@ -352,7 +352,7 @@ export default function Editor() {
                   <View>
                     <SearchPlace
                       onBlur={onBlur}
-                      onChange={onChange}
+                      onChangeText={onChange}
                       editable={!isSubmitting}
                       value={value}
                       placeholder="Onde está localizada?"

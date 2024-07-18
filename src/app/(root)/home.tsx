@@ -77,7 +77,7 @@ export default function House() {
 
           <TextField.Root>
             <TextField.Container disableFocus>
-              <SearchIcon color="#000" size={25} />
+              <SearchIcon color="#000000" size={25} />
               <TextField.Input
                 value=""
                 keyboardType="web-search"
@@ -90,7 +90,7 @@ export default function House() {
           </TextField.Root>
         </View>
 
-        <HomeCard.Root title="Em alta" icon="fire" iconColor="#E25822">
+        <HomeCard.Root title="🔥 Em alta" iconColor="#E25822">
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -143,7 +143,7 @@ export default function House() {
           />
         </HomeCard.Root>
       </View>
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
     </ScrollView>
   )
 }
