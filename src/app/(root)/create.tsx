@@ -15,7 +15,7 @@ import Header from '@/components/Header'
 import SearchPlace from '@/components/SearchPlace'
 import TextField from '@/components/TextField'
 import { supabase } from '@/config/supabase'
-import Constants from '@/constants'
+import constants from '@/constants'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 
@@ -129,7 +129,7 @@ export default function Editor() {
     <View className="relative bg-white">
       <ScrollView
         showsVerticalScrollIndicator={false}
-        style={{ marginTop: Constants.customHeaderDistance }}
+        style={{ marginTop: constants.customHeaderDistance }}
         className="bg-white">
         <View className="flex gap-y-9 px-4 mt-[2%] bg-white">
           <View>
@@ -152,7 +152,7 @@ export default function Editor() {
                         separator=","
                         precision={2}
                         minValue={0}
-                        cursorColor={Constants.colors.primary}
+                        cursorColor={constants.colors.primary}
                         className="flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium"
                         placeholder="Quanto está custando? (em kz)"
                         onChangeText={() => {
@@ -188,7 +188,7 @@ export default function Editor() {
                   <View>
                     <SearchPlace
                       onBlur={onBlur}
-                      onChange={onChange}
+                      onChangeText={onChange}
                       editable={!isSubmitting}
                       value={value}
                       placeholder="Onde está localizada?"
@@ -250,7 +250,7 @@ export default function Editor() {
               <RadioButton
                 value="rent"
                 status={state === 'rent' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                color={constants.colors.primary}
                 onPress={() => setState('rent')}
                 disabled={isSubmitting}
               />
@@ -261,7 +261,7 @@ export default function Editor() {
               <RadioButton
                 value="sell"
                 status={state === 'sell' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                color={constants.colors.primary}
                 onPress={() => setState('sell')}
                 disabled={isSubmitting}
               />
@@ -275,7 +275,7 @@ export default function Editor() {
               <RadioButton
                 value="apartment"
                 status={kind === 'apartment' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                color={constants.colors.primary}
                 onPress={() => setKind('apartment')}
                 disabled={isSubmitting}
               />
@@ -286,7 +286,7 @@ export default function Editor() {
               <RadioButton
                 value="villa"
                 status={kind === 'villa' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                color={constants.colors.primary}
                 onPress={() => setKind('villa')}
                 disabled={isSubmitting}
               />
@@ -297,7 +297,7 @@ export default function Editor() {
               <RadioButton
                 value="land"
                 status={kind === 'land' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                color={constants.colors.primary}
                 onPress={() => setKind('land')}
                 disabled={isSubmitting}
               />
@@ -308,7 +308,7 @@ export default function Editor() {
               <RadioButton
                 value="others"
                 status={kind === 'others' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                color={constants.colors.primary}
                 onPress={() => setKind('others')}
                 disabled={isSubmitting}
               />

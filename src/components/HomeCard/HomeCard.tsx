@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 import { router } from 'expo-router'
+import { MapPinned } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Pressable, Text, View, Image } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import { IResidence } from '@/assets/@types'
 import IconButton from '@/components/IconButton'
@@ -11,11 +11,11 @@ import { formatMoney } from '@/functions/format'
 import { useSupabase } from '@/hooks/useSupabase'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
-interface HomeCardProps extends IResidence {
+interface IHomeCard extends IResidence {
   cardType: 'search' | 'big' | 'small'
 }
 
-export default function HomeCard(props: HomeCardProps) {
+export default function HomeCard(props: IHomeCard) {
   const cachedResidences = useResidenceStore((state) => state.cachedResidences)
   const addToResidences = useResidenceStore((state) => state.addToResidences)
 
@@ -45,7 +45,7 @@ export default function HomeCard(props: HomeCardProps) {
 
       <View className="w-full gap-1 mt-2">
         <View className="flex flex-row items-center">
-          <Icon name="location-pin" color="black" size={19} />
+          <MapPinned color="black" size={19} />
           <Text className="font-poppins-medium text-sm ml-1">
             {props.location.length > 70
               ? `${props.location.slice(0, 60)}...`

@@ -6,7 +6,7 @@ import { FlatList, Image, Pressable, View } from 'react-native'
 import Button from '@/components/Button'
 import IconButton from '@/components/IconButton'
 
-interface GaleryProps {
+interface IGaleryGrid {
   images: ImagePicker.ImagePickerAsset[]
   cover: string | null | undefined
   setCover: Dispatch<React.SetStateAction<string | null | undefined>>
@@ -26,7 +26,7 @@ export default function Galery({
   setImagesToDelete,
   imagesToDelete,
   setPhotoChanged,
-}: GaleryProps) {
+}: IGaleryGrid) {
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,

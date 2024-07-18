@@ -9,12 +9,12 @@ import constants from '@/constants'
 import { useSupabase } from '@/hooks/useSupabase'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
-interface CarouselHeaderProps {
+interface ICarouselHeader {
   owner_id: string
   residence_id: string
 }
 
-export default function CarouselHeader(props: CarouselHeaderProps) {
+export default function CarouselHeader(props: ICarouselHeader) {
   const cachedResidences = useResidenceStore((state) => state.cachedResidences)
   const addToResidences = useResidenceStore((state) => state.addToResidences)
 

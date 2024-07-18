@@ -58,6 +58,7 @@ export default function Search() {
   useEffect(() => {
     navigation.addListener('beforeRemove', (e) => {
       e.preventDefault()
+
       setFilter({
         kind: 'all',
       })
@@ -67,14 +68,12 @@ export default function Search() {
 
     async function fetchData() {
       setLoading(true)
-      const { data, error } = await supabase.rpc('get_residences_by_location', {
-        place: query,
+      const { data } = await supabase.rpc('get_residences_by_location', {
+        search_location: query,
       })
 
       if (data) {
         setResidences(filterResidences({ ...filter, residences: data }))
-      } else {
-        console.log(error)
       }
       setLoading(false)
     }
@@ -112,7 +111,7 @@ export default function Search() {
   return (
     <SheetProvider>
       <View className="w-full h-full bg-white ">
-        <Header.Search value={query || ''} />
+        <Header.Search value={query || ''} filter={filter} />
 
         <View>
           {!loading ? (

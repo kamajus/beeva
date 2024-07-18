@@ -1,13 +1,13 @@
 import { Link } from 'expo-router'
 import { Image, View } from 'react-native'
 
-interface GaleryItemProps {
+interface IGaleryItem {
   id: string
   image: string | null
   activeted: boolean
 }
 
-export default function GaleryItem({ activeted, id, image }: GaleryItemProps) {
+export default function GaleryItem({ activeted, id, image }: IGaleryItem) {
   return (
     <Link
       href={{
