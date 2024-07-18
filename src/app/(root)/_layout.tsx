@@ -1,5 +1,11 @@
 import { Tabs } from 'expo-router'
-import { Home, PlusCircle, SettingsIcon } from 'lucide-react-native'
+import {
+  Bookmark,
+  Home,
+  PlusCircle,
+  SettingsIcon,
+  Sparkles,
+} from 'lucide-react-native'
 
 import constants from '@/constants'
 
@@ -31,6 +37,15 @@ export default function HomeLayout() {
         }}
       />
       <Tabs.Screen
+        name="wishes"
+        options={{
+          title: 'Desejos',
+          tabBarIcon: ({ color, size }) => (
+            <Sparkles size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="create"
         options={{
           title: 'Criar',
@@ -40,6 +55,15 @@ export default function HomeLayout() {
           tabBarStyle: {
             display: 'none',
           },
+        }}
+      />
+      <Tabs.Screen
+        name="saved"
+        options={{
+          title: 'Guardados',
+          tabBarIcon: ({ color, size }) => (
+            <Bookmark size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen

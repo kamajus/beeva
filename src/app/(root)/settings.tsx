@@ -34,7 +34,7 @@ export default function Settings() {
   return (
     <View className="relative bg-white">
       <View>
-        <Header.Normal title="Definições" />
+        <Header.Normal showIcon={false} title="Definições" />
       </View>
 
       <ScrollView className="bg-white h-full">
@@ -65,7 +65,9 @@ export default function Settings() {
           <View
             style={{ width }}
             className="px-4 py-6 flex-row justify-between items-center">
-            <Text className="text-base font-poppins-medium">Residências</Text>
+            <Text className="text-base font-poppins-medium">
+              Minhas residências
+            </Text>
             <ChevronRight color="#000" size={30} />
           </View>
         </TouchableBrightness>
