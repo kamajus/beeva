@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Svg, { Path } from 'react-native-svg'
 
-function NoNotification() {
+export default function NoNotification() {
   return (
     <Svg width={90} height={90} fill="#212121" viewBox="0 0 256 256">
       <Path
@@ -12,5 +12,3 @@ function NoNotification() {
     </Svg>
   )
 }
-
-export default NoNotification

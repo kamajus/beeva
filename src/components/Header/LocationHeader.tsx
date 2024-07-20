@@ -1,12 +1,12 @@
 import Constants from 'expo-constants'
 import { router } from 'expo-router'
+import { ArrowLeft } from 'lucide-react-native'
 import { Dispatch, SetStateAction } from 'react'
 import { View } from 'react-native'
-import Icon from 'react-native-vector-icons/Feather'
 
 import TextField from '../TextField'
 
-import '../ActionSheet'
+import '@/components/ActionSheet'
 
 interface ILocationHeader {
   setSearchQuery: Dispatch<SetStateAction<string>>
@@ -28,12 +28,7 @@ export default function LocationHeader({
               borderColor: 'transparent',
             }}
             disableFocus>
-            <Icon
-              name="arrow-left"
-              color="#000000"
-              size={25}
-              onPress={router.back}
-            />
+            <ArrowLeft color="#000000" size={25} onPress={router.back} />
             <TextField.Input
               value={searchQuery}
               onChangeText={setSearchQuery}

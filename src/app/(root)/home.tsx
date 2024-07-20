@@ -90,7 +90,7 @@ export default function House() {
           </TextField.Root>
         </View>
 
-        <HomeCard.Root title="🔥 Em alta" iconColor="#E25822">
+        <HomeCard.Root title="🔥 Em alta">
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}

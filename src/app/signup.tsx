@@ -58,7 +58,6 @@ export default function SignIn() {
   const {
     handleSubmit,
     control,
-    reset,
     setError,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -117,7 +116,9 @@ export default function SignIn() {
           )
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error)
+
         alert.showAlert(
           'Erro na autenticação',
           'Algo de errado aconteceu, tente novamente mais tarde.',
@@ -125,8 +126,6 @@ export default function SignIn() {
           () => {},
         )
       })
-
-    reset()
   }
 
   return (

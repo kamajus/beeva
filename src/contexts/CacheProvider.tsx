@@ -6,11 +6,11 @@ import React, {
   useState,
 } from 'react'
 
-import { IResidenceEnum, Notification } from '@/assets/@types'
+import { IResidenceEnum, INotification } from '@/assets/@types'
 
 type CacheContextType = {
-  notifications: Notification[]
-  setNotifications: Dispatch<SetStateAction<Notification[]>>
+  notifications: INotification[]
+  setNotifications: Dispatch<SetStateAction<INotification[]>>
   resetCache(): void
   filter: {
     kind?: IResidenceEnum
@@ -35,7 +35,7 @@ interface CacheProviderProps {
 }
 
 export default function CacheProvider(props: CacheProviderProps) {
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<INotification[]>([])
 
   const [filter, setFilter] = useState<{
     kind?: IResidenceEnum

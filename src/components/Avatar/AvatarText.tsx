@@ -10,7 +10,7 @@ interface AvatarTextProps {
 export default function AvatarText({
   className,
   size,
-  ...props
+  label = '...',
 }: AvatarTextProps) {
   return (
     <View
@@ -22,7 +22,7 @@ export default function AvatarText({
         width: size,
         height: size,
       }}>
-      <Text className="text-white font-poppins-semibold">{props.label}</Text>
+      <Text className="text-white font-poppins-semibold">{label}</Text>
     </View>
   )
 }

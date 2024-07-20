@@ -17,7 +17,7 @@ import Constants from '@/constants'
 import { useSupabase } from '@/hooks/useSupabase'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
-export default function Favorites() {
+export default function Residences() {
   const userResidences = useResidenceStore((state) => state.userResidences)
   const addToResidences = useResidenceStore((state) => state.addToResidences)
 
@@ -26,7 +26,6 @@ export default function Favorites() {
   const [refreshing, setRefreshing] = useState(false)
 
   const [loadingResidences, setLoadingResidences] = useState(false)
-  const [loadingFavorites, setLoadingFavorites] = useState(false)
 
   const getResidences = useCallback(async () => {
     const { data: residencesData } = await supabase
@@ -47,29 +46,25 @@ export default function Favorites() {
     setRefreshing(true)
     setTimeout(() => {
       setRefreshing(false)
-      setLoadingFavorites(true)
       setLoadingResidences(true)
       ;(async function () {
         await getResidences()
-        setLoadingFavorites(false)
         setLoadingResidences(false)
       })()
     }, 1000)
   }, [getResidences])
 
   useEffect(() => {
-    setLoadingFavorites(true)
     setLoadingResidences(true)
     ;(async function () {
       await getResidences()
-      setLoadingFavorites(false)
       setLoadingResidences(false)
     })()
   }, [getResidences])
 
   return (
     <View style={{ height }} className="relative bg-white">
-      {!loadingFavorites || !loadingResidences ? (
+      {!loadingResidences ? (
         <ScrollView
           style={{ padding: 16, marginTop: Constants.customHeaderDistance }}
           refreshControl={

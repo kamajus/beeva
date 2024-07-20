@@ -9,49 +9,13 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      favorites: {
-        Row: {
-          created_at: string
-          id: string
-          residence_id: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id: string
-          residence_id?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          residence_id?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "favorites_residence_id_fkey"
-            columns: ["residence_id"]
-            isOneToOne: false
-            referencedRelation: "residences"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "favorites_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       notifications: {
         Row: {
           created_at: string
           description: string
           id: string
           title: string
-          type: Database["public"]["Enums"]["notification_type"]
+          type: Database['public']['Enums']['notification_type']
           user_id: string | null
           was_readed: boolean
         }
@@ -60,7 +24,7 @@ export type Database = {
           description: string
           id?: string
           title: string
-          type: Database["public"]["Enums"]["notification_type"]
+          type: Database['public']['Enums']['notification_type']
           user_id?: string | null
           was_readed?: boolean
         }
@@ -69,24 +33,24 @@ export type Database = {
           description?: string
           id?: string
           title?: string
-          type?: Database["public"]["Enums"]["notification_type"]
+          type?: Database['public']['Enums']['notification_type']
           user_id?: string | null
           was_readed?: boolean
         }
         Relationships: [
           {
-            foreignKeyName: "notifications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'notifications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "public_notifications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'public_notifications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -114,25 +78,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "residence_notifications_notification_id_fkey"
-            columns: ["notification_id"]
+            foreignKeyName: 'residence_notifications_notification_id_fkey'
+            columns: ['notification_id']
             isOneToOne: false
-            referencedRelation: "notifications"
-            referencedColumns: ["id"]
+            referencedRelation: 'notifications'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "residence_notifications_residence_id_fkey"
-            columns: ["residence_id"]
+            foreignKeyName: 'residence_notifications_residence_id_fkey'
+            columns: ['residence_id']
             isOneToOne: false
-            referencedRelation: "residences"
-            referencedColumns: ["id"]
+            referencedRelation: 'residences'
+            referencedColumns: ['id']
           },
           {
-            foreignKeyName: "residence_notifications_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: 'residence_notifications_user_id_fkey'
+            columns: ['user_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -143,12 +107,12 @@ export type Database = {
           created_at: string
           description: string
           id: string
-          kind: Database["public"]["Enums"]["residence_kind"]
+          kind: Database['public']['Enums']['residence_kind']
           location: string
           owner_id: string
           photos: string[] | null
           price: number
-          state: Database["public"]["Enums"]["residence_state"]
+          state: Database['public']['Enums']['residence_state']
           updated_at: string | null
         }
         Insert: {
@@ -157,12 +121,12 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
-          kind: Database["public"]["Enums"]["residence_kind"]
+          kind: Database['public']['Enums']['residence_kind']
           location: string
           owner_id: string
           photos?: string[] | null
           price: number
-          state: Database["public"]["Enums"]["residence_state"]
+          state: Database['public']['Enums']['residence_state']
           updated_at?: string | null
         }
         Update: {
@@ -171,21 +135,57 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
-          kind?: Database["public"]["Enums"]["residence_kind"]
+          kind?: Database['public']['Enums']['residence_kind']
           location?: string
           owner_id?: string
           photos?: string[] | null
           price?: number
-          state?: Database["public"]["Enums"]["residence_state"]
+          state?: Database['public']['Enums']['residence_state']
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "residences_owner_id_fkey"
-            columns: ["owner_id"]
+            foreignKeyName: 'residences_owner_id_fkey'
+            columns: ['owner_id']
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
+            referencedRelation: 'users'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      saved_residences: {
+        Row: {
+          created_at: string
+          id: string
+          residence_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          residence_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          residence_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'favorites_residence_id_fkey'
+            columns: ['residence_id']
+            isOneToOne: false
+            referencedRelation: 'residences'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'favorites_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'users'
+            referencedColumns: ['id']
           },
         ]
       }
@@ -234,9 +234,9 @@ export type Database = {
       }
     }
     Enums: {
-      notification_type: "congratulations" | "residence-posted"
-      residence_kind: "apartment" | "villa" | "land" | "others"
-      residence_state: "sell" | "rent"
+      notification_type: 'congratulations' | 'residence-posted'
+      residence_kind: 'apartment' | 'villa' | 'land' | 'others'
+      residence_state: 'sell' | 'rent'
     }
     CompositeTypes: {
       [_ in never]: never
@@ -244,27 +244,27 @@ export type Database = {
   }
 }
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type PublicSchema = Database[Extract<keyof Database, 'public'>]
 
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
+        Database[PublicTableNameOrOptions['schema']]['Views'])
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
+      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] &
+        PublicSchema['Views'])
+    ? (PublicSchema['Tables'] &
+        PublicSchema['Views'])[PublicTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -273,19 +273,19 @@ export type Tables<
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+    | keyof PublicSchema['Tables']
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
+    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -294,19 +294,19 @@ export type TablesInsert<
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema["Tables"]
+    | keyof PublicSchema['Tables']
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
-    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
+    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -315,13 +315,13 @@ export type TablesUpdate<
 
 export type Enums<
   PublicEnumNameOrOptions extends
-    | keyof PublicSchema["Enums"]
+    | keyof PublicSchema['Enums']
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
     : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
-    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
+    ? PublicSchema['Enums'][PublicEnumNameOrOptions]
     : never

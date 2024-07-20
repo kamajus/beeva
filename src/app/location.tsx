@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { History, MapPin } from 'lucide-react-native'
 import { useEffect, useState, useCallback } from 'react'
 import { KeyboardAvoidingView, ScrollView, Text, View } from 'react-native'
-import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import Header from '@/components/Header'
 import TouchableBrightness from '@/components/TouchableBrightness'
@@ -92,11 +92,11 @@ export default function LocationSearch() {
             dataSource.map((item, index) => (
               <TouchableBrightness href={`/search/${item.value}`} key={index}>
                 <View className="flex flex-row items-center gap-2 py-8 px-4">
-                  <Icon
-                    name={item.origin === 'search' ? 'location-pin' : 'history'}
-                    color="black"
-                    size={25}
-                  />
+                  {item.origin === 'search' ? (
+                    <MapPin color="#000000" size={25} />
+                  ) : (
+                    <History color="#000000" size={25} />
+                  )}
                   <Text className="font-poppins-medium text-sm w-[90%]">
                     {item.value.length > 80
                       ? `${item.value.slice(0, 80)}...`
@@ -110,7 +110,7 @@ export default function LocationSearch() {
             historicSearch.map((item, index) => (
               <TouchableBrightness href={`/search/${item.value}`} key={index}>
                 <View className="flex flex-row items-center gap-2 py-8 px-4">
-                  <Icon name="history" color="black" size={25} />
+                  <History color="#000000" size={25} />
                   <Text className="font-poppins-medium text-sm w-[90%]">
                     {item.value.length > 80
                       ? `${item.value.slice(0, 80)}...`
