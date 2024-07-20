@@ -3,11 +3,11 @@ import { Link, useLocalSearchParams, router } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { Text, ScrollView, StyleSheet, Dimensions, View } from 'react-native'
 import { OtpInput } from 'react-native-otp-entry'
-import { HelperText } from 'react-native-paper'
 
 import Button from '@/components/Button'
+import TextField from '@/components/TextField'
 import { supabase } from '@/config/supabase'
-import Constants from '@/constants'
+import constants from '@/constants'
 
 const { width } = Dimensions.get('window')
 const inputWidth = width - width * 0.16
@@ -80,7 +80,7 @@ export default function Confirmation() {
           </Link>
           <OtpInput
             numberOfDigits={6}
-            focusColor={Constants.colors.primary}
+            focusColor={constants.colors.primary}
             theme={{
               containerStyle: styles.Ocontainer,
               pinCodeContainerStyle: styles.pinCode,
@@ -105,13 +105,10 @@ export default function Confirmation() {
                 ).padStart(2, '0')}`
               : 'Reenviar código'}
           </Text>
-          <HelperText
-            className="p-0 m-0"
-            type="error"
-            visible={error !== false}>
-            O código está incorrecto.
-          </HelperText>
-
+          <TextField.Helper
+            visible={error !== false}
+            message="O código está incorrecto."
+          />
           <Button loading={loading} onPress={signInWithOtp} title="Verificar" />
         </View>
       </ScrollView>

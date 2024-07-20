@@ -45,7 +45,7 @@ export default function Saved() {
         addToResidences(saved, 'saved')
       })
     }
-  }, [user?.id, addToResidences])
+  }, [user, addToResidences])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)

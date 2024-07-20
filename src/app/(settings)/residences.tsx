@@ -40,7 +40,7 @@ export default function Residences() {
         return residence
       })
     }
-  }, [user?.id, addToResidences])
+  }, [user, addToResidences])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)

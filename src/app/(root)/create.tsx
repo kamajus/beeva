@@ -1,12 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import clsx from 'clsx'
 import * as ImagePicker from 'expo-image-picker'
 import { router } from 'expo-router'
 import React, { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { ScrollView, Text, View } from 'react-native'
 import CurrencyInput from 'react-native-currency-input'
-import { HelperText, RadioButton } from 'react-native-paper'
+import { RadioButton } from 'react-native-paper'
 import * as yup from 'yup'
 
 import { IResidence, IResidenceEnum } from '@/assets/@types'
@@ -163,14 +162,7 @@ export default function Editor() {
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.price?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.price?.message !== undefined}>
-                    {errors.price?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.price?.message} />
                 </View>
               )}
             />
@@ -195,14 +187,7 @@ export default function Editor() {
                       error={errors.location?.message !== undefined}
                     />
                   </View>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.location?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.location?.message !== undefined}>
-                    {errors.location?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.location?.message} />
                 </View>
               )}
             />
@@ -230,14 +215,7 @@ export default function Editor() {
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.description?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.description?.message !== undefined}>
-                    {errors.description?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.description?.message} />
                 </View>
               )}
             />

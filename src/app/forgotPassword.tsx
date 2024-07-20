@@ -1,8 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import clsx from 'clsx'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, View } from 'react-native'
-import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
 import Button from '@/components/Button'
@@ -86,14 +84,7 @@ export default function Confirmation() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.email?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.email?.message !== undefined}>
-                    {errors.email?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.email?.message} />
                 </View>
               )}
             />

@@ -1,6 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { decode } from 'base64-arraybuffer'
-import clsx from 'clsx'
 import * as FileSystem from 'expo-file-system'
 import * as ImagePicker from 'expo-image-picker'
 import { useNavigation } from 'expo-router'
@@ -10,11 +9,9 @@ import {
   Dimensions,
   Pressable,
   ScrollView,
-  Text,
   View,
   KeyboardAvoidingView,
 } from 'react-native'
-import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
 import Avatar from '@/components/Avatar'
@@ -315,14 +312,7 @@ export default function Perfil() {
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.firstName?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.firstName?.message !== undefined}>
-                    {errors.firstName?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.firstName?.message} />
                 </View>
               )}
             />
@@ -349,14 +339,7 @@ export default function Perfil() {
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.lastName?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.lastName?.message !== undefined}>
-                    {errors.lastName?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.lastName?.message} />
                 </View>
               )}
             />
@@ -384,23 +367,13 @@ export default function Perfil() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.email?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.email?.message !== undefined}>
-                    {errors.email?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.email?.message} />
                 </View>
               )}
             />
           </View>
 
           <View>
-            <Text className="font-poppins-medium text-xs text-gray-500">
-              OBS: Esse número vai estar visível para todos 🌐
-            </Text>
             <View>
               <Controller
                 control={control}
@@ -423,24 +396,11 @@ export default function Perfil() {
                         />
                       </TextField.Container>
                     </TextField.Root>
-                    <HelperText
-                      className="p-0 m-0 mt-2"
-                      type="error"
-                      visible={errors.phone?.message !== undefined}>
-                      {errors.phone?.message}
-                    </HelperText>
-
-                    <HelperText
-                      className="p-0 m-0 mt-2"
+                    <TextField.Helper message={errors.phone?.message} />
+                    {/* <TextField.Helper
                       type="info"
-                      visible={
-                        false
-                        // session?.user.phone_confirmed_at === undefined && user?.phone !== null
-                      }>
-                      <Text className="text-primary font-poppins-medium">
-                        Confirmar o seu número de telefone
-                      </Text>
-                    </HelperText>
+                      message="Confirmar o seu número de telefone"
+                    /> */}
                   </View>
                 )}
               />

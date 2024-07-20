@@ -96,7 +96,6 @@ export default function Galery({
                 className={clsx('absolute top-[4px] right-3', {
                   hidden: disabled,
                 })}
-                containerColor="#ffffff"
                 color={cover === item.uri ? '#ffcb0c' : 'lightgray'}
                 fill={cover === item.uri ? '#ffcb0c' : 'lightgray'}
               />

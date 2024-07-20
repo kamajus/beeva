@@ -11,7 +11,7 @@ import IconButton from '@/components/IconButton'
 import PublishedSince from '@/components/PublishedSince'
 import { supabase } from '@/config/supabase'
 import constants from '@/constants'
-import { formatMoney } from '@/functions/format'
+import { formatMoney, formatPhoneNumber } from '@/functions/format'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 import { useResidenceStore } from '@/store/ResidenceStore'
@@ -163,13 +163,7 @@ export default function ResidenceDetail() {
                 )}
               </>
             ) : (
-              <>
-                <IconButton
-                  name="MessageSquare"
-                  disabled={!cachedData?.residence}
-                />
-                <IconButton name="Phone" disabled={!cachedData?.residence} />
-              </>
+              <IconButton name="Heart" disabled={!cachedData?.residence} />
             )}
           </View>
         </View>
@@ -227,6 +221,16 @@ export default function ResidenceDetail() {
             {cachedData?.residence?.location
               ? cachedData.residence.location
               : '...'}
+          </Text>
+        </View>
+
+        <View className="mt-7">
+          <Text className="font-poppins-regular text-xs text-gray-400">
+            Telefone
+          </Text>
+
+          <Text className="font-poppins-medium text-gray-600 mt-2 mb-2">
+            {formatPhoneNumber('923512286')}
           </Text>
         </View>
 

@@ -1,13 +1,13 @@
 import { StyleProp, ViewStyle, View, Text, TextStyle } from 'react-native'
 
-interface TextFieldLabelProps {
+interface ITextFieldLabel {
   children: string
   isRequired?: boolean
   style?: StyleProp<ViewStyle>
   textStyle?: StyleProp<TextStyle>
 }
 
-export default function TextFieldLabel(props: TextFieldLabelProps) {
+export default function TextFieldLabel(props: ITextFieldLabel) {
   return (
     <View className="flex-row mb-1 items-center gap-1" style={props.style}>
       <Text

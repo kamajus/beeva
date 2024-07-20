@@ -1,11 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import clsx from 'clsx'
 import { Link, useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
 import Button from '@/components/Button'
@@ -95,14 +93,7 @@ export default function SignIn() {
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: !errors.email?.message,
-                    })}
-                    type="error"
-                    visible={!!errors.email?.message}>
-                    {errors.email?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.email?.message} />
                 </View>
               )}
             />
@@ -140,14 +131,7 @@ export default function SignIn() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: !errors.password?.message,
-                    })}
-                    type="error"
-                    visible={!!errors.password?.message}>
-                    {errors.password?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.password?.message} />
                 </View>
               )}
             />

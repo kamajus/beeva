@@ -1,11 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import clsx from 'clsx'
 import { Link, useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, Text, View, Linking, TouchableOpacity } from 'react-native'
-import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
 import Button from '@/components/Button'
@@ -28,7 +26,7 @@ const schema = yup.object({
     .required('O e-mail é obrigatório'),
   firstName: yup
     .string()
-    .required('O campo de nome é obrigatório')
+    .required('O nome é obrigatório')
     .min(2, 'O nome deve ter pelo menos 2 caracteres')
     .max(50, 'O nome deve ter no máximo 50 caracteres')
     .matches(
@@ -37,7 +35,7 @@ const schema = yup.object({
     ),
   lastName: yup
     .string()
-    .required('O campo de sobrenome é obrigatório')
+    .required('O sobrenome é obrigatório')
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
     .max(50, 'O sobrenome deve ter no máximo 50 caracteres')
     .matches(
@@ -70,10 +68,11 @@ export default function SignIn() {
     resolver: yupResolver(schema),
   })
 
-  const [passwordVisible, setPasswordVisible] = useState(false)
-  const { signUp } = useSupabase()
   const router = useRouter()
   const alert = useAlert()
+  const { signUp } = useSupabase()
+
+  const [passwordVisible, setPasswordVisible] = useState(false)
 
   function onSubmit(data: FormData) {
     signUp(data.email, data.password)
@@ -116,9 +115,7 @@ export default function SignIn() {
           )
         }
       })
-      .catch((error) => {
-        console.log(error)
-
+      .catch(() => {
         alert.showAlert(
           'Erro na autenticação',
           'Algo de errado aconteceu, tente novamente mais tarde.',
@@ -156,14 +153,7 @@ export default function SignIn() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.firstName?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.firstName?.message !== undefined}>
-                    {errors.firstName?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.firstName?.message} />
                 </View>
               )}
             />
@@ -191,14 +181,7 @@ export default function SignIn() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.lastName?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.lastName?.message !== undefined}>
-                    {errors.lastName?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.lastName?.message} />
                 </View>
               )}
             />
@@ -228,14 +211,7 @@ export default function SignIn() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.email?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.email?.message !== undefined}>
-                    {errors.email?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.email?.message} />
                 </View>
               )}
             />
@@ -273,14 +249,7 @@ export default function SignIn() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.password?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.password?.message !== undefined}>
-                    {errors.password?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.password?.message} />
                 </View>
               )}
             />

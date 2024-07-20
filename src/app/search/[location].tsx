@@ -14,7 +14,7 @@ import { useCache } from '@/hooks/useCache'
 
 export default function Search() {
   const navigation = useNavigation()
-  const { query } = useLocalSearchParams<{ query: string }>()
+  const { location } = useLocalSearchParams<{ location: string }>()
   const [residences, setResidences] = useState<IResidence[]>()
   const [loading, setLoading] = useState(false)
   const { filter, setFilter } = useCache()
@@ -69,7 +69,7 @@ export default function Search() {
     async function fetchData() {
       setLoading(true)
       const { data } = await supabase.rpc('get_residences_by_location', {
-        search_location: query,
+        search_location: location,
       })
 
       if (data) {
@@ -79,8 +79,8 @@ export default function Search() {
     }
 
     fetchData()
-    if (query) addItemToHistory(query)
-  }, [query, filter, navigation, setFilter])
+    if (location) addItemToHistory(location)
+  }, [location, filter, navigation, setFilter])
 
   function filterResidences({
     kind,
@@ -111,7 +111,7 @@ export default function Search() {
   return (
     <SheetProvider>
       <View className="w-full h-full bg-white ">
-        <Header.Search value={query || ''} filter={filter} />
+        <Header.Search value={location} filter={filter} />
 
         <View>
           {!loading ? (

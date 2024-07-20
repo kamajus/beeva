@@ -29,7 +29,7 @@ type SupabaseContextProps = {
   signOut: () => Promise<void>
   getResidenceById: (id: string) => Promise<IResidence | void>
   getUserById: (id?: string, upsert?: boolean) => Promise<IUser | void>
-  handleSaveResidence: (residence: IResidence, saved: boolean) => Promise<void>
+  saveResidence: (residence: IResidence, saved: boolean) => Promise<void>
   handleCallNotification: (title: string, body: string) => void
 }
 
@@ -49,7 +49,7 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
   signOut: async () => {},
   getUserById: async () => {},
   getResidenceById: async () => {},
-  handleSaveResidence: async () => {},
+  saveResidence: async () => {},
   handleCallNotification: () => {},
 })
 
@@ -138,19 +138,18 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     }
   }
 
-  const handleSaveResidence = async (residence: IResidence, saved: boolean) => {
+  const saveResidence = async (residence: IResidence, saved: boolean) => {
     if (saved) {
-      addToResidences(residence, 'saved')
       await supabase
         .from('saved_residences')
         .insert({ residence_id: residence.id })
+      addToResidences(residence, 'saved')
     } else {
-      removeResidence(residence.id)
       await supabase
         .from('saved_residences')
         .delete()
-        .eq('user_id', user?.id)
         .eq('residence_id', residence.id)
+      removeResidence(residence.id)
     }
   }
 
@@ -163,13 +162,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         .select('*')
         .eq('id', id)
         .single<IResidence>()
+
       if (error) throw error
-
-      if (data.cover) {
-        data.cover = formatPhotoUrl(data.cover, data.updated_at)
-      }
-
       cachedResidences[id] = data
+
       return data
     },
     [cachedResidences],
@@ -242,14 +238,12 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           (r) => r.id === notification.id,
         )
         if (index !== -1) {
-          // Atualiza a notificação existente
           return [
             notification,
             ...prevNotifications.slice(0, index),
             ...prevNotifications.slice(index + 1),
           ]
         } else {
-          // Adiciona a nova notificação
           return [notification, ...prevNotifications]
         }
       })
@@ -265,17 +259,17 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   }
 
   useEffect(() => {
-    console.log('foda-se')
     const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
+      console.log('loading user data...')
       if (session) {
         try {
           const userData = await getUserById(session.user.id, true)
+          setUser(userData)
+
           if (!userData) {
             await supabase.auth.signOut()
             router.replace('/signin')
           }
-
-          setUser(userData)
 
           const { data: notificationsData } = await supabase
             .from('notifications')
@@ -388,7 +382,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         signInWithPassword,
         sendOtpCode,
         signOut,
-        handleSaveResidence,
+        saveResidence,
         handleCallNotification,
         uploadResidencesImage,
       }}>
