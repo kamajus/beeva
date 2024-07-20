@@ -1,7 +1,7 @@
-import Constants from 'expo-constants'
+import expoContants from 'expo-constants'
 import { useRouter } from 'expo-router'
+import { ArrowLeft } from 'lucide-react-native'
 import { Dimensions, Text, View } from 'react-native'
-import Icon from 'react-native-vector-icons/Feather'
 
 interface INormalHeader {
   title: string
@@ -17,11 +17,9 @@ export default function NormalHeader({
 
   return (
     <View
-      style={{ marginTop: Constants.statusBarHeight, width }}
+      style={{ marginTop: expoContants.statusBarHeight, width }}
       className="bg-white py-4 px-4 flex gap-x-4 flex-row items-center border-b-[.5px] border-b-gray-300">
-      {showIcon && (
-        <Icon name="arrow-left" color="#000000" size={25} onPress={back} />
-      )}
+      {showIcon && <ArrowLeft color="#000000" size={25} onPress={back} />}
       <Text className="font-poppins-semibold text-xl">{title}</Text>
     </View>
   )

@@ -1,4 +1,4 @@
-import ExpoContants from 'expo-constants'
+import expoConstants from 'expo-constants'
 import { useRouter } from 'expo-router'
 import { ChevronRight, ExternalLink, LogOut } from 'lucide-react-native'
 import { useState } from 'react'
@@ -136,7 +136,7 @@ export default function Settings() {
             Versão
           </Text>
           <Text className="text-sm font-poppins-regular text-[#d3d3d3]">
-            {ExpoContants.expoConfig?.version}
+            {expoConstants.expoConfig?.version}
           </Text>
         </View>
       </ScrollView>

@@ -5,7 +5,8 @@ import ActionSheet, {
   SheetManager,
 } from 'react-native-actions-sheet'
 import CurrencyInput from 'react-native-currency-input'
-import { RadioButton } from 'react-native-paper'
+
+import RadioButton from '../RadioButton'
 
 import { IResidenceEnum } from '@/assets/@types'
 import Button from '@/components/Button'
@@ -56,8 +57,7 @@ export default function SearchActionSheet(props: SheetProps) {
             <Text className="text-sm font-poppins-regular">Arrendamento</Text>
             <RadioButton
               value="rent"
-              status={state === 'rent' ? 'checked' : 'unchecked'}
-              color={Constants.colors.primary}
+              isChecked={state === 'rent'}
               onPress={() => setState('rent')}
             />
           </View>
@@ -66,8 +66,7 @@ export default function SearchActionSheet(props: SheetProps) {
             <Text className="text-sm font-poppins-regular">À Venda</Text>
             <RadioButton
               value="sell"
-              status={state === 'sell' ? 'checked' : 'unchecked'}
-              color={Constants.colors.primary}
+              isChecked={state === 'sell'}
               onPress={() => setState('sell')}
             />
           </View>
