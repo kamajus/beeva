@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Svg, { Path } from 'react-native-svg'
 
-function NoData() {
+export default function NoData() {
   return (
     <Svg width={90} height={90} fill="#212121" viewBox="0 0 256 256">
       <Path d="M224 128a96 96 0 11-96-96 96 96 0 0196 96z" opacity={0.2} />
@@ -9,5 +9,3 @@ function NoData() {
     </Svg>
   )
 }
-
-export default NoData

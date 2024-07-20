@@ -7,7 +7,6 @@ import constants from '@/constants'
 interface HomeRootProps {
   children: ReactNode
   title: string
-  iconColor?: string
   withoutPlus?: boolean
 }
 
@@ -15,7 +14,6 @@ export default function HomeRoot({
   children,
   title,
   withoutPlus,
-  iconColor,
 }: HomeRootProps) {
   return (
     <View className="mt-4">

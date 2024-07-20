@@ -17,38 +17,49 @@ interface IHomeCard extends IResidence {
   cardType: 'search' | 'big' | 'small'
 }
 
-export default function HomeCard(props: IHomeCard) {
-  const cachedResidences = useResidenceStore((state) => state.cachedResidences)
-  const addToResidences = useResidenceStore((state) => state.addToResidences)
-
-  const { residenceIsFavorite, handleFavorite, user } = useSupabase()
-  const [favorite, setFavorite] = useState(
-    cachedResidences.some(({ residence: r }) => r.id === props.id),
+export default function HomeCard(residence: IHomeCard) {
+  const residenceSavedStatus = useResidenceStore(
+    (state) => state.residenceSavedStatus,
   )
+  const { handleSaveResidence, user } = useSupabase()
+  const [savedResidence, setSavedResidence] = useState(false)
 
   useEffect(() => {
-    residenceIsFavorite(props.id).then((data) => {
-      setFavorite(data)
-    })
-  }, [props.id, residenceIsFavorite])
+    async function checkSaved() {
+      const isSaved = await residenceSavedStatus(residence.id, user)
+      setSavedResidence(isSaved)
+    }
+
+    checkSaved()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [residence.id, user])
+
+  useEffect(() => {
+    async function checkSaved() {
+      console.log('user!!!!')
+    }
+
+    checkSaved()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
 
   return (
     <View className="mb-2">
-      <Pressable onPress={() => router.push(`/residence/${props.id}`)}>
-        {props.cover ? (
+      <Pressable onPress={() => router.push(`/residence/${residence.id}`)}>
+        {residence.cover ? (
           <Image
-            source={{ uri: String(props.cover) }}
-            alt={props.description || ''}
+            source={{ uri: String(residence.cover) }}
+            alt={residence.description || ''}
             className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
-              'mt-0 w-[272px] h-[220px] mr-2': props.cardType === 'big',
-              'mt-0 w-[172px] h-[190px] mr-2': props.cardType === 'small',
+              'mt-0 w-[272px] h-[220px] mr-2': residence.cardType === 'big',
+              'mt-0 w-[172px] h-[190px] mr-2': residence.cardType === 'small',
             })}
           />
         ) : (
           <SkeletonComponent
             className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
-              'mt-0 w-[272px] h-[220px] mr-2': props.cardType === 'big',
-              'mt-0 w-[172px] h-[190px] mr-2': props.cardType === 'small',
+              'mt-0 w-[272px] h-[220px] mr-2': residence.cardType === 'big',
+              'mt-0 w-[172px] h-[190px] mr-2': residence.cardType === 'small',
             })}
           />
         )}
@@ -58,37 +69,42 @@ export default function HomeCard(props: IHomeCard) {
         <View className="flex flex-row items-center">
           <MapPinned color="black" size={19} />
           <Text className="font-poppins-medium text-sm ml-1">
-            {props.location.length > 70
-              ? `${props.location.slice(0, 60)}...`
-              : props.location}
+            {residence.location.length > 70
+              ? `${residence.location.slice(0, 60)}...`
+              : residence.location}
           </Text>
         </View>
         <Text
           className={clsx('font-poppins-semibold text-sm', {
-            'text-base': props.cardType === 'search',
+            'text-base': residence.cardType === 'search',
           })}>
-          {formatMoney(props.price)}
+          {formatMoney(residence.price)}
         </Text>
       </View>
 
       <IconButton
         name="Bookmark"
-        color={favorite ? constants.colors.primary : '#000000'}
+        color={savedResidence ? constants.colors.primary : '#000000'}
         fill={
-          props.owner_id !== user?.id
-            ? favorite
+          residence.owner_id !== user?.id
+            ? savedResidence
               ? constants.colors.primary
               : 'transparent'
             : 'transparent'
         }
-        disabled={props.owner_id === user?.id || props.owner_id === undefined}
+        disabled={
+          residence.owner_id === user?.id || residence.owner_id === undefined
+        }
         className={clsx('absolute top-[4px] right-3', {
-          'absolute top-6 right-1': props.cardType === 'search',
+          'absolute top-6 right-1': residence.cardType === 'search',
         })}
         onPress={() => {
-          setFavorite(!favorite)
-          handleFavorite(props.id, favorite)
-          if (!favorite) addToResidences(props, 'favorites')
+          async function handleSavingResidence() {
+            setSavedResidence(!savedResidence)
+            await handleSaveResidence(residence, !savedResidence)
+          }
+
+          handleSavingResidence()
         }}
       />
     </View>

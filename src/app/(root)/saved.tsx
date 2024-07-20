@@ -7,8 +7,8 @@ import {
   View,
 } from 'react-native'
 
-import { IFavorite } from '@/assets/@types'
-import NoFavorite from '@/assets/images/no-favorite'
+import { ISavedResidences } from '@/assets/@types'
+import NoSaved from '@/assets/images/no-saved'
 import GaleryItem from '@/components/GaleryItem'
 import Header from '@/components/Header'
 import LoadScreen from '@/components/LoadScreen'
@@ -18,33 +18,31 @@ import { useSupabase } from '@/hooks/useSupabase'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
 export default function Saved() {
-  const favoritesResidences = useResidenceStore(
-    (state) => state.favoritesResidences,
-  )
+  const savedResidences = useResidenceStore((state) => state.savedResidences)
   const addToResidences = useResidenceStore((state) => state.addToResidences)
 
   const { user } = useSupabase()
   const { height } = Dimensions.get('screen')
   const [refreshing, setRefreshing] = useState(false)
 
-  const [loadingFavorites, setLoadingFavorites] = useState(false)
+  const [loadingSaved, setLoadingSaved] = useState(false)
 
-  const getFavorites = useCallback(async () => {
-    const { data: favoritesData } = await supabase
-      .from('favorites')
+  const getSavedResidences = useCallback(async () => {
+    const { data: savedResidencesData } = await supabase
+      .from('saved_residences')
       .select('*')
       .eq('user_id', user?.id)
-      .returns<IFavorite[]>()
+      .returns<ISavedResidences[]>()
 
-    if (favoritesData) {
-      favoritesData.map(async (item) => {
-        const { data: favorite } = await supabase
+    if (savedResidencesData) {
+      savedResidencesData.map(async (item) => {
+        const { data: saved } = await supabase
           .from('residences')
           .select('*')
           .eq('id', item.residence_id)
           .single()
 
-        addToResidences(favorite, 'favorites')
+        addToResidences(saved, 'saved')
       })
     }
   }, [user?.id, addToResidences])
@@ -53,21 +51,21 @@ export default function Saved() {
     setRefreshing(true)
     setTimeout(() => {
       setRefreshing(false)
-      setLoadingFavorites(true)
+      setLoadingSaved(true)
       ;(async function () {
-        await getFavorites()
-        setLoadingFavorites(false)
+        await getSavedResidences()
+        setLoadingSaved(false)
       })()
     }, 1000)
-  }, [getFavorites])
+  }, [getSavedResidences])
 
   useEffect(() => {
-    setLoadingFavorites(true)
+    setLoadingSaved(true)
     ;(async function () {
-      await getFavorites()
-      setLoadingFavorites(false)
+      await getSavedResidences()
+      setLoadingSaved(false)
     })()
-  }, [getFavorites])
+  }, [getSavedResidences])
 
   return (
     <View className="relative bg-white">
@@ -75,7 +73,7 @@ export default function Saved() {
         <Header.Normal showIcon={false} title="Guardados por mim" />
       </View>
 
-      {!loadingFavorites ? (
+      {!loadingSaved ? (
         <ScrollView
           style={{ padding: 16, marginTop: Constants.customHeaderDistance }}
           className="bg-white h-full"
@@ -83,8 +81,8 @@ export default function Saved() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
           <View className="mt-2 flex-1 flex-row flex-wrap">
-            {favoritesResidences.length > 0 ? (
-              favoritesResidences.map(({ id, cover }) => (
+            {savedResidences.length > 0 ? (
+              savedResidences.map(({ id, cover }) => (
                 <View key={id} className="mr-3 mt-3">
                   <GaleryItem
                     image={cover}
@@ -99,7 +97,7 @@ export default function Saved() {
                 style={{ height: height - 74 - Constants.customHeaderDistance }}
                 className="w-full flex-1 flex items-center justify-center">
                 <View className="flex items-center justify-center">
-                  <NoFavorite />
+                  <NoSaved />
                   <Text className="font-poppins-medium text-gray-400 text-center">
                     Você não tem nehuma guardada.
                   </Text>

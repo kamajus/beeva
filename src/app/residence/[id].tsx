@@ -3,7 +3,7 @@ import { useLocalSearchParams, Link, router } from 'expo-router'
 import { useCallback, useEffect, useState } from 'react'
 import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native'
 
-import { ICachedResidence, IResidence } from '@/assets/@types'
+import { ICachedResidence } from '@/assets/@types'
 import Avatar from '@/components/Avatar'
 import Carousel from '@/components/Carousel'
 import Header from '@/components/Header'
@@ -24,7 +24,8 @@ export default function ResidenceDetail() {
 
   const { id } = useLocalSearchParams<{ id: string }>()
 
-  const { handleCallNotification, getUserById, user } = useSupabase()
+  const { handleCallNotification, getUserById, getResidenceById, user } =
+    useSupabase()
   const [cachedData, setCachedData] = useState<ICachedResidence | undefined>(
     cachedResidences.find((r) => r.residence.id === id),
   )
@@ -33,58 +34,41 @@ export default function ResidenceDetail() {
   const [showDescription, setShowDescription] = useState(false)
 
   const getResidence = useCallback(async () => {
-    const { data: residenceData } = await supabase
-      .from('residences')
-      .select('*')
-      .eq('id', id)
-      .single<IResidence>()
+    const residenceData = await getResidenceById(id)
 
     if (residenceData) {
-      if (residenceData.owner_id === user?.id) {
+      const userData = await getUserById(residenceData.owner_id)
+      if (userData) {
         setCachedData({
           residence: residenceData,
-          user,
+          user: userData,
         })
 
-        pushResidence(residenceData, user)
-      } else {
-        await getUserById(residenceData.owner_id).then(async (userData) => {
-          if (userData) {
-            setCachedData({
-              residence: residenceData,
-              user: userData,
-            })
-
-            pushResidence(residenceData, userData)
-          }
-        })
+        pushResidence(residenceData, userData)
       }
     }
-  }, [id, pushResidence, getUserById, user])
+  }, [id, getResidenceById, getUserById, pushResidence])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
-    setTimeout(() => {
-      setRefreshing(false)
-      getResidence()
-    }, 2000)
+    getResidence().finally(() => setRefreshing(false))
   }, [getResidence])
 
-  async function deleteResidence() {
+  const deleteResidence = useCallback(async () => {
     if (cachedData?.residence?.photos) {
       const { error } = await supabase.from('residences').delete().eq('id', id)
-
-      const filesToRemove = cachedData.residence?.photos.map(
-        (image) => `${user?.id}/${id}/${image}`,
-      )
-
-      if (filesToRemove) {
-        await supabase.storage.from('residences').remove(filesToRemove)
-      }
+      await supabase.storage
+        .from('residences')
+        .remove(
+          cachedData.residence.photos.map(
+            (image) => `${user?.id}/${id}/${image}`,
+          ),
+        )
 
       if (!error && id) {
         router.replace('/home')
         removeResidence(id)
+
         handleCallNotification(
           'Residência eliminada',
           'A residência foi eliminada com sucesso',
@@ -98,15 +82,20 @@ export default function ResidenceDetail() {
         )
       }
     }
-  }
+  }, [cachedData, id, user, removeResidence, handleCallNotification, alert])
 
   useEffect(() => {
-    getResidence()
-  }, [getResidence])
+    const checkCachedData = () => {
+      const newData = cachedResidences.find((r) => r?.residence.id === id)
+      if (newData) {
+        setCachedData(newData)
+      } else {
+        onRefresh()
+      }
+    }
 
-  useEffect(() => {
-    setCachedData(cachedResidences.find((r) => r.residence.id === id))
-  }, [cachedResidences, id])
+    checkCachedData()
+  }, [cachedResidences, id, onRefresh])
 
   return (
     <ScrollView
@@ -115,7 +104,10 @@ export default function ResidenceDetail() {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
-      <Carousel photos={cachedData?.residence.photos} style={{ height: 640 }} />
+      <Carousel
+        photos={cachedData?.residence?.photos}
+        style={{ height: 640 }}
+      />
       <View className="px-4 bg-white flex mt-7">
         <View className="flex flex-row items-center justify-between">
           <View className="flex gap-x-3 flex-row">
@@ -123,24 +115,24 @@ export default function ResidenceDetail() {
               {cachedData?.user?.photo_url ? (
                 <Avatar.Image
                   size={50}
-                  source={{ uri: cachedData?.user.photo_url }}
+                  source={{ uri: cachedData?.user?.photo_url }}
                 />
               ) : (
                 <Avatar.Text
                   size={50}
-                  label={String(cachedData?.user?.first_name[0] || '...')}
+                  label={cachedData?.user?.first_name?.[0]}
                 />
               )}
             </View>
             <View>
               <Text className="font-poppins-medium text-base">
                 {cachedData?.user
-                  ? `${cachedData.user.first_name} ${cachedData.user.last_name}`
+                  ? `${cachedData.user?.first_name} ${cachedData.user?.last_name}`
                   : '...'}
               </Text>
               <Text className="font-poppins-regular text-sm text-gray-400">
-                {cachedData?.user && cachedData?.user.id
-                  ? cachedData.user.id === user?.id
+                {cachedData?.user && cachedData?.user?.id
+                  ? cachedData.user?.id === user?.id
                     ? 'Eu (:'
                     : 'Dono'
                   : '...'}
@@ -156,7 +148,7 @@ export default function ResidenceDetail() {
                   onPress={() => {
                     alert.showAlert(
                       'Alerta',
-                      'Você tem ceteza que quer apagar essa residência?',
+                      'Você tem certeza que quer apagar essa residência?',
                       'Sim',
                       () => deleteResidence(),
                       'Cancelar',
@@ -186,7 +178,7 @@ export default function ResidenceDetail() {
           {cachedData?.residence?.price ? (
             <View>
               <Text className="text-2xl font-poppins-semibold">
-                {formatMoney(Number(cachedData?.residence?.price))}
+                {formatMoney(cachedData?.residence?.price)}
               </Text>
               <Text
                 className={clsx('text-xs font-poppins-regular text-gray-400', {
@@ -222,7 +214,7 @@ export default function ResidenceDetail() {
           </Text>
           <PublishedSince
             className="font-poppins-medium"
-            date={String(cachedData?.residence?.created_at)}
+            date={cachedData?.residence?.created_at}
           />
         </View>
 
@@ -233,7 +225,7 @@ export default function ResidenceDetail() {
 
           <Text className="font-poppins-medium text-gray-600 mt-2 mb-2">
             {cachedData?.residence?.location
-              ? cachedData.residence?.location
+              ? cachedData.residence.location
               : '...'}
           </Text>
         </View>
@@ -243,7 +235,7 @@ export default function ResidenceDetail() {
           onPress={() => {
             if (
               cachedData?.residence?.description &&
-              cachedData.residence?.description.length > 100
+              cachedData.residence.description.length > 100
             ) {
               setShowDescription(!showDescription)
             }
@@ -251,17 +243,17 @@ export default function ResidenceDetail() {
           <Text className="font-poppins-semibold text-lg">Descrição</Text>
           <Text className="font-poppins-regular text-gray-600">
             {cachedData?.residence?.description
-              ? cachedData.residence?.description.length > 100 &&
+              ? cachedData.residence.description.length > 100 &&
                 !showDescription
-                ? `${cachedData.residence?.description.slice(0, 100)}...`
-                : cachedData?.residence?.description
+                ? `${cachedData.residence.description.slice(0, 100)}...`
+                : cachedData.residence.description
               : '...'}
           </Text>
           <Text
             className={clsx('text-primary text-xs font-poppins-medium', {
               hidden: !(
                 cachedData?.residence?.description &&
-                cachedData.residence?.description.length > 100
+                cachedData.residence.description.length > 100
               ),
             })}>
             {showDescription ? ' - ver menos' : ' ver mais +'}
@@ -269,12 +261,10 @@ export default function ResidenceDetail() {
         </Pressable>
       </View>
 
-      {cachedData?.residence?.id && (
-        <Header.Carousel
-          owner_id={String(cachedData?.residence?.owner_id)}
-          residence_id={String(cachedData?.residence?.id)}
-        />
-      )}
+      <Header.Carousel
+        owner_id={cachedData?.residence?.owner_id}
+        residence_id={cachedData?.residence?.id}
+      />
     </ScrollView>
   )
 }
