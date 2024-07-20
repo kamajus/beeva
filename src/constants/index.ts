@@ -1,4 +1,4 @@
-import ExpoConstants from 'expo-constants'
+import expoConstants from 'expo-constants'
 
 import { IResidenceEnum } from '@/assets/@types'
 
@@ -11,7 +11,7 @@ const colors = {
 }
 
 // Calculates the distance between the custom navigation header and screen
-const customHeaderDistance = ExpoConstants.statusBarHeight * 2 + 30
+const customHeaderDistance = expoConstants.statusBarHeight * 2 + 30
 
 const categories: Categories = [
   {

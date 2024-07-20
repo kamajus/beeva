@@ -1,4 +1,4 @@
-import ExpoConstants from 'expo-constants'
+import expoConstants from 'expo-constants'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { View, Dimensions } from 'react-native'
@@ -44,7 +44,7 @@ export default function CarouselHeader(props: ICarouselHeader) {
 
   return (
     <View
-      style={{ width, marginTop: ExpoConstants.statusBarHeight + 20 }}
+      style={{ width, marginTop: expoConstants.statusBarHeight + 20 }}
       className="absolute flex px-4 flex-row justify-between items-center">
       <IconButton
         name="ArrowLeft"

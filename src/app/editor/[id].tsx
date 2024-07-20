@@ -5,12 +5,12 @@ import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { ScrollView, Text, View } from 'react-native'
 import CurrencyInput from 'react-native-currency-input'
-import { RadioButton } from 'react-native-paper'
 import * as yup from 'yup'
 
 import { beforeRemoveEventType } from '@/assets/@types'
 import GaleryGrid from '@/components/GaleryGrid'
 import Header from '@/components/Header'
+import RadioButton from '@/components/RadioButton'
 import SearchPlace from '@/components/SearchPlace'
 import TextField from '@/components/TextField'
 import { supabase } from '@/config/supabase'
@@ -381,8 +381,7 @@ export default function Editor() {
               <Text className="text-sm font-poppins-regular">Arrendamento</Text>
               <RadioButton
                 value="rent"
-                status={state === 'rent' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                isChecked={state === 'rent'}
                 onPress={() => setState('rent')}
                 disabled={isSubmitting}
               />
@@ -392,8 +391,7 @@ export default function Editor() {
               <Text className="text-sm font-poppins-regular">À Venda</Text>
               <RadioButton
                 value="sell"
-                status={state === 'sell' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                isChecked={state === 'sell'}
                 onPress={() => setState('sell')}
                 disabled={isSubmitting}
               />
@@ -406,8 +404,7 @@ export default function Editor() {
               <Text className="text-sm font-poppins-regular">Apartamento</Text>
               <RadioButton
                 value="apartment"
-                status={kind === 'apartment' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                isChecked={kind === 'apartment'}
                 onPress={() => setKind('apartment')}
                 disabled={isSubmitting}
               />
@@ -417,8 +414,7 @@ export default function Editor() {
               <Text className="text-sm font-poppins-regular">Vivenda</Text>
               <RadioButton
                 value="villa"
-                status={kind === 'villa' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                isChecked={kind === 'villa'}
                 onPress={() => setKind('villa')}
                 disabled={isSubmitting}
               />
@@ -428,8 +424,7 @@ export default function Editor() {
               <Text className="text-sm font-poppins-regular">Terreno</Text>
               <RadioButton
                 value="land"
-                status={kind === 'land' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                isChecked={kind === 'land'}
                 onPress={() => setKind('land')}
                 disabled={isSubmitting}
               />
@@ -439,8 +434,7 @@ export default function Editor() {
               <Text className="text-sm font-poppins-regular">Outros</Text>
               <RadioButton
                 value="others"
-                status={kind === 'others' ? 'checked' : 'unchecked'}
-                color={Constants.colors.primary}
+                isChecked={kind === 'others'}
                 onPress={() => setKind('others')}
                 disabled={isSubmitting}
               />
