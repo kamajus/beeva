@@ -79,7 +79,6 @@ export default function House() {
             <TextField.Container disableFocus>
               <SearchIcon color="#000000" size={25} />
               <TextField.Input
-                value=""
                 keyboardType="web-search"
                 placeholder="Procurar por casas..."
                 onPress={() => {

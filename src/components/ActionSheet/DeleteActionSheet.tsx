@@ -1,11 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import clsx from 'clsx'
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, View, Text } from 'react-native'
 import ActionSheet, { SheetProps } from 'react-native-actions-sheet'
-import { HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
 import Button from '@/components/Button'
@@ -128,14 +126,8 @@ export default function DeleteActionSheet(props: SheetProps) {
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.password?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.password?.message !== undefined}>
-                    {errors.password?.message}
-                  </HelperText>
+
+                  <TextField.Helper message={errors.password?.message} />
                 </View>
               )}
             />

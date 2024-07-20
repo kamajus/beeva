@@ -47,7 +47,7 @@ export default function RootLayout() {
               }}>
               <Stack.Screen name="index" />
               <Stack.Screen name="forgotPassword" />
-              <Stack.Screen name="search/[query]" />
+              <Stack.Screen name="search/[location]" />
               <Stack.Screen name="residence/[id]" />
               <Stack.Screen name="notification" />
               <Stack.Screen name="(settings)" />

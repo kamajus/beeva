@@ -37,7 +37,6 @@ export default function SearchHeader({ value, filter }: ISearchHeader) {
               value={value}
               keyboardType="web-search"
               onFocus={() => router.push('/location')}
-              placeholder="Diga a localização"
             />
           </TextField.Container>
         </TextField.Root>

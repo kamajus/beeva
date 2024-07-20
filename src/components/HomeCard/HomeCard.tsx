@@ -4,11 +4,9 @@ import { MapPinned } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Pressable, Text, View, Image } from 'react-native'
 
-import SkeletonComponent from '../Skeleton'
-
 import { IResidence } from '@/assets/@types'
 import IconButton from '@/components/IconButton'
-import constants from '@/constants'
+import Skeleton from '@/components/Skeleton'
 import { formatMoney } from '@/functions/format'
 import { useSupabase } from '@/hooks/useSupabase'
 import { useResidenceStore } from '@/store/ResidenceStore'
@@ -18,30 +16,22 @@ interface IHomeCard extends IResidence {
 }
 
 export default function HomeCard(residence: IHomeCard) {
+  const savedResidences = useResidenceStore((state) => state.savedResidences)
   const residenceSavedStatus = useResidenceStore(
     (state) => state.residenceSavedStatus,
   )
-  const { handleSaveResidence, user } = useSupabase()
-  const [savedResidence, setSavedResidence] = useState(false)
+  const { saveResidence, user } = useSupabase()
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     async function checkSaved() {
       const isSaved = await residenceSavedStatus(residence.id, user)
-      setSavedResidence(isSaved)
+      setSaved(isSaved)
     }
 
     checkSaved()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [residence.id, user])
-
-  useEffect(() => {
-    async function checkSaved() {
-      console.log('user!!!!')
-    }
-
-    checkSaved()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
+  }, [residence.id, savedResidences, user])
 
   return (
     <View className="mb-2">
@@ -56,7 +46,7 @@ export default function HomeCard(residence: IHomeCard) {
             })}
           />
         ) : (
-          <SkeletonComponent
+          <Skeleton
             className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
               'mt-0 w-[272px] h-[220px] mr-2': residence.cardType === 'big',
               'mt-0 w-[172px] h-[190px] mr-2': residence.cardType === 'small',
@@ -84,11 +74,11 @@ export default function HomeCard(residence: IHomeCard) {
 
       <IconButton
         name="Bookmark"
-        color={savedResidence ? constants.colors.primary : '#000000'}
+        color="#000000"
         fill={
           residence.owner_id !== user?.id
-            ? savedResidence
-              ? constants.colors.primary
+            ? saved
+              ? '#000000'
               : 'transparent'
             : 'transparent'
         }
@@ -99,12 +89,12 @@ export default function HomeCard(residence: IHomeCard) {
           'absolute top-6 right-1': residence.cardType === 'search',
         })}
         onPress={() => {
-          async function handleSavingResidence() {
-            setSavedResidence(!savedResidence)
-            await handleSaveResidence(residence, !savedResidence)
+          async function handleSaveResidence() {
+            setSaved(!saved)
+            await saveResidence(residence, !saved)
           }
 
-          handleSavingResidence()
+          handleSaveResidence()
         }}
       />
     </View>

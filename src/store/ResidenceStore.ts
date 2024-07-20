@@ -77,17 +77,21 @@ export const useResidenceStore = create<ResidenceState>((set, get) => ({
   },
 
   residenceSavedStatus: async (id: string, user: IUser) => {
-    const savedResidence = get().savedResidences.find((r) => r.id === id)
+    const residence = get().savedResidences.find((r) => r.id === id)
 
-    if (!savedResidence) {
-      const { data } = await supabase
-        .from('saved_residences')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('residence_id', id)
-        .maybeSingle<ISavedResidences>()
+    if (!residence) {
+      try {
+        const { data } = await supabase
+          .from('saved_residences')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('residence_id', id)
+          .maybeSingle<ISavedResidences>()
 
-      return !!data
+        return !!data
+      } catch {
+        return false
+      }
     }
 
     return get().savedResidences.some((r) => r.id === id)
