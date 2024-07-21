@@ -1,15 +1,15 @@
 import clsx from 'clsx'
 import { router } from 'expo-router'
 import { icons } from 'lucide-react-native'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
 
-import { INotification, IResidenceNotification } from '@/assets/@types'
+import { INotification } from '@/assets/@types'
 import PublishedSince from '@/components/PublishedSince'
 import TouchableBrightness from '@/components/TouchableBrightness'
-import { supabase } from '@/config/supabase'
 import constants from '@/constants'
+import { ResidenceNotificationRepository } from '@/repositories/residence.notification.repository'
 
 interface INotificationIcons {
   [key: string]: keyof typeof icons
@@ -26,27 +26,24 @@ interface INotificationBoxLink {
   notificationType: INotification['type']
 }
 
-const getNotificationResidence = async (notificationId: string) => {
-  const { data } = await supabase
-    .from('residence_notifications')
-    .select('*')
-    .eq('notification_id', notificationId)
-    .single<IResidenceNotification>()
-
-  return data
-}
-
 const NotificationBoxLink = ({
   children,
   notificationType,
   notificationId,
 }: INotificationBoxLink) => {
+  const residenceNotificationRepository = useMemo(
+    () => new ResidenceNotificationRepository(),
+    [],
+  )
   const [residenceId, setResidenceId] = useState<string | null>(null)
 
   useEffect(() => {
     if (notificationType.includes('residence')) {
       const fetchData = async () => {
-        const data = await getNotificationResidence(notificationId)
+        const data =
+          await residenceNotificationRepository.findByNotificationId(
+            notificationId,
+          )
         if (data) {
           setResidenceId(data.residence_id)
         }
@@ -54,7 +51,7 @@ const NotificationBoxLink = ({
 
       fetchData()
     }
-  }, [notificationType, notificationId])
+  }, [notificationType, notificationId, residenceNotificationRepository])
 
   const handlePress = () => {
     if (residenceId) {

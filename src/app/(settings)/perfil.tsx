@@ -3,7 +3,7 @@ import { decode } from 'base64-arraybuffer'
 import * as FileSystem from 'expo-file-system'
 import * as ImagePicker from 'expo-image-picker'
 import { useNavigation } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import {
   Dimensions,
@@ -23,6 +23,7 @@ import Constants from '@/constants'
 import { formatPhotoUrl } from '@/functions/format'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
+import { UserRepository } from '@/repositories/user.repository'
 
 interface FormData {
   firstName?: string
@@ -62,6 +63,8 @@ const schema = yup.object({
 
 export default function Perfil() {
   const { user, setUser, session } = useSupabase()
+
+  const userRepository = useMemo(() => new UserRepository(), [])
 
   const {
     handleSubmit,
@@ -110,30 +113,28 @@ export default function Perfil() {
     photo_url?: string
   }) {
     setAllowExiting(false)
-    const { error } = await supabase
-      .from('users')
-      .update({
+
+    try {
+      userRepository.update(user.id, {
         first_name: data.first_name,
         last_name: data.last_name,
         phone: data.phone,
         photo_url: data.photo_url,
       })
-      .eq('id', user?.id)
 
-    if (session?.user.email !== data.email) {
-      alert.showAlert(
-        'Alerta',
-        'Por favor, confirme o e-mail que foi enviado para você. Após a confirmação, seu endereço de e-mail será atualizado.',
-        'Ok',
-        () => {},
-      )
+      if (session?.user.email !== data.email) {
+        alert.showAlert(
+          'Alerta',
+          'Por favor, confirme o e-mail que foi enviado para você. Após a confirmação, seu endereço de e-mail será atualizado.',
+          'Ok',
+          () => {},
+        )
 
-      supabase.auth.updateUser({
-        email: data.email,
-      })
-    }
-
-    if (error) {
+        supabase.auth.updateUser({
+          email: data.email,
+        })
+      }
+    } catch {
       alert.showAlert(
         'Erro a atualizar informações',
         'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
@@ -157,7 +158,7 @@ export default function Perfil() {
     reset({
       firstName: data.first_name,
       lastName: data.last_name,
-      email: session?.user.email,
+      email: session.user.email,
       phone: data.phone,
     })
 

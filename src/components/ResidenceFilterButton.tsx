@@ -1,17 +1,17 @@
 import clsx from 'clsx'
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native'
 
-import { IResidenceEnum } from '@/assets/@types'
+import { IResidenceFilterEnum } from '@/assets/@types'
 import Constants from '@/constants'
 
-interface IFilter {
-  kind?: IResidenceEnum
-  setKind?: React.Dispatch<React.SetStateAction<IResidenceEnum>>
+interface IResidenceFilterButton {
+  kind?: IResidenceFilterEnum
+  setKind?: React.Dispatch<React.SetStateAction<IResidenceFilterEnum>>
   paddingHorizontal: number
 }
 
-export default function Filter(props: IFilter) {
-  function onButtonActive(value: IResidenceEnum) {
+export default function ResidenceFilterButton(props: IResidenceFilterButton) {
+  function onButtonActive(value: IResidenceFilterEnum) {
     if (props?.setKind) {
       props?.setKind(value)
     }

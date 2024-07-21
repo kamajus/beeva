@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Dimensions,
   RefreshControl,
@@ -7,14 +7,13 @@ import {
   View,
 } from 'react-native'
 
-import { IResidence } from '@/assets/@types'
 import NoData from '@/assets/images/no-data'
 import GaleryItem from '@/components/GaleryItem'
 import Header from '@/components/Header'
 import LoadScreen from '@/components/LoadScreen'
-import { supabase } from '@/config/supabase'
 import Constants from '@/constants'
 import { useSupabase } from '@/hooks/useSupabase'
+import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
 export default function Residences() {
@@ -27,20 +26,17 @@ export default function Residences() {
 
   const [loadingResidences, setLoadingResidences] = useState(false)
 
+  const residenceRepository = useMemo(() => new ResidenceRepository(), [])
+
   const getResidences = useCallback(async () => {
-    const { data: residencesData } = await supabase
-      .from('residences')
-      .select('*')
-      .eq('owner_id', user?.id)
-      .returns<IResidence[]>()
+    const residencesData = await residenceRepository.findByOwnerId(user.id)
 
     if (residencesData) {
-      residencesData.map((residence) => {
+      for (const residence of residencesData) {
         addToResidences(residence, 'user')
-        return residence
-      })
+      }
     }
-  }, [user, addToResidences])
+  }, [residenceRepository, user, addToResidences])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
@@ -55,12 +51,14 @@ export default function Residences() {
   }, [getResidences])
 
   useEffect(() => {
-    setLoadingResidences(true)
-    ;(async function () {
-      await getResidences()
-      setLoadingResidences(false)
-    })()
-  }, [getResidences])
+    if (userResidences.length < 0) {
+      setLoadingResidences(true)
+      ;(async function () {
+        await getResidences()
+        setLoadingResidences(false)
+      })()
+    }
+  }, [getResidences, userResidences.length])
 
   return (
     <View style={{ height }} className="relative bg-white">

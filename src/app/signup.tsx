@@ -1,16 +1,16 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Link, useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, Text, View, Linking, TouchableOpacity } from 'react-native'
 import * as yup from 'yup'
 
 import Button from '@/components/Button'
 import TextField from '@/components/TextField'
-import { supabase } from '@/config/supabase'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
+import { UserRepository } from '@/repositories/user.repository'
 
 interface FormData {
   firstName: string
@@ -74,6 +74,8 @@ export default function SignIn() {
 
   const [passwordVisible, setPasswordVisible] = useState(false)
 
+  const userRepository = useMemo(() => new UserRepository(), [])
+
   function onSubmit(data: FormData) {
     signUp(data.email, data.password)
       .then(async (userData) => {
@@ -87,23 +89,23 @@ export default function SignIn() {
               message: 'Já exite um conta castrada com esse e-mail',
             })
           } else {
-            const { error } = await supabase.from('users').insert([
-              {
+            try {
+              await userRepository.create({
                 id: userData.id,
                 first_name: data.firstName,
                 last_name: data.lastName,
-              },
-            ])
+                photo_url: null,
+                phone: null,
+              })
 
-            if (error) {
+              router.replace(`/verification/${data.email}`)
+            } catch {
               alert.showAlert(
-                'Erro na autenticação',
+                'Erro na criação da conta',
                 'Algo de errado aconteceu, tente novamente mais tarde.',
                 'Ok',
                 () => {},
               )
-            } else {
-              router.replace(`/verification/${data.email}`)
             }
           }
         } else {

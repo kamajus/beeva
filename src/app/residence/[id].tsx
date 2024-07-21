@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useLocalSearchParams, Link, router } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native'
 
 import { ICachedResidence } from '@/assets/@types'
@@ -14,6 +14,8 @@ import constants from '@/constants'
 import { formatMoney, formatPhoneNumber } from '@/functions/format'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
+import { ResidenceRepository } from '@/repositories/residence.repository'
+import { UserRepository } from '@/repositories/user.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
 export default function ResidenceDetail() {
@@ -22,10 +24,12 @@ export default function ResidenceDetail() {
   const pushResidence = useResidenceStore((state) => state.pushResidence)
   const removeResidence = useResidenceStore((state) => state.removeResidence)
 
+  const userRepository = useMemo(() => new UserRepository(), [])
+  const residenceRepository = useMemo(() => new ResidenceRepository(), [])
+
   const { id } = useLocalSearchParams<{ id: string }>()
 
-  const { handleCallNotification, getUserById, getResidenceById, user } =
-    useSupabase()
+  const { handleCallNotification, user } = useSupabase()
   const [cachedData, setCachedData] = useState<ICachedResidence | undefined>(
     cachedResidences.find((r) => r.residence.id === id),
   )
@@ -34,10 +38,10 @@ export default function ResidenceDetail() {
   const [showDescription, setShowDescription] = useState(false)
 
   const getResidence = useCallback(async () => {
-    const residenceData = await getResidenceById(id)
+    const residenceData = await residenceRepository.findById(id)
 
     if (residenceData) {
-      const userData = await getUserById(residenceData.owner_id)
+      const userData = await userRepository.findById(residenceData.owner_id)
       if (userData) {
         setCachedData({
           residence: residenceData,
@@ -47,7 +51,7 @@ export default function ResidenceDetail() {
         pushResidence(residenceData, userData)
       }
     }
-  }, [id, getResidenceById, getUserById, pushResidence])
+  }, [id, pushResidence, residenceRepository, userRepository])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
@@ -56,24 +60,24 @@ export default function ResidenceDetail() {
 
   const deleteResidence = useCallback(async () => {
     if (cachedData?.residence?.photos) {
-      const { error } = await supabase.from('residences').delete().eq('id', id)
-      await supabase.storage
-        .from('residences')
-        .remove(
-          cachedData.residence.photos.map(
-            (image) => `${user?.id}/${id}/${image}`,
-          ),
-        )
+      try {
+        await residenceRepository.delete(id)
+        await supabase.storage
+          .from('residences')
+          .remove(
+            cachedData.residence.photos.map(
+              (image) => `${user.id}/${id}/${image}`,
+            ),
+          )
 
-      if (!error && id) {
         router.replace('/home')
-        removeResidence(id)
 
+        removeResidence(id)
         handleCallNotification(
           'Residência eliminada',
           'A residência foi eliminada com sucesso',
         )
-      } else {
+      } catch {
         alert.showAlert(
           'Erro na postagem',
           'Não foi possível eliminar a residência, tente mais tarde.',
@@ -82,7 +86,15 @@ export default function ResidenceDetail() {
         )
       }
     }
-  }, [cachedData, id, user, removeResidence, handleCallNotification, alert])
+  }, [
+    cachedData,
+    residenceRepository,
+    id,
+    removeResidence,
+    handleCallNotification,
+    user,
+    alert,
+  ])
 
   useEffect(() => {
     const checkCachedData = () => {
