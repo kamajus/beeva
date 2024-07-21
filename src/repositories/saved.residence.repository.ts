@@ -8,6 +8,21 @@ export class SavedResidenceRepository extends BaseRepository<ISavedResidences> {
     super('saved_residences')
   }
 
+  async findByResidenceIdAndUserId(
+    residenceId: number | string,
+    userId: number | string,
+  ): Promise<ISavedResidences | null> {
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .select('*')
+      .eq('user_id', userId)
+      .eq('residence_id', residenceId)
+      .maybeSingle<ISavedResidences>()
+
+    if (error) throw error
+    return data ?? null
+  }
+
   async findByUserId(
     userId: number | string,
   ): Promise<ISavedResidences[] | null> {

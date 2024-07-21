@@ -266,11 +266,11 @@ export default function Editor() {
     isSubmitting,
     forceExiting,
     navigation,
-    images.length,
+    images,
     cover,
     state,
     kind,
-    imagesToDelete.length,
+    imagesToDelete,
     alert,
   ])
 

@@ -34,6 +34,7 @@ export default function CustomCarousel({
         marginLeft: 8,
         marginRight: 8,
         backgroundColor: hexToRGBA(constants.colors.primary, 0.5),
+        display: photos && photos.length > 1 ? 'flex' : 'none',
       }}
       activeDotStyle={{
         width: 10,
@@ -42,6 +43,7 @@ export default function CustomCarousel({
         marginLeft: 8,
         marginRight: 8,
         backgroundColor: constants.colors.primary,
+        display: photos && photos.length > 1 ? 'flex' : 'none',
       }}>
       {photos ? (
         photos.map((photo, index) => (

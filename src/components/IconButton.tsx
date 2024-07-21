@@ -41,7 +41,7 @@ const IconButton = forwardRef<TouchableOpacity, IButton>(
           className,
         )}
         {...props}
-        disabled={disabled}>
+        disabled={disabled || loading}>
         {loading ? (
           <ActivityIndicator size={size} color={color} />
         ) : (
