@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Kubata",
-    "slug": "kubata",
+    "name": "RealState",
+    "slug": "realstate-app",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.carlosmateus.kubata"
+      "bundleIdentifier": "com.carlosmateus.realstate"
     },
     "android": {
       "intentFilters": [
@@ -44,7 +44,7 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.carlosmateus.kubata",
+      "package": "com.carlosmateus.realstate",
       "versionCode": 1
     },
     "web": {},
@@ -73,7 +73,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "44ba6e53-7f56-45a1-8df8-f671beeed022"
+        "projectId": "3ec3ab02-4867-4162-946d-3818e87aef32"
       }
     },
     "owner": "carlosmateus"
