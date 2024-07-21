@@ -257,6 +257,7 @@ export default function Perfil() {
               <View>
                 <Pressable
                   onPress={pickImage}
+                  disabled={isSubmitting}
                   className="rounded-full border-2 border-[#393939]">
                   <Avatar.Image
                     size={150}
@@ -270,7 +271,7 @@ export default function Perfil() {
                 </Pressable>
 
                 <Button
-                  loading={isSubmitting}
+                  disabled={isSubmitting}
                   onPress={pickImage}
                   className="rounded-full"
                   title="Modificar"
@@ -310,6 +311,7 @@ export default function Perfil() {
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
+                        editable={!isSubmitting}
                       />
                     </TextField.Container>
                   </TextField.Root>
@@ -337,6 +339,7 @@ export default function Perfil() {
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
+                        editable={!isSubmitting}
                       />
                     </TextField.Container>
                   </TextField.Root>
@@ -364,6 +367,7 @@ export default function Perfil() {
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
+                        editable={!isSubmitting}
                       />
                     </TextField.Container>
                   </TextField.Root>
@@ -394,6 +398,7 @@ export default function Perfil() {
                           onBlur={onBlur}
                           onChangeText={onChange}
                           keyboardType="numeric"
+                          editable={!isSubmitting}
                         />
                       </TextField.Container>
                     </TextField.Root>

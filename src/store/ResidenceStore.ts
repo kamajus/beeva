@@ -1,12 +1,9 @@
 import { create } from 'zustand'
 
-import {
-  ICachedResidence,
-  IResidence,
-  ISavedResidences,
-  IUser,
-} from '@/assets/@types'
-import { supabase } from '@/config/supabase'
+import { ICachedResidence, IResidence, IUser } from '@/assets/@types'
+import { SavedResidenceRepository } from '@/repositories/saved.residence.repository'
+
+const savedResidenceRepository = new SavedResidenceRepository()
 
 interface ResidenceState {
   savedResidences: IResidence[]
@@ -81,13 +78,10 @@ export const useResidenceStore = create<ResidenceState>((set, get) => ({
 
     if (!residence) {
       try {
-        const { data } = await supabase
-          .from('saved_residences')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('residence_id', id)
-          .maybeSingle<ISavedResidences>()
-
+        const data = await savedResidenceRepository.findByResidenceIdAndUserId(
+          id,
+          user.id,
+        )
         return !!data
       } catch {
         return false

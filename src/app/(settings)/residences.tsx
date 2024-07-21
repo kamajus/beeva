@@ -51,7 +51,7 @@ export default function Residences() {
   }, [getResidences])
 
   useEffect(() => {
-    if (userResidences.length < 0) {
+    if (userResidences.length === 0) {
       setLoadingResidences(true)
       ;(async function () {
         await getResidences()
