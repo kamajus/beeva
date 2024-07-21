@@ -9,12 +9,12 @@ import '../ActionSheet'
 import IconButton from '../IconButton'
 import TextField from '../TextField'
 
-import { IResidenceEnum } from '@/assets/@types'
+import { IResidenceFilterEnum } from '@/assets/@types'
 
 interface ISearchHeader {
   value: string
   filter: {
-    kind?: IResidenceEnum
+    kind?: IResidenceFilterEnum
     state?: 'sell' | 'rent'
     minPrice?: number
     maxPrice?: number

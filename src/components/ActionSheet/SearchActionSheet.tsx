@@ -8,10 +8,10 @@ import CurrencyInput from 'react-native-currency-input'
 
 import RadioButton from '../RadioButton'
 
-import { IResidenceEnum } from '@/assets/@types'
+import { IResidenceFilterEnum } from '@/assets/@types'
 import Button from '@/components/Button'
-import Filter from '@/components/Filter'
 import IconButton from '@/components/IconButton'
+import ResidenceFilterButton from '@/components/ResidenceFilterButton'
 import TextField from '@/components/TextField'
 import Constants from '@/constants'
 import { useCache } from '@/hooks/useCache'
@@ -19,7 +19,7 @@ import { useCache } from '@/hooks/useCache'
 export default function SearchActionSheet(props: SheetProps) {
   const { filter, setFilter } = useCache()
 
-  const [kind, setKind] = useState<IResidenceEnum>(
+  const [kind, setKind] = useState<IResidenceFilterEnum>(
     filter.kind ? filter.kind : 'all',
   )
   const [state, setState] = useState<'sell' | 'rent' | undefined>(filter.state)
@@ -46,7 +46,11 @@ export default function SearchActionSheet(props: SheetProps) {
           <Text className="font-poppins-medium text-base mb-3 pt-4 pl-4">
             Tipo de residência
           </Text>
-          <Filter paddingHorizontal={16} kind={kind} setKind={setKind} />
+          <ResidenceFilterButton
+            paddingHorizontal={16}
+            kind={kind}
+            setKind={setKind}
+          />
         </View>
 
         <View className="p-4">

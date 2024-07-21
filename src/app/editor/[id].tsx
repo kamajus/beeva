@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as ImagePicker from 'expo-image-picker'
 import { useLocalSearchParams, useNavigation } from 'expo-router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { ScrollView, Text, View } from 'react-native'
 import CurrencyInput from 'react-native-currency-input'
@@ -17,6 +17,7 @@ import { supabase } from '@/config/supabase'
 import Constants from '@/constants'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
+import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
 interface IFormData {
@@ -95,6 +96,8 @@ export default function Editor() {
   const [isPhotoChaged, setPhotoChanged] = useState(false)
   const alert = useAlert()
 
+  const residenceRepository = useMemo(() => new ResidenceRepository(), [])
+
   async function onSubmit(formData: IFormData) {
     const hasSelectedImages = images.length > 0
     const isCoverChanged = defaultData?.residence.cover !== cover
@@ -150,9 +153,8 @@ export default function Editor() {
   }
 
   async function updateResidenceData({ location, description }: IFormData) {
-    const { error } = await supabase
-      .from('residences')
-      .update({
+    try {
+      await residenceRepository.update(id, {
         price,
         location,
         description,
@@ -160,16 +162,7 @@ export default function Editor() {
         state,
         kind,
       })
-      .eq('id', id)
 
-    if (error) {
-      alert.showAlert(
-        'Erro a realizar postagem',
-        'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
-        'Ok',
-        () => {},
-      )
-    } else if (defaultData) {
       setDefaultData({
         residence: {
           ...defaultData?.residence,
@@ -187,6 +180,13 @@ export default function Editor() {
         location,
         price: price || undefined,
       })
+    } catch {
+      alert.showAlert(
+        'Erro a realizar postagem',
+        'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
+        'Ok',
+        () => {},
+      )
     }
   }
 
@@ -212,10 +212,9 @@ export default function Editor() {
 
     await supabase.storage.from('residences').remove(filesToRemove)
 
-    await supabase
-      .from('residences')
-      .update({ photos: residences.find((r) => r.id === id)?.photos })
-      .eq('id', id)
+    await residenceRepository.update(id, {
+      photos: residences.find((r) => r.id === id)?.photos,
+    })
 
     setImagesToDelete([])
   }

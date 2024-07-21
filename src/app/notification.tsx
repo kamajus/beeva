@@ -1,18 +1,19 @@
 import clsx from 'clsx'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { RefreshControl, ScrollView, View, Text } from 'react-native'
 
-import { INotification } from '@/assets/@types'
 import NoNotification from '@/assets/images/no-notification'
 import Header from '@/components/Header'
 import NotificationBox from '@/components/NotificationBox'
-import { supabase } from '@/config/supabase'
 import { useCache } from '@/hooks/useCache'
 import { useSupabase } from '@/hooks/useSupabase'
+import { NotificationRepository } from '@/repositories/notification.repository'
 
 export default function Notification() {
   const { user } = useSupabase()
   const { notifications, setNotifications } = useCache()
+
+  const notificationRepository = useMemo(() => new NotificationRepository(), [])
 
   const [refreshing, setRefreshing] = useState(false)
 
@@ -20,22 +21,14 @@ export default function Notification() {
     setRefreshing(true)
     setTimeout(() => {
       async function getData() {
-        const { data } = await supabase
-          .from('notifications')
-          .select()
-          .order('created_at', { ascending: false })
-          .eq('user_id', user?.id)
-          .returns<INotification[]>()
-
-        if (data) {
-          setNotifications(data)
-        }
+        const data = await notificationRepository.findByUserId(user.id)
+        setNotifications(data)
       }
 
       getData()
       setRefreshing(false)
     }, 2000)
-  }, [setNotifications, user?.id])
+  }, [notificationRepository, setNotifications, user.id])
 
   return (
     <View

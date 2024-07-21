@@ -1,22 +1,23 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as ImagePicker from 'expo-image-picker'
 import { router } from 'expo-router'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { ScrollView, Text, View } from 'react-native'
 import CurrencyInput from 'react-native-currency-input'
 import * as yup from 'yup'
 
-import { IResidence, IResidenceEnum } from '@/assets/@types'
+import { IResidenceEnum } from '@/assets/@types'
 import GaleryGrid from '@/components/GaleryGrid'
 import Header from '@/components/Header'
 import RadioButton from '@/components/RadioButton'
 import SearchPlace from '@/components/SearchPlace'
 import TextField from '@/components/TextField'
-import { supabase } from '@/config/supabase'
 import constants from '@/constants'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
+import { NotificationRepository } from '@/repositories/notification.repository'
+import { ResidenceRepository } from '@/repositories/residence.repository'
 
 interface FormData {
   price: number
@@ -65,39 +66,36 @@ export default function Editor() {
 
   const { session } = useSupabase()
 
+  const residenceRepository = useMemo(() => new ResidenceRepository(), [])
+  const notificationRepository = useMemo(() => new NotificationRepository(), [])
+
   async function onSubmit(formData: FormData) {
     if (images.length !== 0 && cover && session) {
-      const { data, error } = await supabase
-        .from('residences')
-        .insert([
-          {
-            owner_id: session.user.id,
-            price,
-            location: formData.location,
-            description: formData.description,
-            state,
-            kind,
-          },
-        ])
-        .select('*')
-        .single<IResidence>()
+      try {
+        const data = await residenceRepository.create({
+          price,
+          location: formData.location,
+          description: formData.description,
+          approval_status: false,
+          cover: null,
+          photos: null,
+          state,
+          kind,
+        })
 
-      if (!error) {
         await uploadResidencesImage(data.id, cover, images)
-        await supabase.from('notifications').insert([
-          {
-            user_id: session.user.id,
-            title: 'Residência postada',
-            description: 'A sua residência foi postada com sucesso.',
-            type: 'successful',
-          },
-        ])
+        await notificationRepository.create({
+          user_id: session.user.id,
+          title: 'Residência postada',
+          description: 'A sua residência foi postada com sucesso.',
+          type: 'residence-posted',
+          was_readed: false,
+        })
 
         setImages([])
         reset()
         router.replace(`/(root)/home`)
-      } else {
-        console.log(error)
+      } catch {
         alert.showAlert(
           'Erro a realizar postagem',
           'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Dimensions,
   RefreshControl,
@@ -7,19 +7,25 @@ import {
   View,
 } from 'react-native'
 
-import { ISavedResidences } from '@/assets/@types'
 import NoSaved from '@/assets/images/no-saved'
 import GaleryItem from '@/components/GaleryItem'
 import Header from '@/components/Header'
 import LoadScreen from '@/components/LoadScreen'
-import { supabase } from '@/config/supabase'
 import Constants from '@/constants'
 import { useSupabase } from '@/hooks/useSupabase'
+import { ResidenceRepository } from '@/repositories/residence.repository'
+import { SavedResidenceRepository } from '@/repositories/saved.residence.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
 export default function Saved() {
   const savedResidences = useResidenceStore((state) => state.savedResidences)
   const addToResidences = useResidenceStore((state) => state.addToResidences)
+
+  const residenceRepository = useMemo(() => new ResidenceRepository(), [])
+  const savedResidenceRepository = useMemo(
+    () => new SavedResidenceRepository(),
+    [],
+  )
 
   const { user } = useSupabase()
   const { height } = Dimensions.get('screen')
@@ -28,24 +34,17 @@ export default function Saved() {
   const [loadingSaved, setLoadingSaved] = useState(false)
 
   const getSavedResidences = useCallback(async () => {
-    const { data: savedResidencesData } = await supabase
-      .from('saved_residences')
-      .select('*')
-      .eq('user_id', user?.id)
-      .returns<ISavedResidences[]>()
+    const savedResidencesData = await savedResidenceRepository.findByUserId(
+      user.id,
+    )
 
     if (savedResidencesData) {
-      savedResidencesData.map(async (item) => {
-        const { data: saved } = await supabase
-          .from('residences')
-          .select('*')
-          .eq('id', item.residence_id)
-          .single()
-
+      for (const item of savedResidencesData) {
+        const saved = await residenceRepository.findById(item.residence_id)
         addToResidences(saved, 'saved')
-      })
+      }
     }
-  }, [user, addToResidences])
+  }, [savedResidenceRepository, user, residenceRepository, addToResidences])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
@@ -53,8 +52,9 @@ export default function Saved() {
       setRefreshing(false)
       setLoadingSaved(true)
       ;(async function () {
-        await getSavedResidences()
-        setLoadingSaved(false)
+        await getSavedResidences().finally(() => {
+          setLoadingSaved(false)
+        })
       })()
     }, 1000)
   }, [getSavedResidences])
@@ -62,8 +62,9 @@ export default function Saved() {
   useEffect(() => {
     setLoadingSaved(true)
     ;(async function () {
-      await getSavedResidences()
-      setLoadingSaved(false)
+      await getSavedResidences().finally(() => {
+        setLoadingSaved(false)
+      })
     })()
   }, [getSavedResidences])
 

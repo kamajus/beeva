@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
 
-import { IResidence, IResidenceEnum } from '@/assets/@types'
+import { IResidence, IResidenceFilterEnum } from '@/assets/@types'
 import NoData from '@/assets/images/no-data'
 import Header from '@/components/Header'
 import HomeCard from '@/components/HomeCard'
@@ -58,7 +58,6 @@ export default function Search() {
   useEffect(() => {
     navigation.addListener('beforeRemove', (e) => {
       e.preventDefault()
-
       setFilter({
         kind: 'all',
       })
@@ -89,7 +88,7 @@ export default function Search() {
     minPrice,
     residences,
   }: {
-    kind?: IResidenceEnum | undefined
+    kind?: IResidenceFilterEnum | undefined
     state?: 'sell' | 'rent' | undefined
     minPrice?: number | undefined
     maxPrice?: number | undefined

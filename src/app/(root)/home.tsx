@@ -12,7 +12,7 @@ import {
 } from 'react-native'
 
 import { RESIDENCE_DATA } from '@/assets/data'
-import Filter from '@/components/Filter'
+import Filter from '@/components/ResidenceFilterButton'
 import HomeCard from '@/components/HomeCard'
 import IconButton from '@/components/IconButton'
 import TextField from '@/components/TextField'

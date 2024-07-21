@@ -4,13 +4,17 @@ import * as FileSystem from 'expo-file-system'
 import * as ImagePicker from 'expo-image-picker'
 import * as Notifications from 'expo-notifications'
 import { router } from 'expo-router'
-import { createContext, useEffect, useState, useCallback } from 'react'
+import { createContext, useEffect, useState, useCallback, useMemo } from 'react'
 
 import { IResidence, INotification, IUser } from '@/assets/@types'
 import { supabase } from '@/config/supabase'
 import { formatPhotoUrl } from '@/functions/format'
 import { useAlert } from '@/hooks/useAlert'
 import { useCache } from '@/hooks/useCache'
+import { NotificationRepository } from '@/repositories/notification.repository'
+import { ResidenceRepository } from '@/repositories/residence.repository'
+import { SavedResidenceRepository } from '@/repositories/saved.residence.repository'
+import { UserRepository } from '@/repositories/user.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
 type SupabaseContextProps = {
@@ -27,8 +31,6 @@ type SupabaseContextProps = {
     images: ImagePicker.ImagePickerAsset[],
   ) => Promise<void>
   signOut: () => Promise<void>
-  getResidenceById: (id: string) => Promise<IResidence | void>
-  getUserById: (id?: string, upsert?: boolean) => Promise<IUser | void>
   saveResidence: (residence: IResidence, saved: boolean) => Promise<void>
   handleCallNotification: (title: string, body: string) => void
 }
@@ -47,8 +49,6 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
   signInWithPassword: async () => {},
   sendOtpCode: async () => {},
   signOut: async () => {},
-  getUserById: async () => {},
-  getResidenceById: async () => {},
   saveResidence: async () => {},
   handleCallNotification: () => {},
 })
@@ -66,6 +66,14 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   const addToResidences = useResidenceStore((state) => state.addToResidences)
   const pushResidence = useResidenceStore((state) => state.pushResidence)
   const removeResidence = useResidenceStore((state) => state.removeResidence)
+
+  const userRepository = useMemo(() => new UserRepository(), [])
+  const residenceRepository = useMemo(() => new ResidenceRepository(), [])
+  const savedResidenceRepository = useMemo(
+    () => new SavedResidenceRepository(),
+    [],
+  )
+  const notificationRepository = useMemo(() => new NotificationRepository(), [])
 
   const signUp = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({ email, password })
@@ -90,7 +98,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           const base64 = await FileSystem.readAsStringAsync(image.uri, {
             encoding: 'base64',
           })
-          const filePath = `${user?.id}/${id}/${Date.now()}`
+          const filePath = `${user.id}/${id}/${Date.now()}`
           const { data: photo, error: uploadError } = await supabase.storage
             .from('residences')
             .upload(filePath, decode(base64), { contentType: 'image/png' })
@@ -101,11 +109,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
 
           if (image.uri === cover && !uploadError && session) {
             const coverURL = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`
-            await supabase
-              .from('residences')
-              .update({ cover: coverURL })
-              .eq('id', id)
-              .eq('owner_id', session.user.id)
+
+            await residenceRepository.update(id, {
+              cover: coverURL,
+            })
           }
 
           if (uploadError) {
@@ -130,66 +137,23 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     }
 
     if (session) {
-      await supabase
-        .from('residences')
-        .update({ photos: imagesToAppend })
-        .eq('id', id)
-        .eq('owner_id', session.user.id)
+      await residenceRepository.update(id, {
+        photos: imagesToAppend,
+      })
     }
   }
 
   const saveResidence = async (residence: IResidence, saved: boolean) => {
     if (saved) {
-      await supabase
-        .from('saved_residences')
-        .insert({ residence_id: residence.id })
+      await savedResidenceRepository.create({
+        residence_id: residence.id,
+      })
       addToResidences(residence, 'saved')
     } else {
-      await supabase
-        .from('saved_residences')
-        .delete()
-        .eq('residence_id', residence.id)
+      await savedResidenceRepository.deleteByResidenceId(residence.id)
       removeResidence(residence.id)
     }
   }
-
-  const getResidenceById = useCallback(
-    async (id: string) => {
-      if (cachedResidences[id]) return cachedResidences[id]
-
-      const { data, error } = await supabase
-        .from('residences')
-        .select('*')
-        .eq('id', id)
-        .single<IResidence>()
-
-      if (error) throw error
-      cachedResidences[id] = data
-
-      return data
-    },
-    [cachedResidences],
-  )
-
-  const getUserById = useCallback(
-    async (id?: string, upsert?: boolean) => {
-      if (!upsert && user && user.id === id) return user
-
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', id || user?.id)
-        .single<IUser>()
-      if (error) throw error
-
-      if (data.photo_url) {
-        data.photo_url = formatPhotoUrl(data.photo_url, data.updated_at)
-      }
-
-      return data
-    },
-    [user],
-  )
 
   const signInWithPassword = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -263,7 +227,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       console.log('loading user data...')
       if (session) {
         try {
-          const userData = await getUserById(session.user.id, true)
+          const userData = await userRepository.findById(session.user.id)
           setUser(userData)
 
           if (!userData) {
@@ -271,15 +235,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
             router.replace('/signin')
           }
 
-          const { data: notificationsData } = await supabase
-            .from('notifications')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .eq('user_id', session.user.id)
-
-          if (notificationsData) {
-            setNotifications(notificationsData)
-          }
+          const notificationsData = await notificationRepository.findByUserId(
+            session.user.id,
+          )
+          setNotifications(notificationsData)
 
           supabase
             .channel('users')
@@ -372,8 +331,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   return (
     <SupabaseContext.Provider
       value={{
-        getUserById,
-        getResidenceById,
         user,
         setUser,
         session,
