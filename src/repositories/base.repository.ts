@@ -18,6 +18,17 @@ export class BaseRepository<T extends Record> extends IRepository<T> {
     return data ?? []
   }
 
+  async find(matchs: Record): Promise<T[]> {
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .select('*')
+      .match(matchs)
+      .returns<[]>()
+
+    if (error) throw error
+    return data ?? []
+  }
+
   async findById(id: number | string): Promise<T | null> {
     if (this.cached && this.cached.find((c) => c.id === id)) {
       return this.cached[id]
@@ -60,7 +71,12 @@ export class BaseRepository<T extends Record> extends IRepository<T> {
     return data ?? []
   }
 
-  async delete(id: number | string): Promise<void> {
+  async delete(matchs: Record): Promise<void> {
+    const { error } = await supabase.from(this.tableName).delete().match(matchs)
+    if (error) throw error
+  }
+
+  async deleteById(id: number | string): Promise<void> {
     const { error } = await supabase.from(this.tableName).delete().eq('id', id)
     if (error) throw error
   }

@@ -23,19 +23,25 @@ export default function ResidenceDetail() {
   const cachedResidences = useResidenceStore((state) => state.cachedResidences)
   const pushResidence = useResidenceStore((state) => state.pushResidence)
   const removeResidence = useResidenceStore((state) => state.removeResidence)
+  const lovedResidences = useResidenceStore((state) => state.lovedResidences)
+  const residenceLovedStatus = useResidenceStore(
+    (state) => state.residenceLovedStatus,
+  )
 
   const userRepository = useMemo(() => new UserRepository(), [])
   const residenceRepository = useMemo(() => new ResidenceRepository(), [])
 
   const { id } = useLocalSearchParams<{ id: string }>()
 
-  const { handleCallNotification, user } = useSupabase()
+  const { handleCallNotification, loveResidence, user } = useSupabase()
   const [cachedData, setCachedData] = useState<ICachedResidence | undefined>(
     cachedResidences.find((r) => r.residence.id === id),
   )
 
   const alert = useAlert()
+
   const [showDescription, setShowDescription] = useState(false)
+  const [loved, setLoved] = useState(false)
 
   const getResidence = useCallback(async () => {
     const residenceData = await residenceRepository.findById(id)
@@ -61,7 +67,7 @@ export default function ResidenceDetail() {
   const deleteResidence = useCallback(async () => {
     if (cachedData?.residence?.photos) {
       try {
-        await residenceRepository.delete(id)
+        await residenceRepository.deleteById(id)
         await supabase.storage
           .from('residences')
           .remove(
@@ -95,6 +101,18 @@ export default function ResidenceDetail() {
     user,
     alert,
   ])
+
+  useEffect(() => {
+    async function checkLoved() {
+      if (id) {
+        const isLoved = await residenceLovedStatus(id, user)
+        setLoved(isLoved)
+      }
+    }
+
+    checkLoved()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, lovedResidences, user])
 
   useEffect(() => {
     const checkCachedData = () => {
@@ -152,7 +170,7 @@ export default function ResidenceDetail() {
             </View>
           </View>
 
-          <View className="flex flex-row items-center">
+          <View className="flex flex-row items-center justify-center">
             {cachedData?.user?.id === user?.id ? (
               <>
                 <IconButton
@@ -175,7 +193,25 @@ export default function ResidenceDetail() {
                 )}
               </>
             ) : (
-              <IconButton name="Heart" disabled={!cachedData?.residence} />
+              <IconButton
+                name="Heart"
+                fill={
+                  cachedData?.user?.id !== user.id
+                    ? loved
+                      ? '#FF6F6F'
+                      : 'transparent'
+                    : 'transparent'
+                }
+                onPress={() => {
+                  async function handleLoveResidence() {
+                    setLoved(!loved)
+                    await loveResidence(id, !loved)
+                  }
+
+                  handleLoveResidence()
+                }}
+                disabled={!cachedData?.residence}
+              />
             )}
           </View>
         </View>

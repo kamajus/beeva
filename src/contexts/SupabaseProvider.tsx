@@ -11,6 +11,7 @@ import { supabase } from '@/config/supabase'
 import { formatPhotoUrl } from '@/functions/format'
 import { useAlert } from '@/hooks/useAlert'
 import { useCache } from '@/hooks/useCache'
+import { LovedResidenceRepository } from '@/repositories/loved.residence.repository'
 import { NotificationRepository } from '@/repositories/notification.repository'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { SavedResidenceRepository } from '@/repositories/saved.residence.repository'
@@ -32,6 +33,7 @@ type SupabaseContextProps = {
   ) => Promise<void>
   signOut: () => Promise<void>
   saveResidence: (residence: IResidence, saved: boolean) => Promise<void>
+  loveResidence: (residenceId: string, saved: boolean) => Promise<void>
   handleCallNotification: (title: string, body: string) => void
 }
 
@@ -50,6 +52,7 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
   sendOtpCode: async () => {},
   signOut: async () => {},
   saveResidence: async () => {},
+  loveResidence: async () => {},
   handleCallNotification: () => {},
 })
 
@@ -66,9 +69,19 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   const addToResidences = useResidenceStore((state) => state.addToResidences)
   const pushResidence = useResidenceStore((state) => state.pushResidence)
   const removeResidence = useResidenceStore((state) => state.removeResidence)
+  const addToLovedResidences = useResidenceStore(
+    (state) => state.addToLovedResidences,
+  )
+  const removeLovedResidence = useResidenceStore(
+    (state) => state.removeLovedResidence,
+  )
 
   const userRepository = useMemo(() => new UserRepository(), [])
   const residenceRepository = useMemo(() => new ResidenceRepository(), [])
+  const lovedResidenceRepository = useMemo(
+    () => new LovedResidenceRepository(),
+    [],
+  )
   const savedResidenceRepository = useMemo(
     () => new SavedResidenceRepository(),
     [],
@@ -150,8 +163,27 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       })
       addToResidences(residence, 'saved')
     } else {
-      await savedResidenceRepository.deleteByResidenceId(residence.id)
+      await savedResidenceRepository.delete({
+        residence_id: residence.id,
+        user_id: session.user.id,
+      })
       removeResidence(residence.id)
+    }
+  }
+
+  const loveResidence = async (residenceId: string, liked: boolean) => {
+    if (liked) {
+      const data = await lovedResidenceRepository.create({
+        residence_id: residenceId,
+      })
+      addToLovedResidences(data)
+    } else {
+      await lovedResidenceRepository.delete({
+        residence_id: residenceId,
+        user_id: session.user.id,
+      })
+
+      removeLovedResidence(residenceId)
     }
   }
 
@@ -265,7 +297,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
               'postgres_changes',
               { event: 'INSERT', schema: 'public' },
               async (payload: { new: INotification }) => {
-                if (payload.new.user_id === session.user.id) {
+                if (
+                  payload.new.user_id === session.user.id &&
+                  payload.new?.title
+                ) {
                   updateNotifications(payload.new)
                   handleCallNotification(
                     payload.new.title,
@@ -340,6 +375,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         sendOtpCode,
         signOut,
         saveResidence,
+        loveResidence,
         handleCallNotification,
         uploadResidencesImage,
       }}>
