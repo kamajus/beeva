@@ -8,6 +8,7 @@ export abstract class IRepository<T extends Record> {
   protected abstract cached?: T[]
 
   abstract findAll(): Promise<T[]>
+  abstract find(matchs: Record): Promise<T[]>
   abstract findById(id: number | string): Promise<T | null>
   abstract create(
     record: Omit<
@@ -17,5 +18,6 @@ export abstract class IRepository<T extends Record> {
   ): Promise<T>
 
   abstract update(id: number | string, updates: Partial<T>): Promise<T[]>
-  abstract delete(id: number | string): Promise<void>
+  abstract delete(matchs: Record): Promise<void>
+  abstract deleteById(id: number | string): Promise<void>
 }

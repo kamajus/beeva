@@ -17,6 +17,7 @@ import constants from '@/constants'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 import { NotificationRepository } from '@/repositories/notification.repository'
+import { ResidenceNotificationRepository } from '@/repositories/residence.notification.repository'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 
 interface FormData {
@@ -68,6 +69,10 @@ export default function Editor() {
 
   const residenceRepository = useMemo(() => new ResidenceRepository(), [])
   const notificationRepository = useMemo(() => new NotificationRepository(), [])
+  const residenceNotificationRepository = useMemo(
+    () => new ResidenceNotificationRepository(),
+    [],
+  )
 
   async function onSubmit(formData: FormData) {
     if (images.length !== 0 && cover && session) {
@@ -84,12 +89,18 @@ export default function Editor() {
         })
 
         await uploadResidencesImage(data.id, cover, images)
-        await notificationRepository.create({
+
+        const notification = await notificationRepository.create({
           user_id: session.user.id,
           title: 'Residência postada',
           description: 'A sua residência foi postada com sucesso.',
           type: 'residence-posted',
           was_readed: false,
+        })
+
+        await residenceNotificationRepository.create({
+          residence_id: data.id,
+          notification_id: notification.id,
         })
 
         setImages([])

@@ -1,23 +1,35 @@
 import { create } from 'zustand'
 
-import { ICachedResidence, IResidence, IUser } from '@/assets/@types'
+import {
+  ICachedResidence,
+  IResidence,
+  ILovedResidences,
+  IUser,
+} from '@/assets/@types'
+import { LovedResidenceRepository } from '@/repositories/loved.residence.repository'
 import { SavedResidenceRepository } from '@/repositories/saved.residence.repository'
 
 const savedResidenceRepository = new SavedResidenceRepository()
+const lovedResidenceRepository = new LovedResidenceRepository()
 
 interface ResidenceState {
   savedResidences: IResidence[]
+  lovedResidences: ILovedResidences[]
   userResidences: IResidence[]
   cachedResidences: ICachedResidence[]
   addToResidences: (item: IResidence, type: 'user' | 'saved') => void
+  addToLovedResidences: (item: ILovedResidences) => void
+  removeLovedResidence: (id: string) => void
   pushResidence: (item: IResidence, user?: IUser) => void
   removeResidence: (id: string) => void
   resetResidenceCache: () => void
   residenceSavedStatus: (id: string, user: IUser) => Promise<boolean>
+  residenceLovedStatus: (id: string, user: IUser) => Promise<boolean>
 }
 
 export const useResidenceStore = create<ResidenceState>((set, get) => ({
   savedResidences: [],
+  lovedResidences: [],
   userResidences: [],
   cachedResidences: [],
 
@@ -54,6 +66,30 @@ export const useResidenceStore = create<ResidenceState>((set, get) => ({
     }
   },
 
+  addToLovedResidences: (item) => {
+    set((state) => {
+      const loved = [...state.lovedResidences]
+      const lovedIndex = loved.findIndex((r) => r.id === item.id)
+      if (lovedIndex > -1) {
+        loved[lovedIndex] = item
+      } else {
+        loved.unshift(item)
+      }
+
+      return {
+        lovedResidences: loved,
+      }
+    })
+  },
+
+  removeLovedResidence: (id: string) => {
+    set((state) => {
+      return {
+        lovedResidences: state.lovedResidences.filter((r) => r.id !== id),
+      }
+    })
+  },
+
   pushResidence: (residence, user) => {
     set((state) => {
       const residences = [...state.cachedResidences]
@@ -78,17 +114,37 @@ export const useResidenceStore = create<ResidenceState>((set, get) => ({
 
     if (!residence) {
       try {
-        const data = await savedResidenceRepository.findByResidenceIdAndUserId(
-          id,
-          user.id,
-        )
-        return !!data
+        const data = await savedResidenceRepository.find({
+          residence_id: id,
+          user_id: user.id,
+        })
+
+        return data.length > 0
       } catch {
         return false
       }
     }
 
-    return get().savedResidences.some((r) => r.id === id)
+    return true
+  },
+
+  residenceLovedStatus: async (id: string, user: IUser) => {
+    const residence = get().lovedResidences.find((r) => r.id === id)
+
+    if (!residence) {
+      try {
+        const data = await lovedResidenceRepository.find({
+          residence_id: id,
+          user_id: user.id,
+        })
+
+        return data.length > 0
+      } catch {
+        return false
+      }
+    }
+
+    return true
   },
 
   removeResidence: (id: string) => {

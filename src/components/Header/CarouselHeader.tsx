@@ -20,6 +20,7 @@ export default function CarouselHeader(props: ICarouselHeader) {
   )
 
   const { saveResidence, user } = useSupabase()
+
   const [saved, setSaved] = useState(false)
 
   const { width } = Dimensions.get('window')

@@ -1,22 +1,21 @@
 import { BaseRepository } from './base.repository'
 
-import { ISavedResidences } from '@/assets/@types'
+import { ILovedResidences } from '@/assets/@types'
 import { supabase } from '@/config/supabase'
 
-export class SavedResidenceRepository extends BaseRepository<ISavedResidences> {
+export class LovedResidenceRepository extends BaseRepository<ILovedResidences> {
   constructor() {
-    super('saved_residences')
+    super('loved_residences')
   }
 
   async findByUserId(
     userId: number | string,
-  ): Promise<ISavedResidences[] | null> {
+  ): Promise<ILovedResidences[] | null> {
     const { data, error } = await supabase
       .from(this.tableName)
       .select('*')
-      .order('created_at', { ascending: false })
       .eq('user_id', userId)
-      .returns<ISavedResidences[]>()
+      .returns<ILovedResidences[]>()
 
     if (error) throw error
     return data ?? null
