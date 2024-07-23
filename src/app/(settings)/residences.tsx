@@ -11,7 +11,7 @@ import NoData from '@/assets/images/no-data'
 import GaleryItem from '@/components/GaleryItem'
 import Header from '@/components/Header'
 import LoadScreen from '@/components/LoadScreen'
-import Constants from '@/constants'
+import constants from '@/constants'
 import { useSupabase } from '@/hooks/useSupabase'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
@@ -61,10 +61,15 @@ export default function Residences() {
   }, [getResidences, userResidences.length])
 
   return (
-    <View style={{ height }} className="relative bg-white">
+    <View className="relative bg-white">
+      <View className="absolute">
+        <Header.Normal title="Minhas residências" />
+      </View>
+
       {!loadingResidences ? (
         <ScrollView
-          style={{ padding: 16, marginTop: Constants.customHeaderDistance }}
+          style={{ padding: 16, marginTop: constants.customHeaderDistance }}
+          className="bg-white h-full"
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
@@ -82,7 +87,7 @@ export default function Residences() {
               ))
             ) : (
               <View
-                style={{ height: height - 74 - Constants.customHeaderDistance }}
+                style={{ height: height - 74 - constants.customHeaderDistance }}
                 className="w-full flex-1 flex items-center justify-center">
                 <View className="flex items-center justify-center">
                   <NoData />
@@ -97,10 +102,6 @@ export default function Residences() {
       ) : (
         <LoadScreen />
       )}
-
-      <View className="absolute">
-        <Header.Normal title="Minhas residências" />
-      </View>
     </View>
   )
 }
