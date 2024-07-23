@@ -11,7 +11,7 @@ import NoSaved from '@/assets/images/no-saved'
 import GaleryItem from '@/components/GaleryItem'
 import Header from '@/components/Header'
 import LoadScreen from '@/components/LoadScreen'
-import Constants from '@/constants'
+import constants from '@/constants'
 import { useSupabase } from '@/hooks/useSupabase'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { SavedResidenceRepository } from '@/repositories/saved.residence.repository'
@@ -76,7 +76,7 @@ export default function Saved() {
 
       {!loadingSaved ? (
         <ScrollView
-          style={{ padding: 16, marginTop: Constants.customHeaderDistance }}
+          style={{ padding: 16, marginTop: constants.customHeaderDistance }}
           className="bg-white h-full"
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -95,7 +95,7 @@ export default function Saved() {
               ))
             ) : (
               <View
-                style={{ height: height - 74 - Constants.customHeaderDistance }}
+                style={{ height: height - 74 - constants.customHeaderDistance }}
                 className="w-full flex-1 flex items-center justify-center">
                 <View className="flex items-center justify-center">
                   <NoSaved />

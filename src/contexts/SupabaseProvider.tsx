@@ -361,6 +361,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     cachedResidences,
     addToResidences,
     pushResidence,
+    session,
   ])
 
   return (

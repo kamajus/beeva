@@ -1,7 +1,14 @@
 import clsx from 'clsx'
 import { useLocalSearchParams, Link, router } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native'
+import {
+  View,
+  Text,
+  ScrollView,
+  RefreshControl,
+  Pressable,
+  StatusBar,
+} from 'react-native'
 
 import { ICachedResidence } from '@/assets/@types'
 import Avatar from '@/components/Avatar'
@@ -76,7 +83,11 @@ export default function ResidenceDetail() {
             ),
           )
 
-        router.replace('/home')
+        if (router.canGoBack) {
+          router.back()
+        } else {
+          router.replace('/home')
+        }
 
         removeResidence(id)
         handleCallNotification(
@@ -134,10 +145,16 @@ export default function ResidenceDetail() {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
+      <Header.Carousel
+        owner_id={cachedData?.residence?.owner_id}
+        residence_id={cachedData?.residence?.id}
+      />
+
       <Carousel
         photos={cachedData?.residence?.photos}
         style={{ height: 640 }}
       />
+
       <View className="px-4 bg-white flex mt-7">
         <View className="flex flex-row items-center justify-between">
           <View className="flex gap-x-3 flex-row">
@@ -308,15 +325,11 @@ export default function ResidenceDetail() {
                 cachedData.residence.description.length > 100
               ),
             })}>
-            {showDescription ? ' - ver menos' : ' ver mais +'}
+            {showDescription ? 'menos -' : 'mais +'}
           </Text>
         </Pressable>
       </View>
-
-      <Header.Carousel
-        owner_id={cachedData?.residence?.owner_id}
-        residence_id={cachedData?.residence?.id}
-      />
+      <StatusBar backgroundColor="#000000" barStyle="light-content" />
     </ScrollView>
   )
 }

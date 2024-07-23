@@ -28,6 +28,7 @@ export default function Settings() {
   const { signOut, session, user } = useSupabase()
   const [exiting, setExiting] = useState(false)
   const { resetCache } = useCache()
+
   const router = useRouter()
   const alert = useAlert()
 
