@@ -3,7 +3,13 @@ import { Link, useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import {
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import * as yup from 'yup'
 
 import Button from '@/components/Button'
@@ -159,6 +165,8 @@ export default function SignIn() {
           </Link>
         </View>
       </View>
+
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
     </ScrollView>
   )
 }

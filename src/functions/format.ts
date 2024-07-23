@@ -1,5 +1,13 @@
-export function formatPhotoUrl(photoUrl: string, updateAt?: string | null) {
+export function formatPhotoUrl(
+  photoUrl?: string | null,
+  updateAt?: string | null,
+): string | null {
   const now = new Date().getTime().toString()
+
+  if (!photoUrl) {
+    return null
+  }
+
   photoUrl = photoUrl + '?timestamp=' + updateAt || now
   return photoUrl
 }

@@ -231,7 +231,7 @@ export type Database = {
           first_name: string
           id: string
           last_name: string
-          phone: number | null
+          phone: string
           photo_url: string | null
           updated_at: string | null
         }
@@ -240,7 +240,7 @@ export type Database = {
           first_name: string
           id: string
           last_name: string
-          phone?: number | null
+          phone: string
           photo_url?: string | null
           updated_at?: string | null
         }
@@ -249,7 +249,7 @@ export type Database = {
           first_name?: string
           id?: string
           last_name?: string
-          phone?: number | null
+          phone?: string
           photo_url?: string | null
           updated_at?: string | null
         }

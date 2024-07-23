@@ -40,12 +40,12 @@ const NotificationBoxLink = ({
   useEffect(() => {
     if (notificationType.includes('residence')) {
       const fetchData = async () => {
-        const data =
-          await residenceNotificationRepository.findByNotificationId(
-            notificationId,
-          )
-        if (data) {
-          setResidenceId(data.residence_id)
+        const data = await residenceNotificationRepository.find({
+          notification_id: notificationId,
+        })
+
+        if (data.length !== 0) {
+          setResidenceId(data[0].residence_id)
         }
       }
 

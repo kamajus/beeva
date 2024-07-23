@@ -57,10 +57,12 @@ export default function Confirmation() {
           })
           router.replace('/(root)/home')
         } else {
+          setLoading(false)
           setError(true)
         }
       })
       .catch(() => {
+        setLoading(false)
         setError(true)
       })
   }
@@ -70,12 +72,14 @@ export default function Confirmation() {
 
   return (
     <View className="bg-white h-full">
-      <ScrollView style={styles.container}>
+      <ScrollView className="mt-[10%] ml-[8%]" style={{ width: inputWidth }}>
         <View>
-          <Text style={styles.title}>Confirmação de email</Text>
-          <Text style={styles.message}>
+          <Text className="mt-5 font-poppins-semibold text-2xl">
+            Confirmação de email
+          </Text>
+          <Text className="font-poppins-regular w-full">
             Enviamos um código de confirmação de 6 dígitos para{' '}
-            <Text style={styles.highlight}>{email}</Text>
+            <Text className="font-poppins-semibold">{email}</Text>
           </Text>
           <Link href="/signup" className="text-primary font-poppins-medium">
             Voltar
@@ -107,10 +111,7 @@ export default function Confirmation() {
                 ).padStart(2, '0')}`
               : 'Reenviar código'}
           </Text>
-          <TextField.Helper
-            visible={error !== false}
-            message="O código está incorrecto."
-          />
+          <TextField.Helper message={error && 'O código está incorrecto.'} />
           <Button loading={loading} onPress={signInWithOtp} title="Verificar" />
         </View>
       </ScrollView>
@@ -119,26 +120,6 @@ export default function Confirmation() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: '10%',
-    marginLeft: '8%',
-    width: inputWidth,
-    backgroundColor: 'white',
-  },
-  title: {
-    fontSize: 24,
-    fontFamily: 'poppins-semibold',
-    marginTop: 20,
-  },
-  message: {
-    fontSize: 14,
-    color: '#312E49',
-    marginTop: 20,
-    fontFamily: 'poppins-regular',
-  },
-  highlight: {
-    fontFamily: 'poppins-semibold',
-  },
   Ocontainer: {
     marginVertical: 30,
     width: inputWidth,

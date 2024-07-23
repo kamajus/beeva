@@ -8,13 +8,10 @@ export class UserRepository extends BaseRepository<IUser> {
     super('users')
   }
 
-  async create(
-    record: Omit<IUser, 'created_at' | 'updated_at'>,
-  ): Promise<IUser> {
+  async create(record: Omit<IUser, 'created_at' | 'updated_at'>) {
     const { data, error } = await supabase
       .from(this.tableName)
       .insert([record])
-      .select('*')
       .single<IUser>()
 
     if (error) throw error

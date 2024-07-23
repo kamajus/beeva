@@ -7,17 +7,15 @@ type TextFieldHelperTypes = 'error'
 interface ITextFieldHelper extends TextProps {
   type?: TextFieldHelperTypes
   message?: string
-  visible?: boolean
 }
 
 export default function TextFieldHelper({
   type = 'error',
   message,
-  visible = false,
   className,
   ...props
 }: ITextFieldHelper) {
-  if (!message && !visible) {
+  if (!message) {
     return null
   }
 

@@ -14,8 +14,8 @@ export const RESIDENCE_DATA: IResidence[] = [
     state: 'sell',
     kind: 'land',
     price: 385456045,
-    created_at: String(Date.now()),
-    updated_at: String(Date.now()),
+    created_at: Date.now().toString(),
+    updated_at: Date.now().toString(),
     description:
       'A cozinha, embora espaçosa, pode beneficiar-se de uma renovação para atender aos padrões modernos. As paredes têm histórias para contar, com algumas necessitando de reparos devido à umidade, mas isso também significa uma oportunidade para personalização.',
   },
@@ -32,8 +32,8 @@ export const RESIDENCE_DATA: IResidence[] = [
     state: 'sell',
     kind: 'land',
     price: 789345000,
-    created_at: String(Date.now()),
-    updated_at: String(Date.now()),
+    created_at: Date.now().toString(),
+    updated_at: Date.now().toString(),
     description:
       'A cozinha, embora espaçosa, pode beneficiar-se de uma renovação para atender aos padrões modernos. As paredes têm histórias para contar, com algumas necessitando de reparos devido à umidade, mas isso também significa uma oportunidade para personalização.',
   },
@@ -50,8 +50,8 @@ export const RESIDENCE_DATA: IResidence[] = [
     state: 'sell',
     kind: 'apartment',
     price: 550000000,
-    created_at: String(Date.now()),
-    updated_at: String(Date.now()),
+    created_at: Date.now().toString(),
+    updated_at: Date.now().toString(),
     description:
       'Este apartamento está localizado em uma área tranquila e segura de Viana. Possui três quartos espaçosos, uma sala de estar aconchegante e uma cozinha moderna. O edifício oferece estacionamento seguro e uma área de lazer compartilhada.',
   },
@@ -68,8 +68,8 @@ export const RESIDENCE_DATA: IResidence[] = [
     state: 'sell',
     kind: 'villa',
     price: 1200000000,
-    created_at: String(Date.now()),
-    updated_at: String(Date.now()),
+    created_at: Date.now().toString(),
+    updated_at: Date.now().toString(),
     description:
       'Esta casa espaçosa em Benguela é perfeita para uma família grande. Possui cinco quartos, um jardim amplo e bem cuidado, uma piscina privativa e uma área de churrasco. A localização oferece fácil acesso a escolas, lojas e outros serviços essenciais.',
   },
