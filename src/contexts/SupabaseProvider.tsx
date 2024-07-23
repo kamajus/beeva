@@ -23,7 +23,11 @@ type SupabaseContextProps = {
   setUser: React.Dispatch<React.SetStateAction<IUser | null>> | null
   session: Session | null
   initialized?: boolean
-  signUp: (email: string, password: string) => Promise<User | null | void>
+  signUp: (
+    email: string,
+    phone: string,
+    password: string,
+  ) => Promise<User | null | void>
   signInWithPassword: (email: string, password: string) => Promise<void>
   sendOtpCode: (email: string) => Promise<void>
   uploadResidencesImage: (
@@ -88,8 +92,13 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   )
   const notificationRepository = useMemo(() => new NotificationRepository(), [])
 
-  const signUp = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({ email, password })
+  const signUp = async (email: string, phone: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      phone,
+      password,
+    })
+
     if (data.user) return data.user
     throw error
   }
@@ -192,6 +201,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       email,
       password,
     })
+
     if (error) {
       let redirect: string
 

@@ -3,7 +3,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { useLocalSearchParams, useNavigation } from 'expo-router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { View } from 'react-native'
+import { StatusBar, View } from 'react-native'
 import * as yup from 'yup'
 
 import { beforeRemoveEventType } from '@/assets/@types'
@@ -295,6 +295,8 @@ export default function Editor() {
         loading={isSubmitting}
         onPress={handleSubmit(onSubmit)}
       />
+
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
     </View>
   )
 }

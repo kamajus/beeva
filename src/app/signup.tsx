@@ -3,7 +3,14 @@ import { Link, useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { ScrollView, Text, View, Linking, TouchableOpacity } from 'react-native'
+import {
+  ScrollView,
+  Text,
+  View,
+  Linking,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native'
 import * as yup from 'yup'
 
 import Button from '@/components/Button'
@@ -17,6 +24,7 @@ interface FormData {
   lastName: string
   email: string
   password: string
+  phone?: string
 }
 
 const schema = yup.object({
@@ -50,6 +58,10 @@ const schema = yup.object({
       /^(?=.*[a-zA-Z])(?=.*\d)/,
       'A palavra-passe deve conter pelo menos uma letra e um número',
     ),
+  phone: yup
+    .string()
+    .required('O número de telefone é obrigatório')
+    .matches(/^\d{9}$/, 'O número de telefone está inválido'),
 })
 
 export default function SignIn() {
@@ -64,6 +76,7 @@ export default function SignIn() {
       password: '',
       firstName: '',
       lastName: '',
+      phone: '',
     },
     resolver: yupResolver(schema),
   })
@@ -77,7 +90,7 @@ export default function SignIn() {
   const userRepository = useMemo(() => new UserRepository(), [])
 
   function onSubmit(data: FormData) {
-    signUp(data.email, data.password)
+    signUp(data.email, data.phone, data.password)
       .then(async (userData) => {
         if (userData) {
           if (
@@ -94,8 +107,8 @@ export default function SignIn() {
                 id: userData.id,
                 first_name: data.firstName,
                 last_name: data.lastName,
+                phone: data.phone,
                 photo_url: null,
-                phone: null,
               })
 
               router.replace(`/verification/${data.email}`)
@@ -117,7 +130,10 @@ export default function SignIn() {
           )
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log('error 3')
+        console.log(error)
+
         alert.showAlert(
           'Erro na autenticação',
           'Algo de errado aconteceu, tente novamente mais tarde.',
@@ -184,6 +200,36 @@ export default function SignIn() {
                   </TextField.Root>
 
                   <TextField.Helper message={errors.lastName?.message} />
+                </View>
+              )}
+            />
+          </View>
+
+          <View>
+            <Controller
+              control={control}
+              name="phone"
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, value, onBlur } }) => (
+                <View>
+                  <TextField.Root>
+                    <TextField.Label isRequired>Telefone</TextField.Label>
+                    <TextField.Container
+                      error={errors.phone?.message !== undefined}>
+                      <TextField.Input
+                        placeholder="Telefone"
+                        value={value}
+                        onChangeText={onChange}
+                        inputMode="tel"
+                        keyboardType="phone-pad"
+                        onBlur={onBlur}
+                      />
+                    </TextField.Container>
+                  </TextField.Root>
+
+                  <TextField.Helper message={errors.phone?.message} />
                 </View>
               )}
             />
@@ -276,7 +322,7 @@ export default function SignIn() {
             title="Continuar"
           />
 
-          <View className="flex justify-center items-center flex-row gap-2 w-full mt-5">
+          <View className="flex justify-center items-center flex-row gap-2 w-full mt-5 mb-5">
             <Text className="font-poppins-medium text-gray-700">
               Já tem uma conta?
             </Text>
@@ -286,6 +332,8 @@ export default function SignIn() {
           </View>
         </View>
       </View>
+
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
     </ScrollView>
   )
 }

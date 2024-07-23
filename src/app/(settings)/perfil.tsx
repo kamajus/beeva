@@ -11,6 +11,7 @@ import {
   ScrollView,
   View,
   KeyboardAvoidingView,
+  StatusBar,
 } from 'react-native'
 import * as yup from 'yup'
 
@@ -29,7 +30,7 @@ interface FormData {
   firstName?: string
   lastName: string
   email?: string
-  phone?: number
+  phone?: string
 }
 
 const schema = yup.object({
@@ -58,7 +59,10 @@ const schema = yup.object({
     .email('Preencha com um e-mail válido')
     .required('O e-mail é obrigatório')
     .trim(),
-  phone: yup.number(),
+  phone: yup
+    .string()
+    .required('O número de telefone é obrigatório')
+    .matches(/^\d{9}$/, 'O número de telefone está inválido'),
 })
 
 export default function Perfil() {
@@ -76,8 +80,8 @@ export default function Perfil() {
     defaultValues: {
       firstName: user?.first_name,
       lastName: user?.last_name,
+      phone: user?.phone,
       email: session?.user.email,
-      phone: user?.phone || undefined,
     },
   })
 
@@ -109,7 +113,7 @@ export default function Perfil() {
     first_name: string | undefined
     last_name: string | undefined
     email: string | undefined
-    phone: number | undefined
+    phone: string | undefined
     photo_url?: string
   }) {
     setAllowExiting(false)
@@ -134,6 +138,12 @@ export default function Perfil() {
           email: data.email,
         })
       }
+
+      if (session?.user.phone !== data.phone) {
+        supabase.auth.updateUser({
+          phone: data.phone,
+        })
+      }
     } catch {
       alert.showAlert(
         'Erro a atualizar informações',
@@ -151,7 +161,7 @@ export default function Perfil() {
         phone: data.phone || user.phone,
         photo_url: data.photo_url
           ? formatPhotoUrl(data.photo_url)
-          : formatPhotoUrl(`${user.photo_url}`),
+          : formatPhotoUrl(user.photo_url),
       })
     }
 
@@ -389,12 +399,12 @@ export default function Perfil() {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View>
                     <TextField.Root>
-                      <TextField.Label>Telefone</TextField.Label>
+                      <TextField.Label isRequired>Telefone</TextField.Label>
                       <TextField.Container
                         error={errors.phone?.message !== undefined}>
                         <TextField.Input
                           placeholder="Degite o número de telefone"
-                          value={value ? String(value) : ''}
+                          value={value}
                           onBlur={onBlur}
                           onChangeText={onChange}
                           keyboardType="numeric"
@@ -414,11 +424,14 @@ export default function Perfil() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
       <Header.Action
         title="Editar perfil"
         onPress={handleSubmit(onSubmit)}
         loading={isSubmitting}
       />
+
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
     </View>
   )
 }

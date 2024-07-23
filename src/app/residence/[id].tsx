@@ -8,6 +8,7 @@ import {
   RefreshControl,
   Pressable,
   StatusBar,
+  Linking,
 } from 'react-native'
 
 import { ICachedResidence } from '@/assets/@types'
@@ -91,13 +92,13 @@ export default function ResidenceDetail() {
 
         removeResidence(id)
         handleCallNotification(
-          'Residência eliminada',
-          'A residência foi eliminada com sucesso',
+          'Residência apagada',
+          'A residência foi apagada com sucesso',
         )
       } catch {
         alert.showAlert(
-          'Erro na postagem',
-          'Não foi possível eliminar a residência, tente mais tarde.',
+          'Erro ao tentar apagar',
+          'Não foi possível apagar a residência, tente mais tarde.',
           'Ok',
           () => {},
         )
@@ -145,14 +146,14 @@ export default function ResidenceDetail() {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
-      <Header.Carousel
-        owner_id={cachedData?.residence?.owner_id}
-        residence_id={cachedData?.residence?.id}
-      />
-
       <Carousel
         photos={cachedData?.residence?.photos}
         style={{ height: 640 }}
+      />
+
+      <Header.Carousel
+        owner_id={cachedData?.residence?.owner_id}
+        residence_id={cachedData?.residence?.id}
       />
 
       <View className="px-4 bg-white flex mt-7">
@@ -289,15 +290,27 @@ export default function ResidenceDetail() {
           </Text>
         </View>
 
-        <View className="mt-7">
+        <Pressable
+          className={clsx('mt-7', {
+            hidden: cachedData?.user?.id === user?.id,
+          })}
+          onPress={() => {
+            if (cachedData?.user?.phone) {
+              Linking.openURL(
+                `tel:${formatPhoneNumber(cachedData?.user?.phone)}`,
+              )
+            }
+          }}>
           <Text className="font-poppins-regular text-xs text-gray-400">
             Telefone
           </Text>
 
           <Text className="font-poppins-medium text-gray-600 mt-2 mb-2">
-            {formatPhoneNumber('923512286')}
+            {cachedData?.user?.phone
+              ? formatPhoneNumber(cachedData?.user?.phone)
+              : '...'}
           </Text>
-        </View>
+        </Pressable>
 
         <Pressable
           className="mt-7 mb-7"
