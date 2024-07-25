@@ -1,46 +1,22 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import * as ImagePicker from 'expo-image-picker'
 import { router, useFocusEffect } from 'expo-router'
 import React, { useCallback, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BackHandler, View } from 'react-native'
-import * as yup from 'yup'
 
 import { IResidenceKindEnum, IResidenceStateEnum } from '@/assets/@types'
 import Header from '@/components/Header'
-import ResidenceForm from '@/components/ResidenceForm'
+import ResidenceForm, {
+  IFormData,
+  residenceSchema,
+} from '@/components/ResidenceForm'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 import { NotificationRepository } from '@/repositories/notification.repository'
 import { ResidenceNotificationRepository } from '@/repositories/residence.notification.repository'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
-
-interface FormData {
-  price: number
-  description?: string
-  location?: string
-}
-
-const schema = yup.object({
-  price: yup
-    .number()
-    .typeError('O preço deve ser um número')
-    .required('O preço é obrigatório')
-    .positive('O preço deve ser um número positivo'),
-
-  description: yup
-    .string()
-    .required('A descrição é obrigatória')
-    .min(10, 'A descrição deve ter pelo menos 10 caracteres')
-    .max(200, 'A descrição não pode ter mais de 200 caracteres'),
-
-  location: yup
-    .string()
-    .required('A localização é obrigatória')
-    .min(3, 'A localização deve ter pelo menos 3 caracteres')
-    .max(150, 'A localização não pode ter mais de 150 caracteres'),
-})
 
 export default function Editor() {
   const {
@@ -49,10 +25,12 @@ export default function Editor() {
     reset,
     formState: { errors, isSubmitting, isDirty },
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: zodResolver(residenceSchema),
     defaultValues: {
       description: '',
       location: '',
+      state: 'rent',
+      kind: 'apartment',
       price: 0,
     },
   })
@@ -63,9 +41,6 @@ export default function Editor() {
   )
 
   const [cover, setCover] = useState<string | null>(null)
-  const [price, setPrice] = useState<number | null>(0)
-  const [kind, setKind] = useState<IResidenceKindEnum>('apartment')
-  const [state, setState] = useState<IResidenceStateEnum>('rent')
 
   const { uploadResidencesImage } = useSupabase()
   const alert = useAlert()
@@ -79,26 +54,30 @@ export default function Editor() {
   )
 
   const resetFields = useCallback(() => {
-    reset({ description: '', location: '', price: 0 })
-    setPrice(0)
-    setState('rent')
-    setKind('apartment')
+    reset({
+      description: '',
+      location: '',
+      state: 'rent',
+      kind: 'apartment',
+      price: 0,
+    })
+
     setCover(null)
     setImages([])
   }, [reset])
 
-  async function onSubmit(formData: FormData) {
+  async function onSubmit(formData: IFormData) {
     if (images.length !== 0 && cover && session) {
       try {
         const data = await residenceRepository.create({
-          price,
+          price: formData.price,
           location: formData.location,
           description: formData.description,
           approval_status: false,
+          state: formData.state as IResidenceStateEnum,
+          kind: formData.kind as IResidenceKindEnum,
           cover: null,
           photos: null,
-          state,
-          kind,
         })
 
         await uploadResidencesImage(data.id, cover, images)
@@ -148,15 +127,11 @@ export default function Editor() {
 
   const handleBackPress = useCallback(() => {
     const hasSelectedImages = images.length > 0
-    const isStateDifferent = state !== 'rent'
-    const isKindDifferent = kind !== 'apartment'
 
     if (
       !isSubmitting &&
       !isDirty &&
       !hasSelectedImages &&
-      !isStateDifferent &&
-      !isKindDifferent &&
       images.length === 0
     ) {
       router.back()
@@ -174,7 +149,7 @@ export default function Editor() {
       )
       return true
     }
-  }, [images.length, isDirty, isSubmitting, kind, state, resetFields, alert])
+  }, [images.length, isDirty, isSubmitting, resetFields, alert])
 
   useFocusEffect(
     React.useCallback(() => {
@@ -192,12 +167,6 @@ export default function Editor() {
       <ResidenceForm
         control={control}
         isSubmitting={isSubmitting}
-        price={price}
-        setPrice={setPrice}
-        state={state}
-        setState={setState}
-        kind={kind}
-        setKind={setKind}
         errors={errors}
         images={images}
         setImages={setImages}
