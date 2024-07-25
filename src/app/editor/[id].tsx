@@ -1,45 +1,25 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import * as ImagePicker from 'expo-image-picker'
 import { useLocalSearchParams, useNavigation } from 'expo-router'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { StatusBar, View } from 'react-native'
-import * as yup from 'yup'
 
-import { beforeRemoveEventType } from '@/assets/@types'
+import {
+  beforeRemoveEventType,
+  IResidenceKindEnum,
+  IResidenceStateEnum,
+} from '@/assets/@types'
 import Header from '@/components/Header'
-import ResidenceForm from '@/components/ResidenceForm'
+import ResidenceForm, {
+  IFormData,
+  residenceSchema,
+} from '@/components/ResidenceForm'
 import { supabase } from '@/config/supabase'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
-
-interface IFormData {
-  price: number
-  description?: string
-  location?: string
-}
-
-const schema = yup.object({
-  price: yup
-    .number()
-    .typeError('O preço deve ser um número')
-    .required('O preço é obrigatório')
-    .positive('O preço deve ser um número positivo'),
-
-  description: yup
-    .string()
-    .required('A descrição é obrigatória')
-    .min(10, 'A descrição deve ter pelo menos 10 caracteres')
-    .max(200, 'A descrição não pode ter mais de 200 caracteres'),
-
-  location: yup
-    .string()
-    .required('A localização é obrigatória')
-    .min(3, 'A localização deve ter pelo menos 3 caracteres')
-    .max(150, 'A localização não pode ter mais de 150 caracteres'),
-})
 
 export default function Editor() {
   const navigation = useNavigation()
@@ -58,11 +38,17 @@ export default function Editor() {
     reset,
     formState: { errors, isDirty, isSubmitting },
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: zodResolver(residenceSchema),
     defaultValues: {
       description: defaultData?.residence.description || '',
       location: defaultData?.residence.location || '',
       price: defaultData?.residence.price || 0,
+      kind: defaultData?.residence.kind
+        ? String(defaultData?.residence.kind)
+        : 'apartment',
+      state: defaultData?.residence.state
+        ? String(defaultData?.residence.state)
+        : 'rent',
     },
   })
 
@@ -81,11 +67,6 @@ export default function Editor() {
   const [cover, setCover] = useState<string | null | undefined>(
     defaultData?.residence.cover || undefined,
   )
-  const [price, setPrice] = useState<number | null>(
-    defaultData?.residence.price || 0,
-  )
-  const [kind, setKind] = useState(defaultData?.residence.kind || 'apartment')
-  const [state, setState] = useState(defaultData?.residence.state || 'rent')
   const { uploadResidencesImage, handleCallNotification } = useSupabase()
 
   const [isPhotoChaged, setPhotoChanged] = useState(false)
@@ -96,21 +77,14 @@ export default function Editor() {
   async function onSubmit(formData: IFormData) {
     const hasSelectedImages = images.length > 0
     const isCoverChanged = defaultData?.residence.cover !== cover
-    const isStateDifferent = defaultData?.residence.state !== state
-    const isKindDifferent = defaultData?.residence.kind !== kind
     const hasDeletedImages = imagesToDelete.length > 0
 
     if (
       hasSelectedImages &&
       cover !== undefined &&
-      (isCoverChanged ||
-        isDirty ||
-        isKindDifferent ||
-        isStateDifferent ||
-        hasDeletedImages ||
-        isPhotoChaged)
+      (isCoverChanged || isDirty || hasDeletedImages || isPhotoChaged)
     ) {
-      if (isDirty || isKindDifferent || isStateDifferent || isCoverChanged) {
+      if (isDirty || isCoverChanged) {
         await updateResidenceData(formData)
       }
 
@@ -147,33 +121,37 @@ export default function Editor() {
     }
   }
 
-  async function updateResidenceData({ location, description }: IFormData) {
+  async function updateResidenceData(data: IFormData) {
     try {
       await residenceRepository.update(id, {
-        price,
-        location,
-        description,
+        price: data.price,
+        location: data.location,
+        description: data.description,
+        state: data.state as IResidenceStateEnum,
+        kind: data.kind as IResidenceKindEnum,
         cover,
-        state,
-        kind,
       })
 
       setDefaultData({
         residence: {
           ...defaultData?.residence,
-          price: price || defaultData?.residence.price,
-          location: location || defaultData?.residence.location,
-          description: description || defaultData?.residence.description,
+          price: data.price || defaultData?.residence.price,
+          location: data.location || defaultData?.residence.location,
+          description: data.description || defaultData?.residence.description,
+          state:
+            (data.state as IResidenceStateEnum) || defaultData?.residence.state,
+          kind:
+            (data.kind as IResidenceKindEnum) || defaultData?.residence.kind,
           cover: cover || defaultData?.residence.cover,
-          state,
-          kind,
         },
       })
 
       reset({
-        description,
-        location,
-        price: price || undefined,
+        description: '',
+        location: '',
+        state: 'rent',
+        kind: 'apartment',
+        price: 0,
       })
     } catch {
       alert.showAlert(
@@ -221,9 +199,8 @@ export default function Editor() {
       const hasSelectedImages =
         defaultData?.residence.photos &&
         defaultData?.residence.photos?.length > images.length
+
       const isCoverChanged = defaultData?.residence.cover !== cover
-      const isStateDifferent = defaultData?.residence.state !== state
-      const isKindDifferent = defaultData?.residence.kind !== kind
       const hasDeletedImages = imagesToDelete.length > 0
 
       if (forceExiting) return
@@ -232,8 +209,6 @@ export default function Editor() {
         !isSubmitting &&
         !isDirty &&
         !isCoverChanged &&
-        !isStateDifferent &&
-        !isKindDifferent &&
         !hasDeletedImages &&
         !hasSelectedImages
       ) {
@@ -263,8 +238,6 @@ export default function Editor() {
     navigation,
     images,
     cover,
-    state,
-    kind,
     imagesToDelete,
     alert,
   ])
@@ -274,12 +247,6 @@ export default function Editor() {
       <ResidenceForm
         control={control}
         isSubmitting={isSubmitting}
-        price={price}
-        setPrice={setPrice}
-        state={state}
-        setState={setState}
-        kind={kind}
-        setKind={setKind}
         errors={errors}
         images={images}
         setImages={setImages}

@@ -1,37 +1,82 @@
 import * as ImagePicker from 'expo-image-picker'
-import { Dispatch, SetStateAction } from 'react'
 import { Controller, Control, FieldErrors } from 'react-hook-form'
 import { View, ScrollView, Text } from 'react-native'
 import CurrencyInput from 'react-native-currency-input'
+import * as z from 'zod'
 
-import { IResidenceKindEnum, IResidenceStateEnum } from '@/assets/@types'
+import ResidenceFilterButton from './ResidenceFilterButton'
+
+import { IResidenceKindEnum } from '@/assets/@types'
 import GaleryGrid from '@/components/GaleryGrid'
 import RadioButton from '@/components/RadioButton'
 import SearchPlace from '@/components/SearchPlace'
 import TextField from '@/components/TextField'
 import constants from '@/constants'
 
+export interface IFormData {
+  price: number
+  description: string
+  location: string
+  kind: string
+  state: string
+}
+
+export const residenceSchema = z.object({
+  price: z
+    .number({
+      required_error: 'O preço deve ser um número positivo',
+      invalid_type_error: 'Preço invalido',
+    })
+    .positive({
+      message: 'Preço invalido',
+    }),
+
+  description: z
+    .string({
+      required_error: 'A descrição é obrigatória',
+      invalid_type_error: 'Descrição inválida',
+    })
+    .min(10, 'A descrição deve ter pelo menos 10 caracteres')
+    .max(200, 'A descrição não pode ter mais de 200 caracteres'),
+
+  location: z
+    .string({
+      required_error: 'A localização é obrigatória',
+      invalid_type_error: 'Localização inválida',
+    })
+    .min(3, 'A localização deve ter pelo menos 3 caracteres')
+    .max(150, 'A localização não pode ter mais de 150 caracteres'),
+
+  kind: z.enum(['apartment', 'villa', 'land', 'others'], {
+    invalid_type_error: 'Tipo de residência é obrigatório',
+    required_error: 'Tipo de residência é obrigatório',
+  }),
+
+  state: z.enum(['sale', 'rent'], {
+    invalid_type_error: 'Tipo de venda é obrigatório',
+    required_error: 'Tipo de venda é obrigatório',
+  }),
+})
+
 interface IResidenceForm {
   control: Control<
     {
-      price?: number
-      location?: string
-      description?: string
+      description: string
+      location: string
+      price: number
+      kind: string
+      state: string
     },
     unknown
   >
   isSubmitting: boolean
   errors: FieldErrors<{
-    price?: number
-    location?: string
-    description?: string
+    description: string
+    location: string
+    state: string
+    kind: string
+    price: number
   }>
-  price: number
-  setPrice: (value: number) => void
-  state: string
-  setState: Dispatch<SetStateAction<IResidenceStateEnum>>
-  kind: string
-  setKind: Dispatch<SetStateAction<IResidenceKindEnum>>
   cover: string
   setCover: (value: string) => void
   images: ImagePicker.ImagePickerAsset[]
@@ -43,12 +88,6 @@ interface IResidenceForm {
 export default function ResidenceForm({
   control,
   isSubmitting,
-  price,
-  setPrice,
-  state,
-  setState,
-  kind,
-  setKind,
   errors,
   images,
   setImages,
@@ -71,15 +110,15 @@ export default function ResidenceForm({
             rules={{
               required: true,
             }}
-            render={({ field: { onChange, onBlur } }) => (
+            render={({ field: { value, onChange, onBlur } }) => (
               <View>
                 <TextField.Root>
                   <TextField.Label isRequired>Preço</TextField.Label>
                   <TextField.Container
                     error={errors.price?.message !== undefined}>
                     <CurrencyInput
-                      value={price}
-                      onChangeValue={setPrice}
+                      value={value}
+                      onChangeValue={(value) => onChange(value || 0)}
                       delimiter="."
                       separator=","
                       precision={2}
@@ -87,9 +126,6 @@ export default function ResidenceForm({
                       cursorColor={constants.colors.primary}
                       className="flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium"
                       placeholder="Quanto está custando? (em kz)"
-                      onChangeText={() => {
-                        onChange(String(price))
-                      }}
                       onBlur={onBlur}
                       editable={!isSubmitting}
                     />
@@ -157,70 +193,58 @@ export default function ResidenceForm({
           />
         </View>
 
-        <View>
-          <TextField.Label>Estado</TextField.Label>
+        <View className="p-4">
+          <Text className="font-poppins-medium text-base mb-3">
+            Tipo de venda
+          </Text>
           <View className="flex flex-row justify-between items-center">
             <Text className="text-sm font-poppins-regular">Arrendamento</Text>
-            <RadioButton
-              value="rent"
-              isChecked={state === 'rent'}
-              onPress={() => setState('rent')}
-              disabled={isSubmitting}
+            <Controller
+              control={control}
+              name="state"
+              render={({ field: { value, onChange } }) => (
+                <RadioButton
+                  value="rent"
+                  isChecked={value === 'rent'}
+                  onPress={() => onChange('rent')}
+                />
+              )}
             />
           </View>
 
           <View className="flex flex-row justify-between items-center">
             <Text className="text-sm font-poppins-regular">À Venda</Text>
-            <RadioButton
-              value="sell"
-              isChecked={state === 'sell'}
-              onPress={() => setState('sell')}
-              disabled={isSubmitting}
+            <Controller
+              control={control}
+              name="state"
+              render={({ field: { value, onChange } }) => (
+                <RadioButton
+                  value="sell"
+                  isChecked={value === 'sell'}
+                  onPress={() => onChange('sell')}
+                />
+              )}
             />
           </View>
+          <TextField.Helper message={errors.state?.message} />
         </View>
 
         <View>
-          <TextField.Label>Tipo</TextField.Label>
-          <View className="flex flex-row justify-between items-center">
-            <Text className="text-sm font-poppins-regular">Apartamento</Text>
-            <RadioButton
-              value="apartment"
-              isChecked={kind === 'apartment'}
-              onPress={() => setKind('apartment')}
-              disabled={isSubmitting}
-            />
-          </View>
+          <TextField.Label>Tipo de residência</TextField.Label>
 
-          <View className="flex flex-row justify-between items-center">
-            <Text className="text-sm font-poppins-regular">Vivenda</Text>
-            <RadioButton
-              value="villa"
-              isChecked={kind === 'villa'}
-              onPress={() => setKind('villa')}
-              disabled={isSubmitting}
-            />
-          </View>
-
-          <View className="flex flex-row justify-between items-center">
-            <Text className="text-sm font-poppins-regular">Terreno</Text>
-            <RadioButton
-              value="land"
-              isChecked={kind === 'land'}
-              onPress={() => setKind('land')}
-              disabled={isSubmitting}
-            />
-          </View>
-
-          <View className="flex flex-row justify-between items-center">
-            <Text className="text-sm font-poppins-regular">Outros</Text>
-            <RadioButton
-              value="others"
-              isChecked={kind === 'others'}
-              onPress={() => setKind('others')}
-              disabled={isSubmitting}
-            />
-          </View>
+          <Controller
+            control={control}
+            name="kind"
+            render={({ field: { value, onChange } }) => (
+              <ResidenceFilterButton
+                excludeAllOption
+                paddingHorizontal={0}
+                kind={value as IResidenceKindEnum}
+                setKind={(kind) => onChange(kind)}
+              />
+            )}
+          />
+          <TextField.Helper message={errors.kind?.message} />
         </View>
 
         <View className="mb-6">
