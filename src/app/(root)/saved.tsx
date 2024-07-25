@@ -100,7 +100,7 @@ export default function Saved() {
                 <View className="flex items-center justify-center">
                   <NoSaved />
                   <Text className="font-poppins-medium text-gray-400 text-center">
-                    Você não tem nehuma guardada.
+                    Nenhuma residência guardada.
                   </Text>
                 </View>
               </View>

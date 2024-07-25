@@ -3,6 +3,7 @@ import { EventArg } from '@react-navigation/native'
 import { Database } from '@/assets/@types/supabase'
 
 export type IResidence = Database['public']['Tables']['residences']['Row']
+export type IWishe = Database['public']['Tables']['wishes']['Row']
 export type IResidenceKindEnum =
   Database['public']['Tables']['residences']['Row']['kind']
 export type IResidenceStateEnum =

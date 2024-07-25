@@ -10,7 +10,7 @@ import { twMerge } from 'tailwind-merge'
 interface IButton extends TouchableOpacityProps {
   title: string
   loading?: boolean
-  onPress: () => void
+  onPress?: () => void
   labelStyle?: TextStyle
 }
 
