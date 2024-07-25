@@ -1,12 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as ImagePicker from 'expo-image-picker'
-import { router } from 'expo-router'
-import React, { useMemo, useState } from 'react'
+import { router, useFocusEffect } from 'expo-router'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { View } from 'react-native'
+import { BackHandler, View } from 'react-native'
 import * as yup from 'yup'
 
-import { IResidenceEnum } from '@/assets/@types'
+import { IResidenceKindEnum, IResidenceStateEnum } from '@/assets/@types'
 import Header from '@/components/Header'
 import ResidenceForm from '@/components/ResidenceForm'
 import { useAlert } from '@/hooks/useAlert'
@@ -47,24 +47,28 @@ export default function Editor() {
     handleSubmit,
     control,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: {
+      description: '',
+      location: '',
+      price: 0,
+    },
   })
 
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([])
-
   const resetResidenceCache = useResidenceStore(
     (state) => state.resetResidenceCache,
   )
 
-  const [cover, setCover] = useState<string | null>()
+  const [cover, setCover] = useState<string | null>(null)
   const [price, setPrice] = useState<number | null>(0)
-  const [kind, setKind] = useState<IResidenceEnum>('apartment')
-  const [state, setState] = useState<'rent' | 'sell'>('rent')
+  const [kind, setKind] = useState<IResidenceKindEnum>('apartment')
+  const [state, setState] = useState<IResidenceStateEnum>('rent')
+
   const { uploadResidencesImage } = useSupabase()
   const alert = useAlert()
-
   const { session } = useSupabase()
 
   const residenceRepository = useMemo(() => new ResidenceRepository(), [])
@@ -73,6 +77,15 @@ export default function Editor() {
     () => new ResidenceNotificationRepository(),
     [],
   )
+
+  const resetFields = useCallback(() => {
+    reset({ description: '', location: '', price: 0 })
+    setPrice(0)
+    setState('rent')
+    setKind('apartment')
+    setCover(null)
+    setImages([])
+  }, [reset])
 
   async function onSubmit(formData: FormData) {
     if (images.length !== 0 && cover && session) {
@@ -103,10 +116,8 @@ export default function Editor() {
           notification_id: notification.id,
         })
 
+        resetFields()
         resetResidenceCache()
-
-        setImages([])
-        reset()
         router.replace(`/(root)/home`)
       } catch {
         alert.showAlert(
@@ -135,6 +146,47 @@ export default function Editor() {
     }
   }
 
+  const handleBackPress = useCallback(() => {
+    const hasSelectedImages = images.length > 0
+    const isStateDifferent = state !== 'rent'
+    const isKindDifferent = kind !== 'apartment'
+
+    if (
+      !isSubmitting &&
+      !isDirty &&
+      !hasSelectedImages &&
+      !isStateDifferent &&
+      !isKindDifferent &&
+      images.length === 0
+    ) {
+      router.back()
+      return true
+    } else {
+      alert.showAlert(
+        'Descartar alterações?',
+        'Você possui alterações não salvas, tem certeza de que deseja descartá-las?',
+        'Sim',
+        () => {
+          resetFields()
+          router.back()
+        },
+        'Não',
+      )
+      return true
+    }
+  }, [images.length, isDirty, isSubmitting, kind, state, resetFields, alert])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        handleBackPress,
+      )
+
+      return () => subscription.remove()
+    }, [handleBackPress]),
+  )
+
   return (
     <View className="relative bg-white">
       <ResidenceForm
@@ -157,6 +209,7 @@ export default function Editor() {
         title="Postar residência"
         loading={isSubmitting}
         onPress={handleSubmit(onSubmit)}
+        onBackPress={handleBackPress}
       />
     </View>
   )

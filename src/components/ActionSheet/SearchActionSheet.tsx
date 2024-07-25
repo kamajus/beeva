@@ -8,7 +8,7 @@ import CurrencyInput from 'react-native-currency-input'
 
 import RadioButton from '../RadioButton'
 
-import { IResidenceFilterEnum } from '@/assets/@types'
+import { IResidenceFilterEnum, IResidenceStateEnum } from '@/assets/@types'
 import Button from '@/components/Button'
 import IconButton from '@/components/IconButton'
 import ResidenceFilterButton from '@/components/ResidenceFilterButton'
@@ -22,7 +22,9 @@ export default function SearchActionSheet(props: SheetProps) {
   const [kind, setKind] = useState<IResidenceFilterEnum>(
     filter.kind ? filter.kind : 'all',
   )
-  const [state, setState] = useState<'sell' | 'rent' | undefined>(filter.state)
+  const [state, setState] = useState<IResidenceStateEnum | undefined>(
+    filter.state,
+  )
   const [minPrice, setMinPrice] = useState<number | undefined>(
     filter.minPrice ? filter.minPrice : undefined,
   )

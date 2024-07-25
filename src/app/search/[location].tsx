@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react'
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
 
-import { IResidence, IResidenceFilterEnum } from '@/assets/@types'
+import {
+  IResidence,
+  IResidenceFilterEnum,
+  IResidenceStateEnum,
+} from '@/assets/@types'
 import NoData from '@/assets/images/no-data'
 import Header from '@/components/Header'
 import HomeCard from '@/components/HomeCard'
@@ -89,7 +93,7 @@ export default function Search() {
     residences,
   }: {
     kind?: IResidenceFilterEnum | undefined
-    state?: 'sell' | 'rent' | undefined
+    state?: IResidenceStateEnum | undefined
     minPrice?: number | undefined
     maxPrice?: number | undefined
     residences: IResidence[]
