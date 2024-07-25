@@ -4,6 +4,7 @@ import { Controller, Control, FieldErrors } from 'react-hook-form'
 import { View, ScrollView, Text } from 'react-native'
 import CurrencyInput from 'react-native-currency-input'
 
+import { IResidenceKindEnum, IResidenceStateEnum } from '@/assets/@types'
 import GaleryGrid from '@/components/GaleryGrid'
 import RadioButton from '@/components/RadioButton'
 import SearchPlace from '@/components/SearchPlace'
@@ -28,9 +29,9 @@ interface IResidenceForm {
   price: number
   setPrice: (value: number) => void
   state: string
-  setState: Dispatch<SetStateAction<'sell' | 'rent'>>
+  setState: Dispatch<SetStateAction<IResidenceStateEnum>>
   kind: string
-  setKind: Dispatch<SetStateAction<'apartment' | 'villa' | 'land' | 'others'>>
+  setKind: Dispatch<SetStateAction<IResidenceKindEnum>>
   cover: string
   setCover: (value: string) => void
   images: ImagePicker.ImagePickerAsset[]

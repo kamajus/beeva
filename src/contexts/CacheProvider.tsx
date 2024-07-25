@@ -6,7 +6,11 @@ import React, {
   useState,
 } from 'react'
 
-import { IResidenceFilterEnum, INotification } from '@/assets/@types'
+import {
+  IResidenceFilterEnum,
+  INotification,
+  IResidenceStateEnum,
+} from '@/assets/@types'
 
 type CacheContextType = {
   notifications: INotification[]
@@ -14,14 +18,14 @@ type CacheContextType = {
   resetCache(): void
   filter: {
     kind?: IResidenceFilterEnum
-    state?: 'sell' | 'rent'
+    state?: IResidenceStateEnum
     minPrice?: number
     maxPrice?: number
   }
   setFilter: Dispatch<
     SetStateAction<{
       kind?: IResidenceFilterEnum | undefined
-      state?: 'sell' | 'rent' | undefined
+      state?: IResidenceStateEnum | undefined
       minPrice?: number | undefined
       maxPrice?: number | undefined
     }>
@@ -39,7 +43,7 @@ export default function CacheProvider(props: CacheProviderProps) {
 
   const [filter, setFilter] = useState<{
     kind?: IResidenceFilterEnum
-    state?: 'sell' | 'rent'
+    state?: IResidenceStateEnum
     minPrice?: number
     maxPrice?: number
   }>({

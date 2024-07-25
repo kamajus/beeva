@@ -4,25 +4,20 @@ import {
   View,
   Text,
   TouchableWithoutFeedback,
+  TextInputProps,
 } from 'react-native'
 
 import TextField from '@/components/TextField'
-import TouchableBrightness from '@/components/TouchableBrightness'
 import { placeApi } from '@/config/axios'
 
 interface DropDownProps {
   setValue: React.Dispatch<React.SetStateAction<string>>
   dataSource: string[]
-  updateValue: (...event: string[]) => void
+  updateValue: (value: string) => void
   onPress: () => void
 }
 
-interface SearchSelectProps {
-  value?: string
-  placeholder: string
-  onBlur: () => void
-  onChangeText: (...event: string[]) => void
-  editable?: boolean
+interface SearchSelectProps extends TextInputProps {
   error?: boolean
 }
 
@@ -30,88 +25,69 @@ interface Place {
   display_name: string
 }
 
-const DropDownItem = ({
-  item,
-  onPress,
-  setValue,
-  updateValue,
-}: {
+const DropDownItem: React.FC<{
   item: string
   onPress: () => void
   setValue: React.Dispatch<React.SetStateAction<string>>
-  updateValue: (...event: string[]) => void
-}) => (
-  <View style={{ width: '100%', paddingLeft: 4, paddingTop: 4 }}>
-    <TouchableBrightness
-      onPress={() => {
-        onPress()
-        setValue(item)
-        updateValue(item)
-      }}>
-      <Text
-        style={{ color: 'black', padding: 16, fontFamily: 'poppins-medium' }}>
-        {item}
-      </Text>
-    </TouchableBrightness>
-  </View>
-)
+  updateValue: (value: string) => void
+}> = ({ item, onPress, setValue, updateValue }) => {
+  const [isActive, setIsActive] = useState(false)
 
-const NoResults = () => (
-  <View
-    style={{
-      width: '100%',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 16,
-    }}>
-    <Text
-      style={{ fontSize: 16, color: 'black', fontFamily: 'poppins-semibold' }}>
-      Nenhum resultado encontrado.
-    </Text>
-  </View>
-)
+  return (
+    <View>
+      <TouchableOpacity
+        onPressIn={() => setIsActive(true)}
+        onPressOut={() => setIsActive(false)}
+        onPress={() => {
+          onPress()
+          setValue(item)
+          updateValue(item)
+        }}
+        style={{
+          backgroundColor: isActive ? '#dcdcdc' : 'transparent',
+        }}
+        className="w-full pl-1 pt-1">
+        <Text className="text-black p-4 font-poppins-medium">{item}</Text>
+      </TouchableOpacity>
+    </View>
+  )
+}
 
-const DropDown = ({
+const DropDown: React.FC<DropDownProps> = ({
   updateValue,
   dataSource,
   setValue,
   onPress,
-}: DropDownProps) => (
-  <TouchableOpacity
-    style={{ width: '100%' }}
-    className="shadow-xl transition absolute top-16 z-50">
+}) => (
+  <TouchableOpacity className="w-full shadow-xl transition absolute top-16 z-50">
     <View
+      className="w-full bg-white"
       style={{
-        width: '100%',
-        backgroundColor: 'white',
-        borderRadius: 8,
         shadowColor: '#000000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
       }}>
-      {dataSource.length ? (
-        dataSource.map((item, index) => (
-          <DropDownItem
-            key={index}
-            item={item}
-            onPress={onPress}
-            setValue={setValue}
-            updateValue={updateValue}
-          />
-        ))
-      ) : (
-        <NoResults />
-      )}
+      {dataSource.length
+        ? dataSource.map((item, index) => (
+            <DropDownItem
+              key={index}
+              item={item}
+              onPress={onPress}
+              setValue={setValue}
+              updateValue={updateValue}
+            />
+          ))
+        : null}
     </View>
   </TouchableOpacity>
 )
 
-const SearchSelect = (props: SearchSelectProps) => {
+const SearchSelect: React.FC<SearchSelectProps> = (props) => {
   const [dataSource, setDataSource] = useState<string[]>([])
   const [searching, setSearching] = useState(false)
-  const [value, setValue] = useState(props.value ? `${props.value}` : '')
+  const [value, setValue] = useState(props.value ?? '')
 
   const onSearch = (text: string) => {
     props.onChangeText(text)
@@ -138,21 +114,18 @@ const SearchSelect = (props: SearchSelectProps) => {
 
   return (
     <TouchableWithoutFeedback onPress={() => setSearching(false)}>
-      <View style={{ zIndex: 50 }}>
+      <View className="z-50">
         <TextField.Label isRequired>Localização</TextField.Label>
-        <View
-          style={{
-            width: '100%',
-            alignItems: 'center',
-            flexDirection: 'row',
-            position: 'relative',
-          }}>
+        <View className="w-full relative items-center flex-row">
           <TextField.Container error={props.error}>
             <TextField.Input
               placeholder={props.placeholder}
               onChangeText={onSearch}
               editable={props.editable}
               value={value}
+              keyboardType="web-search"
+              returnKeyType="search"
+              autoFocus
             />
           </TextField.Container>
           {searching && (
