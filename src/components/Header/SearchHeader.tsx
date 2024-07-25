@@ -5,7 +5,6 @@ import { ArrowLeft } from 'lucide-react-native'
 import { View } from 'react-native'
 import { SheetManager } from 'react-native-actions-sheet'
 
-import '../ActionSheet'
 import IconButton from '../IconButton'
 import TextField from '../TextField'
 
