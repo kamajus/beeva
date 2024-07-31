@@ -21,20 +21,19 @@ import Header from '@/components/Header'
 import TextField from '@/components/TextField'
 import { supabase } from '@/config/supabase'
 import Constants from '@/constants'
-import { formatPhotoUrl } from '@/functions/format'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 import { UserRepository } from '@/repositories/user.repository'
 
 interface FormData {
-  firstName?: string
-  lastName: string
+  first_name?: string
+  last_name: string
   email?: string
   phone?: string
 }
 
 const schema = yup.object({
-  firstName: yup
+  first_name: yup
     .string()
     .required('O campo de nome é obrigatório')
     .min(2, 'O nome deve ter pelo menos 2 caracteres')
@@ -44,7 +43,7 @@ const schema = yup.object({
       /^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/,
       'A expressão introduzida está inválida',
     ),
-  lastName: yup
+  last_name: yup
     .string()
     .required('O campo de sobrenome é obrigatório')
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
@@ -78,8 +77,8 @@ export default function Perfil() {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      firstName: user?.first_name,
-      lastName: user?.last_name,
+      first_name: user?.first_name,
+      last_name: user?.last_name,
       phone: user?.phone,
       email: session?.user.email,
     },
@@ -157,15 +156,13 @@ export default function Perfil() {
         first_name: data.first_name || user.first_name,
         last_name: data.last_name || user.last_name,
         phone: data.phone || user.phone,
-        photo_url: data.photo_url
-          ? formatPhotoUrl(data.photo_url)
-          : formatPhotoUrl(user.photo_url),
+        photo_url: data.photo_url,
       })
     }
 
     reset({
-      firstName: data.first_name,
-      lastName: data.last_name,
+      first_name: data.first_name,
+      last_name: data.last_name,
       email: session.user.email,
       phone: data.phone,
     })
@@ -193,8 +190,8 @@ export default function Perfil() {
           const photoUrl = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/avatars/${user.id}`
 
           await updatePerfil({
-            first_name: data.firstName,
-            last_name: data.lastName,
+            first_name: data.first_name,
+            last_name: data.last_name,
             email: data.email,
             phone: data.phone,
             photo_url: photoUrl,
@@ -210,8 +207,8 @@ export default function Perfil() {
         }
       } else {
         await updatePerfil({
-          first_name: data.firstName,
-          last_name: data.lastName,
+          first_name: data.first_name,
+          last_name: data.last_name,
           email: data.email,
           phone: data.phone,
         })
@@ -267,12 +264,8 @@ export default function Perfil() {
                   className="rounded-full border-2 border-[#393939]">
                   <Avatar.Image
                     size={150}
-                    source={{
-                      uri:
-                        photo.length === 0
-                          ? `${user?.photo_url}`
-                          : photo[0].uri,
-                    }}
+                    src={photo.length === 0 ? user?.photo_url : photo[0].uri}
+                    updateAt={user.updated_at}
                   />
                 </Pressable>
 
@@ -302,7 +295,7 @@ export default function Perfil() {
           <View>
             <Controller
               control={control}
-              name="firstName"
+              name="first_name"
               rules={{
                 required: true,
               }}
@@ -311,7 +304,7 @@ export default function Perfil() {
                   <TextField.Root>
                     <TextField.Label isRequired>Nome</TextField.Label>
                     <TextField.Container
-                      error={errors.firstName?.message !== undefined}>
+                      error={errors.first_name?.message !== undefined}>
                       <TextField.Input
                         placeholder="Degite o teu nome"
                         value={value}
@@ -321,7 +314,7 @@ export default function Perfil() {
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <TextField.Helper message={errors.firstName?.message} />
+                  <TextField.Helper message={errors.first_name?.message} />
                 </View>
               )}
             />
@@ -330,7 +323,7 @@ export default function Perfil() {
           <View>
             <Controller
               control={control}
-              name="lastName"
+              name="last_name"
               rules={{
                 required: true,
               }}
@@ -339,7 +332,7 @@ export default function Perfil() {
                   <TextField.Root>
                     <TextField.Label isRequired>Sobrenome</TextField.Label>
                     <TextField.Container
-                      error={errors.lastName?.message !== undefined}>
+                      error={errors.last_name?.message !== undefined}>
                       <TextField.Input
                         placeholder="Degite o teu sobrenome"
                         value={value}
@@ -349,7 +342,7 @@ export default function Perfil() {
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <TextField.Helper message={errors.lastName?.message} />
+                  <TextField.Helper message={errors.last_name?.message} />
                 </View>
               )}
             />

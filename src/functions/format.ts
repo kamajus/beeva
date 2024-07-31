@@ -32,25 +32,21 @@ export function formatMoney(
   decimal = ',',
   thousands = '.',
 ) {
-  try {
-    decimalCount = Math.abs(decimalCount)
-    decimalCount = isNaN(decimalCount) ? 2 : decimalCount
+  decimalCount = Math.abs(decimalCount)
+  decimalCount = isNaN(decimalCount) ? 2 : decimalCount
 
-    const negativeSign = amount < 0 ? '-' : ''
+  const negativeSign = amount < 0 ? '-' : ''
 
-    let [integerPart, decimalPart] = Math.abs(Number(amount) || 0)
-      .toFixed(decimalCount)
-      .split('.')
+  let [integerPart, decimalPart] = Math.abs(Number(amount) || 0)
+    .toFixed(decimalCount)
+    .split('.')
 
-    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousands)
+  integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, thousands)
 
-    return (
-      negativeSign +
-      integerPart +
-      (decimalCount ? decimal + decimalPart.slice(0, decimalCount) : '') +
-      ' AKZ'
-    )
-  } catch (e) {
-    console.log(e)
-  }
+  return (
+    negativeSign +
+    integerPart +
+    (decimalCount ? decimal + decimalPart.slice(0, decimalCount) : '') +
+    ' AKZ'
+  )
 }
