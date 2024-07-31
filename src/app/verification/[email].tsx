@@ -52,7 +52,7 @@ export default function Confirmation() {
             title: 'Seja bem vindo',
             description:
               'Bem-vindo à plataforma onde seus sonhos de moradia se tornam realidade! 🏡✨',
-            type: 'congratulations',
+            type: 'new-user-account',
             was_readed: false,
           })
           router.replace('/(root)/home')
