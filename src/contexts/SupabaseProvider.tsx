@@ -265,7 +265,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
       console.log('Auth state changed')
-      console.log(session.user?.email)
+      console.log(session)
 
       if (session) {
         try {
