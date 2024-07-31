@@ -1,112 +1,143 @@
 import clsx from 'clsx'
 import { useLocalSearchParams, Link, router } from 'expo-router'
-import { useCallback, useEffect, useState } from 'react'
-import { View, Text, ScrollView, RefreshControl, Pressable } from 'react-native'
-import { Avatar, IconButton } from 'react-native-paper'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  View,
+  Text,
+  ScrollView,
+  RefreshControl,
+  Pressable,
+  StatusBar,
+  Linking,
+} from 'react-native'
 
-import { CachedResidence, Residence } from '../../assets/@types'
-import Carousel from '../../components/Carousel'
-import Header from '../../components/Header'
-import PublishedSince from '../../components/PublishedSince'
-import { supabase } from '../../config/supabase'
-import Constants from '../../constants'
-import { useAlert } from '../../hooks/useAlert'
-import useMoneyFormat from '../../hooks/useMoneyFormat'
-import { useSupabase } from '../../hooks/useSupabase'
-import { useResidenceStore } from '../../store/ResidenceStore'
+import { ICachedResidence } from '@/assets/@types'
+import Avatar from '@/components/Avatar'
+import Carousel from '@/components/Carousel'
+import Header from '@/components/Header'
+import IconButton from '@/components/IconButton'
+import PublishedSince from '@/components/PublishedSince'
+import { supabase } from '@/config/supabase'
+import constants from '@/constants'
+import { formatMoney, formatPhoneNumber } from '@/functions/format'
+import { useAlert } from '@/hooks/useAlert'
+import { useSupabase } from '@/hooks/useSupabase'
+import { ResidenceRepository } from '@/repositories/residence.repository'
+import { UserRepository } from '@/repositories/user.repository'
+import { useResidenceStore } from '@/store/ResidenceStore'
 
 export default function ResidenceDetail() {
   const [refreshing, setRefreshing] = useState(false)
   const cachedResidences = useResidenceStore((state) => state.cachedResidences)
   const pushResidence = useResidenceStore((state) => state.pushResidence)
   const removeResidence = useResidenceStore((state) => state.removeResidence)
+  const lovedResidences = useResidenceStore((state) => state.lovedResidences)
+  const residenceLovedStatus = useResidenceStore(
+    (state) => state.residenceLovedStatus,
+  )
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true)
-    setTimeout(() => {
-      setRefreshing(false)
-      getResidence()
-    }, 2000)
-  }, [])
+  const userRepository = useMemo(() => new UserRepository(), [])
+  const residenceRepository = useMemo(() => new ResidenceRepository(), [])
 
   const { id } = useLocalSearchParams<{ id: string }>()
-  const money = useMoneyFormat()
 
-  const { handleCallNotification, getUserById, user } = useSupabase()
-  const [cachedData, setCachedData] = useState<CachedResidence | undefined>(
+  const { handleCallNotification, loveResidence, user } = useSupabase()
+  const [cachedData, setCachedData] = useState<ICachedResidence | undefined>(
     cachedResidences.find((r) => r.residence.id === id),
   )
 
   const alert = useAlert()
-  const [showDescription, setShowDescription] = useState(false)
 
-  async function getResidence() {
-    const { data: residenceData } = await supabase
-      .from('residences')
-      .select('*')
-      .eq('id', id)
-      .single<Residence>()
+  const [showDescription, setShowDescription] = useState(false)
+  const [loved, setLoved] = useState(false)
+
+  const getResidence = useCallback(async () => {
+    const residenceData = await residenceRepository.findById(id)
 
     if (residenceData) {
-      if (residenceData.owner_id === user?.id) {
+      const userData = await userRepository.findById(residenceData.owner_id)
+      if (userData) {
         setCachedData({
           residence: residenceData,
-          user,
+          user: userData,
         })
 
-        pushResidence(residenceData, user)
-      } else {
-        await getUserById(residenceData.owner_id).then(async (userData) => {
-          if (userData) {
-            setCachedData({
-              residence: residenceData,
-              user: userData,
-            })
-
-            pushResidence(residenceData, userData)
-          }
-        })
+        pushResidence(residenceData, userData)
       }
     }
-  }
+  }, [id, pushResidence, residenceRepository, userRepository])
 
-  async function deleteResidence() {
+  const onRefresh = useCallback(() => {
+    setRefreshing(true)
+    getResidence().finally(() => setRefreshing(false))
+  }, [getResidence])
+
+  const deleteResidence = useCallback(async () => {
     if (cachedData?.residence?.photos) {
-      const { error } = await supabase.from('residences').delete().eq('id', id)
+      try {
+        await residenceRepository.deleteById(id)
+        await supabase.storage
+          .from('residences')
+          .remove(
+            cachedData.residence.photos.map(
+              (image) => `${user.id}/${id}/${image}`,
+            ),
+          )
 
-      const filesToRemove = cachedData.residence?.photos.map(
-        (image) => `${user?.id}/${id}/${image}`,
-      )
+        if (router.canGoBack) {
+          router.back()
+        } else {
+          router.replace('/home')
+        }
 
-      if (filesToRemove) {
-        await supabase.storage.from('residences').remove(filesToRemove)
-      }
-
-      if (!error) {
-        router.replace('/home')
         removeResidence(id)
         handleCallNotification(
-          'Residência eliminada',
-          'A residência foi eliminada com sucesso',
+          'Residência apagada',
+          'A residência foi apagada com sucesso',
         )
-      } else {
+      } catch {
         alert.showAlert(
-          'Erro na postagem',
-          'Não foi possível eliminar a residência, tente mais tarde.',
+          'Erro ao tentar apagar',
+          'Não foi possível apagar a residência, tente mais tarde.',
           'Ok',
           () => {},
         )
       }
     }
-  }
+  }, [
+    cachedData,
+    residenceRepository,
+    id,
+    removeResidence,
+    handleCallNotification,
+    user,
+    alert,
+  ])
 
   useEffect(() => {
-    getResidence()
-  }, [])
+    async function checkLoved() {
+      if (id) {
+        const isLoved = await residenceLovedStatus(id, user)
+        setLoved(isLoved)
+      }
+    }
+
+    checkLoved()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, lovedResidences, user])
 
   useEffect(() => {
-    setCachedData(cachedResidences.find((r) => r.residence.id === id))
-  }, [cachedResidences])
+    const checkCachedData = () => {
+      const newData = cachedResidences.find((r) => r?.residence.id === id)
+      if (newData) {
+        setCachedData(newData)
+      } else {
+        onRefresh()
+      }
+    }
+
+    checkCachedData()
+  }, [cachedResidences, id, onRefresh])
 
   return (
     <ScrollView
@@ -115,32 +146,41 @@ export default function ResidenceDetail() {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }>
-      <Carousel photos={cachedData?.residence.photos} style={{ height: 640 }} />
+      <Carousel
+        photos={cachedData?.residence?.photos}
+        style={{ height: 640 }}
+      />
+
+      <Header.Carousel
+        owner_id={cachedData?.residence?.owner_id}
+        residence_id={cachedData?.residence?.id}
+      />
+
       <View className="px-4 bg-white flex mt-7">
         <View className="flex flex-row items-center justify-between">
           <View className="flex gap-x-3 flex-row">
-            <>
+            <View>
               {cachedData?.user?.photo_url ? (
                 <Avatar.Image
                   size={50}
-                  source={{ uri: cachedData?.user.photo_url }}
+                  source={{ uri: cachedData?.user?.photo_url }}
                 />
               ) : (
                 <Avatar.Text
                   size={50}
-                  label={String(cachedData?.user?.first_name[0] || '...')}
+                  label={cachedData?.user?.first_name?.[0]}
                 />
               )}
-            </>
-            <View className="">
+            </View>
+            <View>
               <Text className="font-poppins-medium text-base">
                 {cachedData?.user
-                  ? `${cachedData.user.first_name} ${cachedData.user.last_name}`
+                  ? `${cachedData.user?.first_name} ${cachedData.user?.last_name}`
                   : '...'}
               </Text>
               <Text className="font-poppins-regular text-sm text-gray-400">
-                {cachedData?.user && cachedData?.user.id
-                  ? cachedData.user.id === user?.id
+                {cachedData?.user && cachedData?.user?.id
+                  ? cachedData.user?.id === user?.id
                     ? 'Eu (:'
                     : 'Dono'
                   : '...'}
@@ -148,17 +188,15 @@ export default function ResidenceDetail() {
             </View>
           </View>
 
-          <View className="flex flex-row items-center">
+          <View className="flex flex-row items-center justify-center">
             {cachedData?.user?.id === user?.id ? (
               <>
                 <IconButton
-                  icon="delete"
-                  mode="outlined"
-                  iconColor="#000"
+                  name="Trash"
                   onPress={() => {
                     alert.showAlert(
                       'Alerta',
-                      'Você tem ceteza que quer apagar essa residência?',
+                      'Você tem certeza que quer apagar essa residência?',
                       'Sim',
                       () => deleteResidence(),
                       'Cancelar',
@@ -167,33 +205,40 @@ export default function ResidenceDetail() {
                   }}
                 />
                 {cachedData?.residence && (
-                  <Link href={`/editor/${cachedData?.residence.id}`}>
-                    <IconButton
-                      icon="pencil-outline"
-                      mode="outlined"
-                      iconColor="#000"
-                    />
+                  <Link href={`/editor/${cachedData?.residence.id}`} asChild>
+                    <IconButton name="Pencil" />
                   </Link>
                 )}
               </>
             ) : (
-              <>
-                <IconButton
-                  icon="message-processing-outline"
-                  mode="outlined"
-                  iconColor="#000"
-                />
-                <IconButton icon="phone" mode="outlined" iconColor="#000" />
-              </>
+              <IconButton
+                name="Heart"
+                fill={
+                  cachedData?.user?.id !== user.id
+                    ? loved
+                      ? '#FF6F6F'
+                      : 'transparent'
+                    : 'transparent'
+                }
+                onPress={() => {
+                  async function handleLoveResidence() {
+                    setLoved(!loved)
+                    await loveResidence(id, !loved)
+                  }
+
+                  handleLoveResidence()
+                }}
+                disabled={!cachedData?.residence}
+              />
             )}
           </View>
         </View>
 
         <View className="flex gap-1 flex-row items-center mt-7">
           {cachedData?.residence?.price ? (
-            <>
+            <View>
               <Text className="text-2xl font-poppins-semibold">
-                {money.format(Number(cachedData?.residence?.price))}
+                {formatMoney(cachedData?.residence?.price)}
               </Text>
               <Text
                 className={clsx('text-xs font-poppins-regular text-gray-400', {
@@ -201,7 +246,7 @@ export default function ResidenceDetail() {
                 })}>
                 /mês
               </Text>
-            </>
+            </View>
           ) : (
             <Text className="text-xs font-poppins-regular">...</Text>
           )}
@@ -213,11 +258,12 @@ export default function ResidenceDetail() {
           </Text>
           <Text className="font-poppins-medium">
             {cachedData?.residence
-              ? Constants.categories.map((categorie) => {
-                  if (categorie.value === cachedData.residence.kind) {
-                    return `${categorie.emoji} ${categorie.name}`
-                  }
-                })
+              ? constants.categories
+                  .filter(
+                    (categorie) =>
+                      categorie.value === cachedData.residence.kind,
+                  )
+                  .map((categorie) => `${categorie.emoji} ${categorie.name}`)
               : '...'}
           </Text>
         </View>
@@ -228,7 +274,7 @@ export default function ResidenceDetail() {
           </Text>
           <PublishedSince
             className="font-poppins-medium"
-            date={String(cachedData?.residence?.created_at)}
+            date={cachedData?.residence?.created_at}
           />
         </View>
 
@@ -239,47 +285,64 @@ export default function ResidenceDetail() {
 
           <Text className="font-poppins-medium text-gray-600 mt-2 mb-2">
             {cachedData?.residence?.location
-              ? cachedData.residence?.location
+              ? cachedData.residence.location
               : '...'}
           </Text>
         </View>
+
+        <Pressable
+          className={clsx('mt-7', {
+            hidden: cachedData?.user?.id === user?.id,
+          })}
+          onPress={() => {
+            if (cachedData?.user?.phone) {
+              Linking.openURL(
+                `tel:${formatPhoneNumber(cachedData?.user?.phone)}`,
+              )
+            }
+          }}>
+          <Text className="font-poppins-regular text-xs text-gray-400">
+            Telefone
+          </Text>
+
+          <Text className="font-poppins-medium text-gray-600 mt-2 mb-2">
+            {cachedData?.user?.phone
+              ? formatPhoneNumber(cachedData?.user?.phone)
+              : '...'}
+          </Text>
+        </Pressable>
 
         <Pressable
           className="mt-7 mb-7"
           onPress={() => {
             if (
               cachedData?.residence?.description &&
-              cachedData.residence?.description.length > 100
+              cachedData.residence.description.length > 100
             ) {
               setShowDescription(!showDescription)
             }
           }}>
           <Text className="font-poppins-semibold text-lg">Descrição</Text>
           <Text className="font-poppins-regular text-gray-600">
-            {cachedData?.residence?.description &&
-            cachedData.residence?.description.length > 100 &&
-            !showDescription
-              ? `${cachedData.residence?.description.slice(0, 100)}...`
-              : cachedData?.residence?.description}
+            {cachedData?.residence?.description
+              ? cachedData.residence.description.length > 100 &&
+                !showDescription
+                ? `${cachedData.residence.description.slice(0, 100)}...`
+                : cachedData.residence.description
+              : '...'}
           </Text>
           <Text
             className={clsx('text-primary text-xs font-poppins-medium', {
               hidden: !(
                 cachedData?.residence?.description &&
-                cachedData.residence?.description.length > 100
+                cachedData.residence.description.length > 100
               ),
             })}>
-            {showDescription ? ' - ver menos' : ' ver mais +'}
+            {showDescription ? 'menos -' : 'mais +'}
           </Text>
         </Pressable>
       </View>
-
-      {cachedData?.residence?.id && (
-        <Header.Carousel
-          owner_id={String(cachedData?.residence?.owner_id)}
-          residence_id={String(cachedData?.residence?.id)}
-        />
-      )}
+      <StatusBar backgroundColor="#000000" barStyle="light-content" />
     </ScrollView>
   )
 }

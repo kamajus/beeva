@@ -13,7 +13,7 @@ module.exports = {
     fontWeight: {},
     extend: {
       colors: {
-        primary: '#6B0088',
+        primary: '#A60067',
         input: '#f9f9f9',
         alert: '#EF4444',
       },

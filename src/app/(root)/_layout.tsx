@@ -1,7 +1,13 @@
 import { Tabs } from 'expo-router'
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import {
+  Bookmark,
+  Home,
+  PlusCircle,
+  SettingsIcon,
+  Sparkles,
+} from 'lucide-react-native'
 
-import Constants from '../../constants'
+import constants from '@/constants'
 
 export default function HomeLayout() {
   return (
@@ -12,7 +18,7 @@ export default function HomeLayout() {
           height: 70,
           paddingBottom: 10,
         },
-        tabBarActiveTintColor: Constants.colors.primary,
+        tabBarActiveTintColor: constants.colors.primary,
         tabBarInactiveTintColor: '#212121',
         tabBarHideOnKeyboard: true,
         tabBarLabelStyle: {
@@ -27,8 +33,15 @@ export default function HomeLayout() {
         name="home"
         options={{
           title: 'Início',
+          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="wishes"
+        options={{
+          title: 'Desejos',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="home" size={size} color={color} />
+            <Sparkles size={size} color={color} />
           ),
         }}
       />
@@ -37,7 +50,7 @@ export default function HomeLayout() {
         options={{
           title: 'Criar',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="add-circle" size={size} color={color} />
+            <PlusCircle size={size} color={color} />
           ),
           tabBarStyle: {
             display: 'none',
@@ -45,11 +58,20 @@ export default function HomeLayout() {
         }}
       />
       <Tabs.Screen
+        name="saved"
+        options={{
+          title: 'Guardados',
+          tabBarIcon: ({ color, size }) => (
+            <Bookmark size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Definições',
           tabBarIcon: ({ color, size }) => (
-            <Icon name="settings" size={size} color={color} />
+            <SettingsIcon size={size} color={color} fill="white" />
           ),
         }}
       />

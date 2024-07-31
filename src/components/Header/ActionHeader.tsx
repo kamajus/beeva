@@ -1,36 +1,40 @@
-import ExpoConstants from 'expo-constants'
+import expoConstants from 'expo-constants'
 import { router } from 'expo-router'
+import { ArrowLeft } from 'lucide-react-native'
 import { Text, View } from 'react-native'
-import { IconButton } from 'react-native-paper'
-import Icon from 'react-native-vector-icons/Feather'
 
-import Constants from '../../constants'
+import IconButton from '@/components/IconButton'
+import Constants from '@/constants'
 
-interface ActionHeaderProps {
+interface IActionHeader {
   title: string
   onPress?: () => void
+  onBackPress?: () => void
   loading?: boolean
 }
 
 export default function ActionHeader({
   title,
   onPress,
+  onBackPress,
   loading,
-}: ActionHeaderProps) {
+}: IActionHeader) {
   return (
     <View
-      style={{ top: ExpoConstants.statusBarHeight }}
+      style={{ top: expoConstants.statusBarHeight }}
       className="w-screen absolute top-8 py-4 px-4 flex gap-x-4 flex-row items-center justify-between bg-white border-b-[.5px] border-b-gray-300">
-      <Icon name="arrow-left" color="#000" size={25} onPress={router.back} />
+      <ArrowLeft
+        color="#000000"
+        size={25}
+        onPress={!onBackPress ? router.back : onBackPress}
+      />
       <Text className="font-poppins-medium text-base">{title}</Text>
-
       <IconButton
-        loading={loading}
-        mode="outlined"
-        icon="check"
-        iconColor={Constants.colors.primary}
+        name="Check"
         size={20}
         onPress={onPress}
+        color={Constants.colors.primary}
+        loading={loading}
       />
     </View>
   )

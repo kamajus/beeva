@@ -1,55 +1,38 @@
-import { FileObject } from '@supabase/storage-js/src/lib/types'
+import { EventArg } from '@react-navigation/native'
 
-import { Database } from './supabase'
+import { Database } from '@/assets/@types/supabase'
 
-export type ResidenceTypes = 'apartment' | 'land' | 'others' | 'villa' | 'all'
-export type Residence = Database['public']['Tables']['residences']['Row']
-export type Favorite = Database['public']['Tables']['favorites']['Row']
-export type User = Database['public']['Tables']['users']['Row']
-export type Notification = Database['public']['Tables']['notifications']['Row']
+export type IResidence = Database['public']['Tables']['residences']['Row']
+export type IWishe = Database['public']['Tables']['wishes']['Row']
+export type IResidenceKindEnum =
+  Database['public']['Tables']['residences']['Row']['kind']
+export type IResidenceStateEnum =
+  Database['public']['Tables']['residences']['Row']['state']
+export type ISavedResidences =
+  Database['public']['Tables']['saved_residences']['Row']
+export type ILovedResidences =
+  Database['public']['Tables']['loved_residences']['Row']
+export type IUser = Database['public']['Tables']['users']['Row']
+export type INotification = Database['public']['Tables']['notifications']['Row']
+export type IResidenceNotification =
+  Database['public']['Tables']['residence_notifications']['Row']
 
-type WithoutPrice<T> = {
-  [K in Exclude<keyof T, 'price'>]: T[K]
+export type IResidenceFilterEnum = IResidenceKindEnum | 'all'
+
+export interface ICachedResidence {
+  residence: IResidence
+  user?: IUser
 }
 
-export interface ResidenceCard extends WithoutPrice<Residence> {
-  price: string | null
-}
-
-export interface ResidenceBase {
-  id?: number
-  location: string
-  status: 'sell' | 'rent'
-  cover: string
-  type?: ResidenceTypes
-}
-
-export interface ResidenceQuery {
-  id: string
-  owner_id: string
-  location: string
-  status: 'sell' | 'rent'
-  cover: string
-  price: number
-  type: ResidenceTypes
-  description: string
-  created_at: Date
-}
-
-export interface CachedResidence {
-  residence: Residence
-  user?: User
-}
-
-export interface ResidenceProps extends ResidenceBase {
-  price: number
-  description?: string
-}
-
-export interface ResidencePropsCard extends ResidenceBase {
-  price: string
-}
-
-export interface NewFileObject extends FileObject {
-  public_url: string
-}
+export type beforeRemoveEventType = EventArg<
+  'beforeRemove',
+  true,
+  {
+    action: Readonly<{
+      type: string
+      payload?: object | undefined
+      source?: string | undefined
+      target?: string | undefined
+    }>
+  }
+>

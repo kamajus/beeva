@@ -6,22 +6,26 @@ import React, {
   useState,
 } from 'react'
 
-import { ResidenceTypes, Notification } from '../assets/@types'
+import {
+  IResidenceFilterEnum,
+  INotification,
+  IResidenceStateEnum,
+} from '@/assets/@types'
 
 type CacheContextType = {
-  notifications: Notification[]
-  setNotifications: Dispatch<SetStateAction<Notification[]>>
+  notifications: INotification[]
+  setNotifications: Dispatch<SetStateAction<INotification[]>>
   resetCache(): void
   filter: {
-    kind?: ResidenceTypes
-    state?: 'sell' | 'rent'
+    kind?: IResidenceFilterEnum
+    state?: IResidenceStateEnum
     minPrice?: number
     maxPrice?: number
   }
   setFilter: Dispatch<
     SetStateAction<{
-      kind?: ResidenceTypes | undefined
-      state?: 'sell' | 'rent' | undefined
+      kind?: IResidenceFilterEnum | undefined
+      state?: IResidenceStateEnum | undefined
       minPrice?: number | undefined
       maxPrice?: number | undefined
     }>
@@ -35,11 +39,11 @@ interface CacheProviderProps {
 }
 
 export default function CacheProvider(props: CacheProviderProps) {
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<INotification[]>([])
 
   const [filter, setFilter] = useState<{
-    kind?: ResidenceTypes
-    state?: 'sell' | 'rent'
+    kind?: IResidenceFilterEnum
+    state?: IResidenceStateEnum
     minPrice?: number
     maxPrice?: number
   }>({

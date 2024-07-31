@@ -1,15 +1,24 @@
 import clsx from 'clsx'
 import { router } from 'expo-router'
 import React, { ReactNode, useState } from 'react'
-import { View, TouchableWithoutFeedback } from 'react-native'
+import {
+  View,
+  TouchableWithoutFeedback,
+  TouchableOpacityProps,
+} from 'react-native'
 
-interface TouchableBrightnessProps {
+interface TouchableBrightnessProps extends TouchableOpacityProps {
   children: ReactNode
   href?: string
   onPress?: () => void
 }
 
-export default function TouchableBrightness(props: TouchableBrightnessProps) {
+export default function TouchableBrightness({
+  href,
+  onPress,
+  children,
+  ...props
+}: TouchableBrightnessProps) {
   const [isPressed, setIsPressed] = useState(false)
 
   const handlePressIn = () => {
@@ -25,19 +34,15 @@ export default function TouchableBrightness(props: TouchableBrightnessProps) {
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={() => {
-        if (props.href) {
-          router.push(props.href)
-        }
-
-        if (props.onPress) {
-          props.onPress()
-        }
-      }}>
+        if (href) router.push(href)
+        if (onPress) onPress()
+      }}
+      {...props}>
       <View
         className={clsx('bg-white', {
           'bg-input': isPressed,
         })}>
-        {props.children}
+        {children}
       </View>
     </TouchableWithoutFeedback>
   )

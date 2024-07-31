@@ -4,18 +4,22 @@ import { useEffect, useState } from 'react'
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
 
-import { Residence, ResidenceTypes } from '../../assets/@types'
-import NoData from '../../assets/images/no-data'
-import Header from '../../components/Header'
-import HomeCard from '../../components/HomeCard'
-import { supabase } from '../../config/supabase'
-import Constants from '../../constants'
-import { useCache } from '../../hooks/useCache'
+import {
+  IResidence,
+  IResidenceFilterEnum,
+  IResidenceStateEnum,
+} from '@/assets/@types'
+import NoData from '@/assets/images/no-data'
+import Header from '@/components/Header'
+import HomeCard from '@/components/HomeCard'
+import { supabase } from '@/config/supabase'
+import Constants from '@/constants'
+import { useCache } from '@/hooks/useCache'
 
 export default function Search() {
   const navigation = useNavigation()
-  const { query } = useLocalSearchParams<{ query: string }>()
-  const [residences, setResidences] = useState<Residence[]>()
+  const { location } = useLocalSearchParams<{ location: string }>()
+  const [residences, setResidences] = useState<IResidence[]>()
   const [loading, setLoading] = useState(false)
   const { filter, setFilter } = useCache()
 
@@ -67,21 +71,19 @@ export default function Search() {
 
     async function fetchData() {
       setLoading(true)
-      const { data, error } = await supabase.rpc('get_residences_by_location', {
-        place: query,
+      const { data } = await supabase.rpc('get_residences_by_location', {
+        search_location: location,
       })
 
       if (data) {
         setResidences(filterResidences({ ...filter, residences: data }))
-      } else {
-        console.log(error)
       }
       setLoading(false)
     }
 
     fetchData()
-    addItemToHistory(query)
-  }, [query, filter])
+    if (location) addItemToHistory(location)
+  }, [location, filter, navigation, setFilter])
 
   function filterResidences({
     kind,
@@ -90,11 +92,11 @@ export default function Search() {
     minPrice,
     residences,
   }: {
-    kind?: ResidenceTypes | undefined
-    state?: 'sell' | 'rent' | undefined
+    kind?: IResidenceFilterEnum | undefined
+    state?: IResidenceStateEnum | undefined
     minPrice?: number | undefined
     maxPrice?: number | undefined
-    residences: Residence[]
+    residences: IResidence[]
   }) {
     return residences?.filter((residence) => {
       const meetsResidenceType =
@@ -112,7 +114,7 @@ export default function Search() {
   return (
     <SheetProvider>
       <View className="w-full h-full bg-white ">
-        <Header.Search value={query} />
+        <Header.Search value={location} filter={filter} />
 
         <View>
           {!loading ? (

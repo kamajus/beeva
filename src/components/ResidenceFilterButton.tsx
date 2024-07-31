@@ -1,17 +1,22 @@
 import clsx from 'clsx'
 import { FlatList, Pressable, ScrollView, Text, View } from 'react-native'
 
-import { ResidenceTypes } from '../assets/@types'
-import Constants from '../constants'
+import { IResidenceFilterEnum } from '@/assets/@types'
+import constants from '@/constants'
 
-interface FilterProps {
-  kind?: ResidenceTypes
-  setKind?: React.Dispatch<React.SetStateAction<ResidenceTypes>>
+interface IResidenceFilterButton {
+  kind?: IResidenceFilterEnum
+  setKind?: React.Dispatch<React.SetStateAction<IResidenceFilterEnum>>
   paddingHorizontal: number
+  excludeAllOption?: boolean
 }
 
-export default function Filter(props: FilterProps) {
-  function onButtonActive(value: ResidenceTypes) {
+export default function ResidenceFilterButton(props: IResidenceFilterButton) {
+  const data = props.excludeAllOption
+    ? constants.categories.filter((category) => category.value !== 'all')
+    : constants.categories
+
+  function onButtonActive(value: IResidenceFilterEnum) {
     if (props?.setKind) {
       props?.setKind(value)
     }
@@ -21,7 +26,7 @@ export default function Filter(props: FilterProps) {
     <ScrollView>
       <View>
         <FlatList
-          data={Constants.categories}
+          data={data}
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item.value}
           contentContainerStyle={{ paddingHorizontal: props.paddingHorizontal }}
@@ -32,9 +37,7 @@ export default function Filter(props: FilterProps) {
                 'mr-2 py-4 px-5 border-t-transparent rounded-md bg-[#f5f5f5]',
                 {
                   'bg-primary': props.kind === item.value,
-                  'mr-0':
-                    Constants.categories[Constants.categories.length - 1] ===
-                    item,
+                  'mr-0': data[data.length - 1] === item,
                 },
               )}
               onPress={() => onButtonActive(item.value)}>
@@ -42,11 +45,9 @@ export default function Filter(props: FilterProps) {
                 className={clsx('font-poppins-medium text-black text-sm', {
                   'text-white': props.kind === item.value,
                 })}>
-                {Constants.categories.map((categorie) => {
-                  if (categorie.value === item.value) {
-                    return `${categorie.emoji} ${categorie.name}`
-                  }
-                })}
+                {data
+                  .filter((categorie) => categorie.value === item.value)
+                  .map((categorie) => `${categorie.emoji} ${categorie.name}`)}
               </Text>
             </Pressable>
           )}
