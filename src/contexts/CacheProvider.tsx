@@ -10,7 +10,7 @@ import {
   IResidenceFilterEnum,
   INotification,
   IResidenceStateEnum,
-} from '@/assets/@types'
+} from '@/@types'
 
 type CacheContextType = {
   notifications: INotification[]

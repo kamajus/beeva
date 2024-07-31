@@ -22,14 +22,12 @@ export default function Settings() {
         'Erro na autenticação',
         'Ocorreu um erro ao tentar enviar o email para a alteração da palavra-passe, tente novamente mais tarde.',
         'Ok',
-        () => {},
       )
     } else {
       alert.showAlert(
         'Sucesso',
         'Foi enviando um email com intruções para alterar a sua palavra-passe.',
         'Ok',
-        () => {},
       )
     }
   }
@@ -45,7 +43,7 @@ export default function Settings() {
           <TouchableBrightness
             onPress={() => {
               alert.showAlert(
-                'Alerta',
+                'Atenção',
                 'Você tem certeza que quer alterar a sua palavra-passe?',
                 'Sim',
                 () => {
@@ -54,7 +52,6 @@ export default function Settings() {
                   }
                 },
                 'Cancelar',
-                () => {},
               )
             }}>
             <View

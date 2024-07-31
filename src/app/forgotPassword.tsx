@@ -39,14 +39,12 @@ export default function Confirmation() {
         'Erro na autenticação',
         'Ocorreu um erro ao tentar enviar um email de recuperação da conta, tente novamente mais tarde.',
         'Ok',
-        () => {},
       )
     } else {
       alert.showAlert(
         'Sucesso',
         'Foi enviando um email para você conseguir alterar a sua senha.',
         'Ok',
-        () => {},
       )
     }
 

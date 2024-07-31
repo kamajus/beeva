@@ -6,7 +6,7 @@ import * as Notifications from 'expo-notifications'
 import { router } from 'expo-router'
 import { createContext, useEffect, useState, useCallback, useMemo } from 'react'
 
-import { IResidence, INotification, IUser } from '@/assets/@types'
+import { IResidence, INotification, IUser } from '@/@types'
 import { supabase } from '@/config/supabase'
 import { formatPhotoUrl } from '@/functions/format'
 import { useAlert } from '@/hooks/useAlert'
@@ -150,7 +150,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
             'Erro a realizar postagem',
             'Houve um problema ao tentar carregar as imagens que você forneceu.',
             'Ok',
-            () => {},
           )
         }
       } else {

@@ -11,10 +11,10 @@ import CustomAlert from '@/components/CustomAlert'
 interface AlertObject {
   title: string
   message: string
-  valueOption1: string
-  functionOption1: () => void
-  valueOption2?: string
-  functionOption2?: () => void
+  primaryLabel: string
+  onPressPrimary?: () => void
+  secondaryLabel?: string
+  onPressSecondary?: () => void
   alertVisible: boolean
   setAlertVisible: Dispatch<SetStateAction<boolean>>
 }
@@ -23,10 +23,10 @@ interface AlertContextProps {
   showAlert: (
     title: string,
     message: string,
-    valueOption1: string,
-    functionOption1: () => void,
-    valueOption2?: string,
-    functionOption2?: () => void,
+    primaryLabel: string,
+    onPressPrimary?: () => void,
+    secondaryLabel?: string,
+    onPressSecondary?: () => void,
   ) => void
   hideAlert: () => void
 }
@@ -47,18 +47,18 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
   const showAlert = (
     title: string,
     message: string,
-    valueOption1: string,
-    functionOption1: () => void,
-    valueOption2?: string,
-    functionOption2?: () => void,
+    primaryLabel: string,
+    onPressPrimary: () => void,
+    secondaryLabel?: string,
+    onPressSecondary?: () => void,
   ) => {
     setAlertObject({
       title,
       message,
-      valueOption1,
-      functionOption1,
-      valueOption2,
-      functionOption2,
+      primaryLabel,
+      onPressPrimary,
+      secondaryLabel,
+      onPressSecondary,
       alertVisible: true,
       setAlertVisible,
     })
