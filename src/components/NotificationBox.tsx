@@ -18,7 +18,7 @@ interface INotificationIcons {
 const notificationIcons: INotificationIcons = {
   'new-user-account': 'PartyPopper',
   'residence-posted': 'Smile',
-  'wishe-found': 'Star',
+  'wishe-found': 'Sparkles',
 }
 
 interface INotificationBoxLink {
@@ -39,7 +39,10 @@ const NotificationBoxLink = ({
   const [residenceId, setResidenceId] = useState<string | null>(null)
 
   useEffect(() => {
-    if (notificationType.includes('residence')) {
+    if (
+      notificationType === 'residence-posted' ||
+      notificationType === 'wishe-found'
+    ) {
       const fetchData = async () => {
         const data = await residenceNotificationRepository.find({
           notification_id: notificationId,
