@@ -1,17 +1,21 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import clsx from 'clsx'
 import { Link, useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
-import { Button, HelperText } from 'react-native-paper'
+import {
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import * as yup from 'yup'
 
-import TextField from '../components/TextField'
-import Constants from '../constants'
-import { useAlert } from '../hooks/useAlert'
-import { useSupabase } from '../hooks/useSupabase'
+import Button from '@/components/Button'
+import TextField from '@/components/TextField'
+import { useAlert } from '@/hooks/useAlert'
+import { useSupabase } from '@/hooks/useSupabase'
 
 interface FormData {
   email: string
@@ -40,7 +44,6 @@ export default function SignIn() {
   const {
     handleSubmit,
     control,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
@@ -62,7 +65,6 @@ export default function SignIn() {
             'Ok',
             () => {},
           )
-          reset()
         }
       })
   }
@@ -97,14 +99,7 @@ export default function SignIn() {
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: !errors.email?.message,
-                    })}
-                    type="error"
-                    visible={!!errors.email?.message}>
-                    {errors.email?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.email?.message} />
                 </View>
               )}
             />
@@ -142,14 +137,7 @@ export default function SignIn() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: !errors.password?.message,
-                    })}
-                    type="error"
-                    visible={!!errors.password?.message}>
-                    {errors.password?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.password?.message} />
                 </View>
               )}
             />
@@ -162,20 +150,10 @@ export default function SignIn() {
           </Link>
 
           <Button
-            style={{
-              height: 58,
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: 10,
-            }}
-            mode="contained"
-            buttonColor={Constants.colors.primary}
-            textColor="white"
-            uppercase={false}
             loading={isSubmitting}
-            onPress={handleSubmit(onSubmit)}>
-            Entrar
-          </Button>
+            onPress={handleSubmit(onSubmit)}
+            title="Entrar"
+          />
         </View>
 
         <View className="flex justify-center items-center flex-row gap-2 w-full mt-5">
@@ -187,6 +165,8 @@ export default function SignIn() {
           </Link>
         </View>
       </View>
+
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
     </ScrollView>
   )
 }

@@ -1,24 +1,30 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import clsx from 'clsx'
 import { Link, useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { ScrollView, Text, View, Linking, TouchableOpacity } from 'react-native'
-import { Button, HelperText } from 'react-native-paper'
+import {
+  ScrollView,
+  Text,
+  View,
+  Linking,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native'
 import * as yup from 'yup'
 
-import TextField from '../components/TextField'
-import { supabase } from '../config/supabase'
-import Constants from '../constants'
-import { useAlert } from '../hooks/useAlert'
-import { useSupabase } from '../hooks/useSupabase'
+import Button from '@/components/Button'
+import TextField from '@/components/TextField'
+import { useAlert } from '@/hooks/useAlert'
+import { useSupabase } from '@/hooks/useSupabase'
+import { UserRepository } from '@/repositories/user.repository'
 
 interface FormData {
   firstName: string
   lastName: string
   email: string
   password: string
+  phone?: string
 }
 
 const schema = yup.object({
@@ -28,7 +34,7 @@ const schema = yup.object({
     .required('O e-mail é obrigatório'),
   firstName: yup
     .string()
-    .required('O campo de nome é obrigatório')
+    .required('O nome é obrigatório')
     .min(2, 'O nome deve ter pelo menos 2 caracteres')
     .max(50, 'O nome deve ter no máximo 50 caracteres')
     .matches(
@@ -37,7 +43,7 @@ const schema = yup.object({
     ),
   lastName: yup
     .string()
-    .required('O campo de sobrenome é obrigatório')
+    .required('O sobrenome é obrigatório')
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
     .max(50, 'O sobrenome deve ter no máximo 50 caracteres')
     .matches(
@@ -52,13 +58,16 @@ const schema = yup.object({
       /^(?=.*[a-zA-Z])(?=.*\d)/,
       'A palavra-passe deve conter pelo menos uma letra e um número',
     ),
+  phone: yup
+    .string()
+    .required('O número de telefone é obrigatório')
+    .matches(/^\d{9}$/, 'O número de telefone está inválido'),
 })
 
 export default function SignIn() {
   const {
     handleSubmit,
     control,
-    reset,
     setError,
     formState: { errors, isSubmitting },
   } = useForm({
@@ -67,17 +76,21 @@ export default function SignIn() {
       password: '',
       firstName: '',
       lastName: '',
+      phone: '',
     },
     resolver: yupResolver(schema),
   })
 
-  const [passwordVisible, setPasswordVisible] = useState(false)
-  const { signUp } = useSupabase()
   const router = useRouter()
   const alert = useAlert()
+  const { signUp } = useSupabase()
+
+  const [passwordVisible, setPasswordVisible] = useState(false)
+
+  const userRepository = useMemo(() => new UserRepository(), [])
 
   function onSubmit(data: FormData) {
-    signUp(data.email, data.password)
+    signUp(data.email, data.phone, data.password)
       .then(async (userData) => {
         if (userData) {
           if (
@@ -89,23 +102,23 @@ export default function SignIn() {
               message: 'Já exite um conta castrada com esse e-mail',
             })
           } else {
-            const { error } = await supabase.from('users').insert([
-              {
+            try {
+              await userRepository.create({
                 id: userData.id,
                 first_name: data.firstName,
                 last_name: data.lastName,
-              },
-            ])
+                phone: data.phone,
+                photo_url: null,
+              })
 
-            if (error) {
+              router.replace(`/verification/${data.email}`)
+            } catch {
               alert.showAlert(
-                'Erro na autenticação',
+                'Erro na criação da conta',
                 'Algo de errado aconteceu, tente novamente mais tarde.',
                 'Ok',
                 () => {},
               )
-            } else {
-              router.replace(`/verification/${data.email}`)
             }
           }
         } else {
@@ -117,7 +130,10 @@ export default function SignIn() {
           )
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log('error 3')
+        console.log(error)
+
         alert.showAlert(
           'Erro na autenticação',
           'Algo de errado aconteceu, tente novamente mais tarde.',
@@ -125,8 +141,6 @@ export default function SignIn() {
           () => {},
         )
       })
-
-    reset()
   }
 
   return (
@@ -157,14 +171,7 @@ export default function SignIn() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.firstName?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.firstName?.message !== undefined}>
-                    {errors.firstName?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.firstName?.message} />
                 </View>
               )}
             />
@@ -192,14 +199,37 @@ export default function SignIn() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.lastName?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.lastName?.message !== undefined}>
-                    {errors.lastName?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.lastName?.message} />
+                </View>
+              )}
+            />
+          </View>
+
+          <View>
+            <Controller
+              control={control}
+              name="phone"
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, value, onBlur } }) => (
+                <View>
+                  <TextField.Root>
+                    <TextField.Label isRequired>Telefone</TextField.Label>
+                    <TextField.Container
+                      error={errors.phone?.message !== undefined}>
+                      <TextField.Input
+                        placeholder="Telefone"
+                        value={value}
+                        onChangeText={onChange}
+                        inputMode="tel"
+                        keyboardType="phone-pad"
+                        onBlur={onBlur}
+                      />
+                    </TextField.Container>
+                  </TextField.Root>
+
+                  <TextField.Helper message={errors.phone?.message} />
                 </View>
               )}
             />
@@ -229,14 +259,7 @@ export default function SignIn() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.email?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.email?.message !== undefined}>
-                    {errors.email?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.email?.message} />
                 </View>
               )}
             />
@@ -274,14 +297,7 @@ export default function SignIn() {
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.password?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.password?.message !== undefined}>
-                    {errors.password?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.password?.message} />
                 </View>
               )}
             />
@@ -301,22 +317,12 @@ export default function SignIn() {
           </Text>
 
           <Button
-            style={{
-              height: 58,
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: 10,
-            }}
-            mode="contained"
-            buttonColor={Constants.colors.primary}
-            textColor="white"
-            uppercase={false}
             loading={isSubmitting}
-            onPress={handleSubmit(onSubmit)}>
-            Continuar
-          </Button>
+            onPress={handleSubmit(onSubmit)}
+            title="Continuar"
+          />
 
-          <View className="flex justify-center items-center flex-row gap-2 w-full mt-5">
+          <View className="flex justify-center items-center flex-row gap-2 w-full mt-5 mb-5">
             <Text className="font-poppins-medium text-gray-700">
               Já tem uma conta?
             </Text>
@@ -326,6 +332,8 @@ export default function SignIn() {
           </View>
         </View>
       </View>
+
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
     </ScrollView>
   )
 }

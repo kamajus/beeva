@@ -1,34 +1,36 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { decode } from 'base64-arraybuffer'
-import clsx from 'clsx'
 import * as FileSystem from 'expo-file-system'
 import * as ImagePicker from 'expo-image-picker'
 import { useNavigation } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import {
   Dimensions,
   Pressable,
   ScrollView,
-  Text,
   View,
   KeyboardAvoidingView,
+  StatusBar,
 } from 'react-native'
-import { Avatar, Button, HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
-import Header from '../../components/Header'
-import TextField from '../../components/TextField'
-import { supabase } from '../../config/supabase'
-import Constants from '../../constants'
-import { useAlert } from '../../hooks/useAlert'
-import { useSupabase } from '../../hooks/useSupabase'
+import Avatar from '@/components/Avatar'
+import Button from '@/components/Button'
+import Header from '@/components/Header'
+import TextField from '@/components/TextField'
+import { supabase } from '@/config/supabase'
+import Constants from '@/constants'
+import { formatPhotoUrl } from '@/functions/format'
+import { useAlert } from '@/hooks/useAlert'
+import { useSupabase } from '@/hooks/useSupabase'
+import { UserRepository } from '@/repositories/user.repository'
 
 interface FormData {
   firstName?: string
   lastName: string
   email?: string
-  phone?: number
+  phone?: string
 }
 
 const schema = yup.object({
@@ -57,11 +59,16 @@ const schema = yup.object({
     .email('Preencha com um e-mail válido')
     .required('O e-mail é obrigatório')
     .trim(),
-  phone: yup.number(),
+  phone: yup
+    .string()
+    .required('O número de telefone é obrigatório')
+    .matches(/^\d{9}$/, 'O número de telefone está inválido'),
 })
 
 export default function Perfil() {
   const { user, setUser, session } = useSupabase()
+
+  const userRepository = useMemo(() => new UserRepository(), [])
 
   const {
     handleSubmit,
@@ -73,8 +80,8 @@ export default function Perfil() {
     defaultValues: {
       firstName: user?.first_name,
       lastName: user?.last_name,
+      phone: user?.phone,
       email: session?.user.email,
-      phone: user?.phone || undefined,
     },
   })
 
@@ -82,6 +89,7 @@ export default function Perfil() {
 
   const { height } = Dimensions.get('screen')
   const [forceExiting, setForceExiting] = useState(false)
+  const [allowExiting, setAllowExiting] = useState(true)
 
   const [photo, setPhoto] = useState<ImagePicker.ImagePickerAsset[]>([])
   const [isPhotoChanged, setPhotoChanged] = useState(false)
@@ -105,41 +113,44 @@ export default function Perfil() {
     first_name: string | undefined
     last_name: string | undefined
     email: string | undefined
-    phone: number | undefined
+    phone: string | undefined
     photo_url?: string
   }) {
-    const { error } = await supabase
-      .from('users')
-      .update({
+    setAllowExiting(false)
+
+    try {
+      userRepository.update(user.id, {
         first_name: data.first_name,
         last_name: data.last_name,
         phone: data.phone,
         photo_url: data.photo_url,
       })
-      .eq('id', user?.id)
 
-    if (session?.user.email !== data.email) {
-      alert.showAlert(
-        'Alerta',
-        'Por favor, confirme o e-mail que foi enviado para você. Após a confirmação, seu endereço de e-mail será atualizado.',
-        'Ok',
-        () => {},
-      )
+      if (session?.user.email !== data.email) {
+        alert.showAlert(
+          'Alerta',
+          'Por favor, confirme o e-mail que foi enviado para você. Após a confirmação, seu endereço de e-mail será atualizado.',
+          'Ok',
+          () => {},
+        )
 
-      supabase.auth.updateUser({
-        email: data.email,
-      })
-    }
+        supabase.auth.updateUser({
+          email: data.email,
+        })
+      }
 
-    if (error) {
+      if (session?.user.phone !== data.phone) {
+        supabase.auth.updateUser({
+          phone: data.phone,
+        })
+      }
+    } catch {
       alert.showAlert(
         'Erro a atualizar informações',
         'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
         'Ok',
         () => {},
       )
-
-      console.log(error)
     }
 
     if (setUser && user) {
@@ -149,56 +160,57 @@ export default function Perfil() {
         last_name: data.last_name || user.last_name,
         phone: data.phone || user.phone,
         photo_url: data.photo_url
-          ? data.photo_url + '?timestamp=' + new Date().getTime()
-          : user.photo_url + '?timestamp=' + new Date().getTime(),
+          ? formatPhotoUrl(data.photo_url)
+          : formatPhotoUrl(user.photo_url),
       })
     }
 
     reset({
       firstName: data.first_name,
       lastName: data.last_name,
-      email: session?.user.email,
+      email: session.user.email,
       phone: data.phone,
     })
 
     setForceExiting(true)
+    setAllowExiting(true)
     navigation.goBack()
   }
 
   const onSubmit = async (data: FormData) => {
-    if (isDirty || isPhotoChanged) {
+    if ((isDirty || isPhotoChanged) && user?.id) {
       if (isPhotoChanged) {
         const base64 = await FileSystem.readAsStringAsync(photo[0].uri, {
           encoding: 'base64',
         })
 
-        await supabase.storage
+        const { error } = await supabase.storage
           .from('avatars')
-          .upload(`${user?.id}`, decode(base64), {
+          .upload(user.id, decode(base64), {
             contentType: 'image/png',
             upsert: true,
           })
-          .then(async () => {
-            setPhotoChanged(false)
-            const photoUrl = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/avatars/${user?.id}`
 
-            await updatePerfil({
-              first_name: data.firstName,
-              last_name: data.lastName,
-              email: data.email,
-              phone: data.phone,
-              photo_url: photoUrl,
-            })
+        if (!error && data) {
+          const photoUrl = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/avatars/${user.id}`
+
+          await updatePerfil({
+            first_name: data.firstName,
+            last_name: data.lastName,
+            email: data.email,
+            phone: data.phone,
+            photo_url: photoUrl,
           })
-          .catch((error) => {
-            alert.showAlert(
-              'Erro a atualizar informações',
-              'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
-              'Ok',
-              () => {},
-            )
-            console.log(error)
-          })
+        }
+
+        if (error) {
+          alert.showAlert(
+            'Erro a atualizar informações',
+            'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
+            'Ok',
+            () => {},
+          )
+        }
       } else {
         await updatePerfil({
           first_name: data.firstName,
@@ -213,23 +225,34 @@ export default function Perfil() {
   useEffect(
     () =>
       navigation.addListener('beforeRemove', (e) => {
-        if (forceExiting) return
-        if (!isSubmitting && !isDirty && !isPhotoChanged) {
-          return
+        if (allowExiting) {
+          if (forceExiting) return
+
+          if (!isSubmitting && !isDirty && !isPhotoChanged) {
+            return
+          }
+
+          e.preventDefault()
+
+          alert.showAlert(
+            'Descartar alterações?',
+            'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',
+            'Descartar',
+            () => navigation.dispatch(e.data.action),
+            'Não sair',
+            () => {},
+          )
         }
-
-        e.preventDefault()
-
-        alert.showAlert(
-          'Descartar alterações?',
-          'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',
-          'Descartar',
-          () => navigation.dispatch(e.data.action),
-          'Não sair',
-          () => {},
-        )
       }),
-    [navigation, isDirty, isPhotoChanged, isSubmitting, forceExiting, alert],
+    [
+      navigation,
+      isDirty,
+      isPhotoChanged,
+      isSubmitting,
+      forceExiting,
+      alert,
+      allowExiting,
+    ],
   )
 
   return (
@@ -244,6 +267,7 @@ export default function Perfil() {
               <View>
                 <Pressable
                   onPress={pickImage}
+                  disabled={isSubmitting}
                   className="rounded-full border-2 border-[#393939]">
                   <Avatar.Image
                     size={150}
@@ -252,59 +276,30 @@ export default function Perfil() {
                         photo.length === 0
                           ? `${user?.photo_url}`
                           : photo[0].uri,
-                      cache: 'reload',
                     }}
                   />
                 </Pressable>
+
                 <Button
-                  style={{
-                    height: 56,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    backgroundColor: Constants.colors.primary,
-                    borderRadius: 28,
-                    marginTop: 10,
-                  }}
+                  disabled={isSubmitting}
                   onPress={pickImage}
-                  mode="contained"
-                  textColor="white"
-                  uppercase={false}>
-                  Modificar
-                </Button>
+                  className="rounded-full"
+                  title="Modificar"
+                />
               </View>
             ) : (
               <View>
                 <Pressable
                   onPress={pickImage}
                   className="rounded-full border-2 border-[#393939]">
-                  <Avatar.Text
-                    size={150}
-                    label={String(user?.first_name[0])}
-                    color="#fff"
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: '#212121',
-                    }}
-                  />
+                  <Avatar.Text size={150} label={String(user?.first_name[0])} />
                 </Pressable>
 
                 <Button
-                  style={{
-                    height: 56,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    backgroundColor: '#212121',
-                    borderRadius: 28,
-                    marginTop: 10,
-                  }}
                   onPress={pickImage}
-                  mode="contained"
-                  textColor="white"
-                  uppercase={false}>
-                  Modificar
-                </Button>
+                  className="rounded-full"
+                  title="Modificar"
+                />
               </View>
             )}
           </View>
@@ -326,17 +321,11 @@ export default function Perfil() {
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
+                        editable={!isSubmitting}
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.firstName?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.firstName?.message !== undefined}>
-                    {errors.firstName?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.firstName?.message} />
                 </View>
               )}
             />
@@ -360,17 +349,11 @@ export default function Perfil() {
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
+                        editable={!isSubmitting}
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.lastName?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.lastName?.message !== undefined}>
-                    {errors.lastName?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.lastName?.message} />
                 </View>
               )}
             />
@@ -394,27 +377,18 @@ export default function Perfil() {
                         value={value}
                         onBlur={onBlur}
                         onChangeText={onChange}
+                        editable={!isSubmitting}
                       />
                     </TextField.Container>
                   </TextField.Root>
 
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.email?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.email?.message !== undefined}>
-                    {errors.email?.message}
-                  </HelperText>
+                  <TextField.Helper message={errors.email?.message} />
                 </View>
               )}
             />
           </View>
 
           <View>
-            <Text className="font-poppins-medium text-xs text-gray-500">
-              OBS: Esse número vai estar visível para todos 🌐
-            </Text>
             <View>
               <Controller
                 control={control}
@@ -425,36 +399,24 @@ export default function Perfil() {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View>
                     <TextField.Root>
-                      <TextField.Label>Telefone</TextField.Label>
+                      <TextField.Label isRequired>Telefone</TextField.Label>
                       <TextField.Container
                         error={errors.phone?.message !== undefined}>
                         <TextField.Input
                           placeholder="Degite o número de telefone"
-                          value={value ? String(value) : ''}
+                          value={value}
                           onBlur={onBlur}
                           onChangeText={onChange}
                           keyboardType="numeric"
+                          editable={!isSubmitting}
                         />
                       </TextField.Container>
                     </TextField.Root>
-                    <HelperText
-                      className="p-0 m-0 mt-2"
-                      type="error"
-                      visible={errors.phone?.message !== undefined}>
-                      {errors.phone?.message}
-                    </HelperText>
-
-                    <HelperText
-                      className="p-0 m-0 mt-2"
+                    <TextField.Helper message={errors.phone?.message} />
+                    {/* <TextField.Helper
                       type="info"
-                      visible={
-                        false
-                        // session?.user.phone_confirmed_at === undefined && user?.phone !== null
-                      }>
-                      <Text className="text-primary font-poppins-medium">
-                        Confirmar o seu número de telefone
-                      </Text>
-                    </HelperText>
+                      message="Confirmar o seu número de telefone"
+                    /> */}
                   </View>
                 )}
               />
@@ -462,11 +424,14 @@ export default function Perfil() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
       <Header.Action
         title="Editar perfil"
         onPress={handleSubmit(onSubmit)}
         loading={isSubmitting}
       />
+
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
     </View>
   )
 }

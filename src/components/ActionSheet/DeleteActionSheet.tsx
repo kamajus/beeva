@@ -1,21 +1,19 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import clsx from 'clsx'
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, View, Text } from 'react-native'
 import ActionSheet, { SheetProps } from 'react-native-actions-sheet'
-import { Button, HelperText } from 'react-native-paper'
 import * as yup from 'yup'
 
-import { supabase } from '../../config/supabase'
-import Constants from '../../constants'
-import { useAlert } from '../../hooks/useAlert'
-import { useCache } from '../../hooks/useCache'
-import { useResidenceStore } from '../../store/ResidenceStore'
-import TextField from '../TextField'
+import Button from '@/components/Button'
+import TextField from '@/components/TextField'
+import { supabase } from '@/config/supabase'
+import { useAlert } from '@/hooks/useAlert'
+import { useCache } from '@/hooks/useCache'
+import { useResidenceStore } from '@/store/ResidenceStore'
 
-interface FormData {
+interface IFormData {
   password: string
 }
 
@@ -49,7 +47,7 @@ export default function DeleteActionSheet(props: SheetProps) {
   const [loading, setLoading] = useState(false)
   const alert = useAlert()
 
-  async function onSubmit({ password }: FormData) {
+  async function onSubmit({ password }: IFormData) {
     setLoading(true)
 
     const verifyResponse = await supabase.rpc('verify_user_password', {
@@ -128,34 +126,19 @@ export default function DeleteActionSheet(props: SheetProps) {
                       />
                     </TextField.Container>
                   </TextField.Root>
-                  <HelperText
-                    className={clsx('p-0 m-0 mt-2', {
-                      hidden: errors.password?.message === undefined,
-                    })}
-                    type="error"
-                    visible={errors.password?.message !== undefined}>
-                    {errors.password?.message}
-                  </HelperText>
+
+                  <TextField.Helper message={errors.password?.message} />
                 </View>
               )}
             />
           </View>
 
           <Button
-            style={{
-              height: 58,
-              display: 'flex',
-              justifyContent: 'center',
-              marginTop: 10,
-            }}
-            mode="contained"
-            buttonColor={Constants.colors.alert}
-            textColor="white"
-            uppercase={false}
             loading={loading}
-            onPress={handleSubmit(onSubmit)}>
-            Continuar
-          </Button>
+            onPress={handleSubmit(onSubmit)}
+            className="bg-alert"
+            title="Continuar"
+          />
         </View>
       </ScrollView>
     </ActionSheet>

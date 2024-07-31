@@ -2,11 +2,11 @@ import clsx from 'clsx'
 import * as ImagePicker from 'expo-image-picker'
 import { Dispatch, SetStateAction } from 'react'
 import { FlatList, Image, Pressable, View } from 'react-native'
-import { Button, IconButton } from 'react-native-paper'
 
-import Constants from '../constants'
+import Button from '@/components/Button'
+import IconButton from '@/components/IconButton'
 
-interface GaleryProps {
+interface IGaleryGrid {
   images: ImagePicker.ImagePickerAsset[]
   cover: string | null | undefined
   setCover: Dispatch<React.SetStateAction<string | null | undefined>>
@@ -26,7 +26,7 @@ export default function Galery({
   setImagesToDelete,
   imagesToDelete,
   setPhotoChanged,
-}: GaleryProps) {
+}: IGaleryGrid) {
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -40,6 +40,7 @@ export default function Galery({
       if (!images || images.length === 0) {
         setCover(result.assets[0].uri)
       }
+
       setImages([...images, ...result.assets])
 
       if (setPhotoChanged) {
@@ -74,6 +75,7 @@ export default function Galery({
                   setCover(undefined)
                 }
               }}>
+              {/* eslint-disable-next-line jsx-a11y/alt-text */}
               <Image
                 key={item.uri}
                 source={{ uri: item.uri }}
@@ -86,16 +88,16 @@ export default function Galery({
               />
 
               <IconButton
-                icon="star"
-                mode="outlined"
-                iconColor={cover === item.uri ? '#ffcb0c' : 'lightgray'}
-                containerColor="#fff"
-                className={clsx('absolute top-[1px] right-2', {
-                  hidden: disabled,
-                })}
+                name="Star"
+                size={18}
                 onPress={() => {
                   setCover(item.uri)
                 }}
+                className={clsx('absolute top-[4px] right-3', {
+                  hidden: disabled,
+                })}
+                color={cover === item.uri ? '#ffcb0c' : 'lightgray'}
+                fill={cover === item.uri ? '#ffcb0c' : 'lightgray'}
               />
             </Pressable>
           )}
@@ -103,23 +105,16 @@ export default function Galery({
       )}
 
       <Button
-        labelStyle={{
-          textTransform: 'capitalize',
-        }}
-        style={{
-          height: 56,
-          backgroundColor: Constants.colors.primary,
-        }}
+        onPress={pickImage}
         className={clsx('flex items-center justify-center', {
           hidden: disabled || images.length >= 5,
         })}
-        icon="camera"
-        mode="contained"
-        onPress={pickImage}>
-        {images && images?.length > 0
-          ? `(${images.length}) Adicicionar mais fotos`
-          : 'Adicionar fotografias'}
-      </Button>
+        title={
+          images && images?.length > 0
+            ? `(${images.length}) Adicicionar mais fotos`
+            : 'Adicionar fotografias'
+        }
+      />
     </View>
   )
 }

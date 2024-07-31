@@ -1,12 +1,21 @@
 import { TextInput, TextInputProps } from 'react-native'
+import { twMerge } from 'tailwind-merge'
 
-import Constants from '../../constants'
+import constants from '@/constants'
 
-export default function TextFieldInput(props: TextInputProps) {
+export default function TextFieldInput({
+  value = '',
+  className,
+  ...props
+}: TextInputProps) {
   return (
     <TextInput
-      cursorColor={Constants.colors.primary}
-      className="flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium"
+      cursorColor={constants.colors.primary}
+      className={twMerge(
+        'flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium',
+        className,
+      )}
+      value={value}
       {...props}
     />
   )

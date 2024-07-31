@@ -1,17 +1,17 @@
-import ExpoConstants from 'expo-constants'
+import expoConstants from 'expo-constants'
 
-import { ResidenceTypes } from '../assets/@types'
+import { IResidenceFilterEnum } from '@/assets/@types'
 
-type Categories = { name: string; value: ResidenceTypes; emoji: string }[]
+type Categories = { name: string; value: IResidenceFilterEnum; emoji: string }[]
 
 const colors = {
-  primary: '#6B0088',
+  primary: '#A60067',
   input: '#f9f9f9',
   alert: '#EF4444',
 }
 
 // Calculates the distance between the custom navigation header and screen
-const customHeaderDistance = ExpoConstants.statusBarHeight * 2 + 30
+const customHeaderDistance = expoConstants.statusBarHeight * 2 + 30
 
 const categories: Categories = [
   {
