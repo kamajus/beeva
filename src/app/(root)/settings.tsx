@@ -46,7 +46,11 @@ export default function Settings() {
             <View className="flex gap-x-3 flex-row">
               <View>
                 {user?.photo_url ? (
-                  <Avatar.Image size={50} source={{ uri: user.photo_url }} />
+                  <Avatar.Image
+                    size={50}
+                    src={user.photo_url}
+                    updateAt={user.updated_at}
+                  />
                 ) : (
                   <Avatar.Text size={50} label={user?.first_name[0] || 'U'} />
                 )}
