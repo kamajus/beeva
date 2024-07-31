@@ -25,7 +25,7 @@ export default function WisheCard(props: IWishe) {
 
       handleCallNotification(
         'Desejo apagado',
-        'O desejo foi apagado com sucesso',
+        'O desejo foi removido da lista de desejos',
       )
     } catch {
       alert.showAlert('Atenção', 'Não foi possível apagar o teu desejo.', 'Ok')

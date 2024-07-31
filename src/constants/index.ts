@@ -5,7 +5,7 @@ import { IResidenceFilterEnum } from '@/@types'
 type Categories = { name: string; value: IResidenceFilterEnum; emoji: string }[]
 
 const colors = {
-  primary: '#A60067',
+  primary: '#a4b8c4',
   input: '#f9f9f9',
   alert: '#EF4444',
 }
