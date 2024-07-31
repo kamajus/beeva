@@ -261,8 +261,8 @@ export type Database = {
           id: string
           kind: Database['public']['Enums']['residence_kind']
           location: string
-          maxPrice: number | null
-          minPrice: number | null
+          max_price: number
+          min_price: number
           state: Database['public']['Enums']['residence_state']
           updated_at: string | null
           user_id: string | null
@@ -272,8 +272,8 @@ export type Database = {
           id?: string
           kind: Database['public']['Enums']['residence_kind']
           location: string
-          maxPrice?: number | null
-          minPrice?: number | null
+          max_price: number
+          min_price: number
           state: Database['public']['Enums']['residence_state']
           updated_at?: string | null
           user_id?: string | null
@@ -283,8 +283,8 @@ export type Database = {
           id?: string
           kind?: Database['public']['Enums']['residence_kind']
           location?: string
-          maxPrice?: number | null
-          minPrice?: number | null
+          max_price?: number
+          min_price?: number
           state?: Database['public']['Enums']['residence_state']
           updated_at?: string | null
           user_id?: string | null

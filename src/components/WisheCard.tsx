@@ -43,10 +43,16 @@ export default function WisheCard(props: IWishe) {
       <Text className="text-black font-poppins-semibold text-[15px] w-[85%]">
         {props.location}
       </Text>
-      <Text className="text-black text-xs font-poppins-medium w-[88%]">
-        de {getFormattedPrice(props.minPrice)} até{' '}
-        {getFormattedPrice(props.maxPrice)}
-      </Text>
+      {props.min_price === 0 ? (
+        <Text className="text-black text-xs font-poppins-medium w-[88%]">
+          Até {getFormattedPrice(props.max_price)}
+        </Text>
+      ) : (
+        <Text className="text-black text-xs font-poppins-medium w-[88%]">
+          De {getFormattedPrice(props.min_price)} até{' '}
+          {getFormattedPrice(props.max_price)}
+        </Text>
+      )}
       <View className="flex flex-row items-center gap-x-3 mt-2">
         <Text className="text-black font-poppins-medium">
           Tipo de residência:

@@ -162,7 +162,8 @@ export default function ResidenceDetail() {
               {cachedData?.user?.photo_url ? (
                 <Avatar.Image
                   size={50}
-                  source={{ uri: cachedData?.user?.photo_url }}
+                  src={cachedData?.user?.photo_url}
+                  updateAt={user.updated_at}
                 />
               ) : (
                 <Avatar.Text

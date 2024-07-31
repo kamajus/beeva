@@ -8,7 +8,6 @@ import { createContext, useEffect, useState, useCallback, useMemo } from 'react'
 
 import { IResidence, INotification, IUser } from '@/@types'
 import { supabase } from '@/config/supabase'
-import { formatPhotoUrl } from '@/functions/format'
 import { useAlert } from '@/hooks/useAlert'
 import { useCache } from '@/hooks/useCache'
 import { LovedResidenceRepository } from '@/repositories/loved.residence.repository'
@@ -265,7 +264,9 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
-      console.log(session)
+      console.log('Auth state changed')
+      console.log(session.user?.email)
+
       if (session) {
         try {
           const userData = await userRepository.findById(session.user.id)
@@ -288,13 +289,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
               { event: 'UPDATE', schema: 'public' },
               async (payload: { new: IUser }) => {
                 if (payload.new.id === session.user.id) {
-                  setUser({
-                    ...payload.new,
-                    photo_url: formatPhotoUrl(
-                      payload.new.photo_url,
-                      payload.new.updated_at,
-                    ),
-                  })
+                  setUser(payload.new)
                 }
               },
             )

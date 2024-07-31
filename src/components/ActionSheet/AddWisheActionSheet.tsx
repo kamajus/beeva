@@ -41,15 +41,24 @@ const schema = z
       required_error: 'Tipo de venda é obrigatório',
     }),
 
-    minPrice: z.number({
-      required_error: 'O preço minimo é obrigatório',
-    }),
-    maxPrice: z.number({
-      required_error: 'O preço máximo é obrigatório',
-    }),
+    min_price: z
+      .number({
+        required_error: 'O preço minimo é obrigatório',
+      })
+      .refine((value) => value >= 0, {
+        message: 'Preço mínimo está inválido',
+      }),
+    max_price: z
+      .number({
+        required_error: 'O preço máximo é obrigatório',
+      })
+      .positive('O preço máximo está inválido'),
   })
   .refine(
-    (data) => data.maxPrice && data.minPrice && data.maxPrice > data.minPrice,
+    (data) =>
+      data.max_price !== undefined &&
+      data.min_price !== undefined &&
+      data.max_price > data.min_price,
     {
       message: 'Preço máximo deve ser maior que o preço mínimo',
       path: ['maxPrice'],
@@ -61,8 +70,8 @@ export default function AddWisheActionSheet(props: SheetProps) {
     kind: IResidenceKindEnum
     state: IResidenceStateEnum
     location: string
-    minPrice: number
-    maxPrice: number
+    min_price: number
+    max_price: number
   }
 
   const {
@@ -73,6 +82,7 @@ export default function AddWisheActionSheet(props: SheetProps) {
   } = useForm<IFormData>({
     resolver: zodResolver(schema),
     defaultValues: {
+      min_price: 0,
       kind: 'apartment',
       state: 'rent',
     },
@@ -195,28 +205,28 @@ export default function AddWisheActionSheet(props: SheetProps) {
             <TextField.Label isRequired>Preço mínimo</TextField.Label>
             <Controller
               control={control}
-              name="minPrice"
+              name="min_price"
               render={({ field: { value, onChange } }) => (
-                <TextField.Container error={errors.minPrice !== undefined}>
+                <TextField.Container error={errors.min_price !== undefined}>
                   <TextField.Currency value={value} onChange={onChange} />
                 </TextField.Container>
               )}
             />
-            <TextField.Helper message={errors.minPrice?.message} />
+            <TextField.Helper message={errors.min_price?.message} />
           </View>
 
           <View>
             <TextField.Label isRequired>Preço máximo</TextField.Label>
             <Controller
               control={control}
-              name="maxPrice"
+              name="max_price"
               render={({ field: { value, onChange } }) => (
-                <TextField.Container error={errors.maxPrice !== undefined}>
+                <TextField.Container error={errors.max_price !== undefined}>
                   <TextField.Currency value={value} onChange={onChange} />
                 </TextField.Container>
               )}
             />
-            <TextField.Helper message={errors.maxPrice?.message} />
+            <TextField.Helper message={errors.max_price?.message} />
           </View>
 
           <View className="flex flex-row justify-between items-center">
