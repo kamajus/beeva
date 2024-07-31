@@ -1,26 +1,31 @@
 import clsx from 'clsx'
-import { ReactNode } from 'react'
-import { ViewStyle, StyleProp, View } from 'react-native'
+import { View, ViewProps } from 'react-native'
+import { twMerge } from 'tailwind-merge'
 
-interface TextFieldContainerProps {
-  children: ReactNode
+interface TextFieldContainerProps extends ViewProps {
   error?: boolean
-  style?: StyleProp<ViewStyle>
   disableFocus?: boolean
 }
 
-export default function TextFieldContainer(props: TextFieldContainerProps) {
+export default function TextFieldContainer({
+  className,
+  error,
+  disableFocus,
+  ...props
+}: TextFieldContainerProps) {
   return (
     <View
-      className={clsx(
-        'w-full px-2 flex-row items-center bg-input border-2 border-input rounded',
-        {
-          'focus:border-alert': props.error && !props.disableFocus,
-          'focus:border-primary': !props.error && !props.disableFocus,
-        },
+      className={twMerge(
+        clsx(
+          'w-full px-2 flex-row items-center bg-input border-2 border-input rounded',
+          {
+            'focus:border-alert': error && !disableFocus,
+            'focus:border-primary': !error && !disableFocus,
+          },
+        ),
+        className,
       )}
-      style={props.style}>
-      {props.children}
-    </View>
+      {...props}
+    />
   )
 }

@@ -11,7 +11,7 @@ import {
   Linking,
 } from 'react-native'
 
-import { ICachedResidence } from '@/assets/@types'
+import { ICachedResidence } from '@/@types'
 import Avatar from '@/components/Avatar'
 import Carousel from '@/components/Carousel'
 import Header from '@/components/Header'
@@ -100,7 +100,6 @@ export default function ResidenceDetail() {
           'Erro ao tentar apagar',
           'Não foi possível apagar a residência, tente mais tarde.',
           'Ok',
-          () => {},
         )
       }
     }
@@ -195,12 +194,11 @@ export default function ResidenceDetail() {
                   name="Trash"
                   onPress={() => {
                     alert.showAlert(
-                      'Alerta',
+                      'Atenção',
                       'Você tem certeza que quer apagar essa residência?',
                       'Sim',
                       () => deleteResidence(),
                       'Cancelar',
-                      () => {},
                     )
                   }}
                 />

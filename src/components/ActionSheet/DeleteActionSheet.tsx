@@ -65,7 +65,6 @@ export default function DeleteActionSheet(props: SheetProps) {
           'Erro',
           'Parece que aconteceu algum erro no processo de eliminação da sua conta, tente novamente mais tarde.',
           'Ok',
-          () => {},
         )
       } else {
         supabase.auth.signOut()

@@ -1,4 +1,4 @@
-import { IResidence } from '@/assets/@types'
+import { IResidence } from '@/@types'
 
 export const RESIDENCE_DATA: IResidence[] = [
   {

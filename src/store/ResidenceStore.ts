@@ -1,11 +1,6 @@
 import { create } from 'zustand'
 
-import {
-  ICachedResidence,
-  IResidence,
-  ILovedResidences,
-  IUser,
-} from '@/assets/@types'
+import { ICachedResidence, IResidence, ILovedResidences, IUser } from '@/@types'
 import { LovedResidenceRepository } from '@/repositories/loved.residence.repository'
 import { SavedResidenceRepository } from '@/repositories/saved.residence.repository'
 

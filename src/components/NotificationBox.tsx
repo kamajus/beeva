@@ -5,7 +5,7 @@ import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
 
-import { INotification } from '@/assets/@types'
+import { INotification } from '@/@types'
 import PublishedSince from '@/components/PublishedSince'
 import TouchableBrightness from '@/components/TouchableBrightness'
 import constants from '@/constants'

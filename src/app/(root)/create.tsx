@@ -5,7 +5,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BackHandler, View } from 'react-native'
 
-import { IResidenceKindEnum, IResidenceStateEnum } from '@/assets/@types'
+import { IResidenceKindEnum, IResidenceStateEnum } from '@/@types'
 import Header from '@/components/Header'
 import ResidenceForm, {
   IFormData,
@@ -103,7 +103,6 @@ export default function Editor() {
           'Erro a realizar postagem',
           'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
           'Ok',
-          () => {},
         )
       }
     } else {
@@ -112,14 +111,12 @@ export default function Editor() {
           'Erro a realizar postagem',
           'Não selecionaste nenhuma foto da residência.',
           'Ok',
-          () => {},
         )
       } else {
         alert.showAlert(
           'Erro a realizar postagem',
           'Escolha uma fotografia para ser a foto de capa da sua residência.',
           'Ok',
-          () => {},
         )
       }
     }

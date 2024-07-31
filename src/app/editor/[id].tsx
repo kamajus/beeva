@@ -9,7 +9,7 @@ import {
   beforeRemoveEventType,
   IResidenceKindEnum,
   IResidenceStateEnum,
-} from '@/assets/@types'
+} from '@/@types'
 import Header from '@/components/Header'
 import ResidenceForm, {
   IFormData,
@@ -108,14 +108,12 @@ export default function Editor() {
           'Erro a realizar postagem',
           'Não selecionaste nenhuma foto da residência.',
           'Ok',
-          () => {},
         )
       } else if (!cover) {
         alert.showAlert(
           'Erro a realizar postagem',
           'Escolha uma fotografia para ser a foto de capa da sua residência.',
           'Ok',
-          () => {},
         )
       }
     }
@@ -158,7 +156,6 @@ export default function Editor() {
         'Erro a realizar postagem',
         'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
         'Ok',
-        () => {},
       )
     }
   }
@@ -222,7 +219,6 @@ export default function Editor() {
         'Sim',
         () => navigation.dispatch(e.data.action),
         'Não',
-        () => {},
       )
     }
 
