@@ -25,7 +25,7 @@ export default function App() {
       console.log(`fontsLoaded: ${fontsLoaded}`)
       console.log(`fontError: ${fontError}`)
       console.log(`initialized: ${initialized}`)
-      console.log(`session: ${session.user.email}`)
+      console.log(`session: ${session}`)
 
       if (fontsLoaded && !fontError && initialized) {
         console.log('Redirecting...')
