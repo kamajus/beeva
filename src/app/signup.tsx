@@ -117,7 +117,6 @@ export default function SignIn() {
                 'Erro na criação da conta',
                 'Algo de errado aconteceu, tente novamente mais tarde.',
                 'Ok',
-                () => {},
               )
             }
           }
@@ -126,19 +125,14 @@ export default function SignIn() {
             'Erro na autenticação',
             'Algo de errado aconteceu, tente novamente mais tarde.',
             'Ok',
-            () => {},
           )
         }
       })
-      .catch((error) => {
-        console.log('error 3')
-        console.log(error)
-
+      .catch(() => {
         alert.showAlert(
           'Erro na autenticação',
           'Algo de errado aconteceu, tente novamente mais tarde.',
           'Ok',
-          () => {},
         )
       })
   }

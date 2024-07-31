@@ -4,7 +4,7 @@ import { MapPinned } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Pressable, Text, View, Image } from 'react-native'
 
-import { IResidence } from '@/assets/@types'
+import { IResidence } from '@/@types'
 import IconButton from '@/components/IconButton'
 import Skeleton from '@/components/Skeleton'
 import { formatMoney } from '@/functions/format'

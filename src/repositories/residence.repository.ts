@@ -1,6 +1,6 @@
 import { BaseRepository } from './base.repository'
 
-import { IResidence } from '@/assets/@types'
+import { IResidence } from '@/@types'
 import { supabase } from '@/config/supabase'
 
 export class ResidenceRepository extends BaseRepository<IResidence> {

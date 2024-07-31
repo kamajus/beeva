@@ -1,12 +1,11 @@
 import * as ImagePicker from 'expo-image-picker'
 import { Controller, Control, FieldErrors } from 'react-hook-form'
 import { View, ScrollView, Text } from 'react-native'
-import CurrencyInput from 'react-native-currency-input'
 import * as z from 'zod'
 
 import ResidenceFilterButton from './ResidenceFilterButton'
 
-import { IResidenceKindEnum } from '@/assets/@types'
+import { IResidenceKindEnum } from '@/@types'
 import GaleryGrid from '@/components/GaleryGrid'
 import RadioButton from '@/components/RadioButton'
 import SearchPlace from '@/components/SearchPlace'
@@ -52,7 +51,7 @@ export const residenceSchema = z.object({
     required_error: 'Tipo de residência é obrigatório',
   }),
 
-  state: z.enum(['sale', 'rent'], {
+  state: z.enum(['sell', 'rent'], {
     invalid_type_error: 'Tipo de venda é obrigatório',
     required_error: 'Tipo de venda é obrigatório',
   }),
@@ -110,25 +109,12 @@ export default function ResidenceForm({
             rules={{
               required: true,
             }}
-            render={({ field: { value, onChange, onBlur } }) => (
+            render={({ field: { value, onChange } }) => (
               <View>
                 <TextField.Root>
                   <TextField.Label isRequired>Preço</TextField.Label>
-                  <TextField.Container
-                    error={errors.price?.message !== undefined}>
-                    <CurrencyInput
-                      value={value}
-                      onChangeValue={(value) => onChange(value || 0)}
-                      delimiter="."
-                      separator=","
-                      precision={2}
-                      minValue={0}
-                      cursorColor={constants.colors.primary}
-                      className="flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium"
-                      placeholder="Quanto está custando? (em kz)"
-                      onBlur={onBlur}
-                      editable={!isSubmitting}
-                    />
+                  <TextField.Container error={errors.price !== undefined}>
+                    <TextField.Currency value={value} onChange={onChange} />
                   </TextField.Container>
                 </TextField.Root>
 
@@ -193,10 +179,8 @@ export default function ResidenceForm({
           />
         </View>
 
-        <View className="p-4">
-          <Text className="font-poppins-medium text-base mb-3">
-            Tipo de venda
-          </Text>
+        <View>
+          <TextField.Label isRequired>Tipo de venda</TextField.Label>
           <View className="flex flex-row justify-between items-center">
             <Text className="text-sm font-poppins-regular">Arrendamento</Text>
             <Controller
@@ -213,7 +197,7 @@ export default function ResidenceForm({
           </View>
 
           <View className="flex flex-row justify-between items-center">
-            <Text className="text-sm font-poppins-regular">À Venda</Text>
+            <Text className="text-sm font-poppins-regular">À venda</Text>
             <Controller
               control={control}
               name="state"
@@ -231,7 +215,6 @@ export default function ResidenceForm({
 
         <View>
           <TextField.Label>Tipo de residência</TextField.Label>
-
           <Controller
             control={control}
             name="kind"

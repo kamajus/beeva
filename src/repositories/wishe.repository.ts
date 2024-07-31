@@ -1,6 +1,6 @@
 import { BaseRepository } from './base.repository'
 
-import { IWishe } from '@/assets/@types'
+import { IWishe } from '@/@types'
 import { supabase } from '@/config/supabase'
 
 export class WisheRepository extends BaseRepository<IWishe> {

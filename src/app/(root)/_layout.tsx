@@ -36,15 +36,17 @@ export default function HomeLayout() {
           tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
         }}
       />
+
       <Tabs.Screen
-        name="wishes"
+        name="saved"
         options={{
-          title: 'Desejos',
+          title: 'Guardados',
           tabBarIcon: ({ color, size }) => (
-            <Sparkles size={size} color={color} />
+            <Bookmark size={size} color={color} />
           ),
         }}
       />
+
       <Tabs.Screen
         name="create"
         options={{
@@ -57,15 +59,17 @@ export default function HomeLayout() {
           },
         }}
       />
+
       <Tabs.Screen
-        name="saved"
+        name="wishes"
         options={{
-          title: 'Guardados',
+          title: 'Desejos',
           tabBarIcon: ({ color, size }) => (
-            <Bookmark size={size} color={color} />
+            <Sparkles size={size} color={color} />
           ),
         }}
       />
+
       <Tabs.Screen
         name="settings"
         options={{

@@ -8,7 +8,7 @@ import { SheetManager } from 'react-native-actions-sheet'
 import IconButton from '../IconButton'
 import TextField from '../TextField'
 
-import { IResidenceFilterEnum, IResidenceStateEnum } from '@/assets/@types'
+import { IResidenceFilterEnum, IResidenceStateEnum } from '@/@types'
 
 interface ISearchHeader {
   value: string

@@ -12,6 +12,7 @@ import NoWishe from '@/assets/images/no-wishe'
 import Button from '@/components/Button'
 import Header from '@/components/Header'
 import LoadScreen from '@/components/LoadScreen'
+import WisheCard from '@/components/WisheCard'
 import constants from '@/constants'
 import { useSupabase } from '@/hooks/useSupabase'
 import { WisheRepository } from '@/repositories/wishe.repository'
@@ -85,11 +86,20 @@ export default function Wishes() {
               }}
               title="+"
             />
-            <View className="mt-2 flex-1 flex-row flex-wrap">
+
+            <View className="w-full flex-1 flex items-center justify-center">
               {wishlist.length > 0 ? (
-                wishlist.map(({ id }) => (
-                  <View key={id} className="mr-3 mt-3" />
-                ))
+                <View
+                  style={{
+                    height: height - 74 - constants.customHeaderDistance,
+                  }}
+                  className="w-full flex-1">
+                  {wishlist.map(({ id, ...data }) => (
+                    <View key={id} className="mt-3">
+                      <WisheCard key={id} id={id} {...data} />
+                    </View>
+                  ))}
+                </View>
               ) : (
                 <View
                   style={{
