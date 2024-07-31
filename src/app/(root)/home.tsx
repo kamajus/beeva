@@ -34,7 +34,7 @@ export default function House() {
 
   return (
     <ScrollView
-      className="bg-white"
+      className="bg-white h-full"
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

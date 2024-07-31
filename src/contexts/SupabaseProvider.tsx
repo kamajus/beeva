@@ -265,7 +265,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
-      console.log('loading user data...')
+      console.log(session)
       if (session) {
         try {
           const userData = await userRepository.findById(session.user.id)

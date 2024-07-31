@@ -33,9 +33,7 @@ export default function Button({
       {loading ? (
         <ActivityIndicator size={25} color="#ffffff" />
       ) : (
-        <Text
-          className={twMerge('text-white font-poppins-semibold')}
-          style={labelStyle}>
+        <Text className="text-white font-poppins-semibold" style={labelStyle}>
           {title}
         </Text>
       )}
