@@ -53,9 +53,9 @@ export default function WisheCard(props: IWishe) {
           {getFormattedPrice(props.max_price)}
         </Text>
       )}
-      <View className="flex flex-row items-center gap-x-3 mt-2">
-        <Text className="text-black font-poppins-medium">
-          Tipo de residência:
+      <View className="flex flex-row items-center gap-x-1 mt-2">
+        <Text className="text-white bg-slate-400 rounded border-[.5px] border-gray-500 px-2 py-[3px] font-poppins-medium">
+          {props.state === 'rent' ? 'Aluguel' : 'Venda'}
         </Text>
         <Text className="text-white bg-slate-400 rounded border-[.5px] border-gray-500 px-2 py-[3px] font-poppins-medium">
           {constants.categories
