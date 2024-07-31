@@ -1,6 +1,6 @@
 import { BaseRepository } from './base.repository'
 
-import { IUser } from '@/assets/@types'
+import { IUser } from '@/@types'
 import { supabase } from '@/config/supabase'
 
 export class UserRepository extends BaseRepository<IUser> {

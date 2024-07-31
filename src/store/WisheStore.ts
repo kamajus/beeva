@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-import { IWishe } from '@/assets/@types'
+import { IWishe } from '@/@types'
 
 interface WisheState {
   wishlist: IWishe[]

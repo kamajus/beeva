@@ -100,7 +100,7 @@ export default function Settings() {
           <TouchableBrightness
             onPress={() => {
               alert.showAlert(
-                'Alerta',
+                'Atenção',
                 'Você tem certeza que deseja terminar sessão?',
                 'Sim',
                 () => {
@@ -112,7 +112,6 @@ export default function Settings() {
                   })
                 },
                 'Cancelar',
-                () => {},
               )
             }}>
             <View className="w-full px-4 py-6 mb-4 flex-row justify-between items-center">

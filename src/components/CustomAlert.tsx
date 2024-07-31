@@ -97,10 +97,10 @@ const styles = StyleSheet.create({
 interface ICustomAlertProps {
   title?: string
   message?: string
-  valueOption1?: string
-  functionOption1?: () => void
-  valueOption2?: string
-  functionOption2?: () => void
+  primaryLabel?: string
+  onPressPrimary?: () => void
+  secondaryLabel?: string
+  onPressSecondary?: () => void
   alertVisible?: boolean
   setAlertVisible?: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -108,27 +108,27 @@ interface ICustomAlertProps {
 const CustomAlert: React.FC<ICustomAlertProps> = ({
   title,
   message,
-  valueOption1,
-  functionOption1,
-  valueOption2,
-  functionOption2,
+  primaryLabel,
+  onPressPrimary,
+  secondaryLabel,
+  onPressSecondary,
   alertVisible,
   setAlertVisible,
 }) => {
   const buttons = [
     {
-      text: valueOption2 || '',
+      text: secondaryLabel || '',
       onPress: () => {
-        if (functionOption2) {
-          functionOption2()
+        if (onPressSecondary) {
+          onPressSecondary()
         }
       },
     },
     {
-      text: valueOption1 || '',
+      text: primaryLabel || '',
       onPress: () => {
-        if (functionOption1) {
-          functionOption1()
+        if (onPressPrimary) {
+          onPressPrimary()
         }
       },
     },

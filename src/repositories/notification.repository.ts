@@ -1,6 +1,6 @@
 import { BaseRepository } from './base.repository'
 
-import { INotification } from '@/assets/@types'
+import { INotification } from '@/@types'
 import { supabase } from '@/config/supabase'
 
 export class NotificationRepository extends BaseRepository<INotification> {

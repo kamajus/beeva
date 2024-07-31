@@ -128,10 +128,9 @@ export default function Perfil() {
 
       if (session?.user.email !== data.email) {
         alert.showAlert(
-          'Alerta',
+          'Atenção',
           'Por favor, confirme o e-mail que foi enviado para você. Após a confirmação, seu endereço de e-mail será atualizado.',
           'Ok',
-          () => {},
         )
 
         supabase.auth.updateUser({
@@ -149,7 +148,6 @@ export default function Perfil() {
         'Erro a atualizar informações',
         'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
         'Ok',
-        () => {},
       )
     }
 
@@ -208,7 +206,6 @@ export default function Perfil() {
             'Erro a atualizar informações',
             'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
             'Ok',
-            () => {},
           )
         }
       } else {
@@ -240,7 +237,6 @@ export default function Perfil() {
             'Descartar',
             () => navigation.dispatch(e.data.action),
             'Não sair',
-            () => {},
           )
         }
       }),

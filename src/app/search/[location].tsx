@@ -4,11 +4,7 @@ import { useEffect, useState } from 'react'
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
 
-import {
-  IResidence,
-  IResidenceFilterEnum,
-  IResidenceStateEnum,
-} from '@/assets/@types'
+import { IResidence, IResidenceFilterEnum, IResidenceStateEnum } from '@/@types'
 import NoData from '@/assets/images/no-data'
 import Header from '@/components/Header'
 import HomeCard from '@/components/HomeCard'

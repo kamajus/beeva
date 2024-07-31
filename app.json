@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "RealState",
-    "slug": "realstate-app",
+    "name": "Beeva",
+    "slug": "beeva",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./src/assets/images/icon.png",
@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.carlosmateus.realstate"
+      "bundleIdentifier": "com.carlosmateus.beeva"
     },
     "android": {
       "intentFilters": [
@@ -44,7 +44,7 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.carlosmateus.realstate",
+      "package": "com.carlosmateus.beeva",
       "versionCode": 1
     },
     "web": {},

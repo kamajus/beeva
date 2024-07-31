@@ -1,6 +1,6 @@
 import { EventArg } from '@react-navigation/native'
 
-import { Database } from '@/assets/@types/supabase'
+import { Database } from '@/@types/supabase'
 
 export type IResidence = Database['public']['Tables']['residences']['Row']
 export type IWishe = Database['public']['Tables']['wishes']['Row']

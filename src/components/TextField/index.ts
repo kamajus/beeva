@@ -1,5 +1,6 @@
 import TextFieldArea from './TextFieldArea'
 import TextFieldContainer from './TextFieldContainer'
+import TextFieldCurrency from './TextFieldCurrency'
 import TextFieldHelper from './TextFieldHelper'
 import TextFieldInput from './TextFieldInput'
 import TextFieldLabel from './TextFieldLabel'
@@ -10,6 +11,7 @@ const TextField = {
   Label: TextFieldLabel,
   Container: TextFieldContainer,
   Input: TextFieldInput,
+  Currency: TextFieldCurrency,
   Area: TextFieldArea,
   Helper: TextFieldHelper,
 }
