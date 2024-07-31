@@ -1,6 +1,5 @@
 import clsx from 'clsx'
 import { router } from 'expo-router'
-import { MapPinned } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { Pressable, Text, View, Image } from 'react-native'
 
@@ -56,20 +55,22 @@ export default function HomeCard(residence: IHomeCard) {
       </Pressable>
 
       <View className="w-full gap-1 mt-2">
-        <View className="flex flex-row items-center">
-          <MapPinned color="black" size={19} />
-          <Text className="font-poppins-medium text-sm ml-1">
-            {residence.location.length > 70
-              ? `${residence.location.slice(0, 60)}...`
-              : residence.location}
+        <Text className="font-poppins-semibold text-base">
+          {residence.location.length > 70
+            ? `${residence.location.slice(0, 60)}...`
+            : residence.location}
+        </Text>
+        <View className="flex flex-row gap-x-1">
+          <Text className="text-base font-poppins-medium">
+            {formatMoney(residence.price)}
+          </Text>
+          <Text
+            className={clsx('text-base font-poppins-regular text-gray-400', {
+              hidden: residence.state === 'sell',
+            })}>
+            /mês
           </Text>
         </View>
-        <Text
-          className={clsx('font-poppins-semibold text-sm', {
-            'text-base': residence.cardType === 'search',
-          })}>
-          {formatMoney(residence.price)}
-        </Text>
       </View>
 
       <IconButton
