@@ -1,10 +1,10 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { router } from 'expo-router'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, View, Text } from 'react-native'
 import ActionSheet, { SheetProps } from 'react-native-actions-sheet'
-import * as yup from 'yup'
+import * as z from 'zod'
 
 import Button from '@/components/Button'
 import TextField from '@/components/TextField'
@@ -17,12 +17,14 @@ interface IFormData {
   password: string
 }
 
-const schema = yup.object({
-  password: yup
-    .string()
-    .required('A senha é obrigatória')
+const schema = z.object({
+  password: z
+    .string({
+      required_error: 'A senha é obrigatória',
+      invalid_type_error: 'Senha inválida',
+    })
     .min(8, 'A senha deve ter pelo menos 8 caracteres')
-    .matches(
+    .regex(
       /^(?=.*[a-zA-Z])(?=.*\d)/,
       'A senha deve conter pelo menos uma letra e um número',
     )
@@ -41,7 +43,10 @@ export default function DeleteActionSheet(props: SheetProps) {
     setError,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(schema),
+    defaultValues: {
+      password: '',
+    },
+    resolver: zodResolver(schema),
   })
 
   const [loading, setLoading] = useState(false)
@@ -106,7 +111,7 @@ export default function DeleteActionSheet(props: SheetProps) {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field }) => (
                 <View>
                   <TextField.Root>
                     <TextField.Label
@@ -118,10 +123,9 @@ export default function DeleteActionSheet(props: SheetProps) {
                     <TextField.Container
                       error={errors.password?.message !== undefined}>
                       <TextField.Input
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
                         placeholder="*su**a**s3nh*"
+                        onChangeValue={field.onChange}
+                        {...field}
                       />
                     </TextField.Container>
                   </TextField.Root>

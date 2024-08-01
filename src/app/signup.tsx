@@ -1,4 +1,4 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   StatusBar,
 } from 'react-native'
-import * as yup from 'yup'
+import * as z from 'zod'
 
 import Button from '@/components/Button'
 import TextField from '@/components/TextField'
@@ -20,48 +20,58 @@ import { useSupabase } from '@/hooks/useSupabase'
 import { UserRepository } from '@/repositories/user.repository'
 
 interface FormData {
-  firstName: string
-  lastName: string
+  first_name: string
+  last_name: string
   email: string
   password: string
   phone?: string
 }
 
-const schema = yup.object({
-  email: yup
-    .string()
-    .email('Endereço de e-mail inválido')
-    .required('O e-mail é obrigatório'),
-  firstName: yup
-    .string()
-    .required('O nome é obrigatório')
+const schema = z.object({
+  email: z
+    .string({
+      required_error: 'O email é obrigatória',
+      invalid_type_error: 'Email inválido',
+    })
+    .email('Email inválido'),
+  first_name: z
+    .string({
+      required_error: 'O nome é obrigatório',
+      invalid_type_error: 'Nome inválido',
+    })
     .min(2, 'O nome deve ter pelo menos 2 caracteres')
     .max(50, 'O nome deve ter no máximo 50 caracteres')
-    .matches(
+    .regex(
       /^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/,
       'A expressão introduzida está inválida',
     ),
-  lastName: yup
-    .string()
-    .required('O sobrenome é obrigatório')
+  last_name: z
+    .string({
+      required_error: 'O nome é obrigatório',
+      invalid_type_error: 'Nome inválido',
+    })
     .min(2, 'O sobrenome deve ter pelo menos 2 caracteres')
     .max(50, 'O sobrenome deve ter no máximo 50 caracteres')
-    .matches(
+    .regex(
       /^[a-zA-ZÀ-úÁáÂâÃãÉéÊêÍíÓóÔôÕõÚúÜüÇç]+$/,
       'A expressão introduzida está inválida',
     ),
-  password: yup
-    .string()
-    .required('A palavra-passe é obrigatória')
+  password: z
+    .string({
+      required_error: 'A palavra-passe é obrigatória',
+      invalid_type_error: 'Palavra-passe inválida',
+    })
     .min(8, 'A palavra-passe deve ter pelo menos 8 caracteres')
-    .matches(
+    .regex(
       /^(?=.*[a-zA-Z])(?=.*\d)/,
       'A palavra-passe deve conter pelo menos uma letra e um número',
     ),
-  phone: yup
-    .string()
-    .required('O número de telefone é obrigatório')
-    .matches(/^\d{9}$/, 'O número de telefone está inválido'),
+  phone: z
+    .string({
+      required_error: 'O número de telefone é obrigatório',
+      invalid_type_error: 'Número de telefone inválido',
+    })
+    .regex(/^\d{9}$/, 'O número de telefone está inválido'),
 })
 
 export default function SignIn() {
@@ -74,11 +84,11 @@ export default function SignIn() {
     defaultValues: {
       email: '',
       password: '',
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       phone: '',
     },
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
   })
 
   const router = useRouter()
@@ -105,8 +115,8 @@ export default function SignIn() {
             try {
               await userRepository.create({
                 id: userData.id,
-                first_name: data.firstName,
-                last_name: data.lastName,
+                first_name: data.first_name,
+                last_name: data.last_name,
                 phone: data.phone,
                 photo_url: null,
               })
@@ -146,26 +156,27 @@ export default function SignIn() {
           <View>
             <Controller
               control={control}
-              name="firstName"
+              name="first_name"
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field }) => (
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Nome</TextField.Label>
                     <TextField.Container
-                      error={errors.firstName?.message !== undefined}>
+                      error={errors.first_name?.message !== undefined}>
                       <TextField.Input
                         placeholder="Nome"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
+                        onChangeValue={field.onChange}
+                        returnKeyType="next"
+                        autoFocus
+                        {...field}
                       />
                     </TextField.Container>
                   </TextField.Root>
 
-                  <TextField.Helper message={errors.firstName?.message} />
+                  <TextField.Helper message={errors.first_name?.message} />
                 </View>
               )}
             />
@@ -174,26 +185,26 @@ export default function SignIn() {
           <View>
             <Controller
               control={control}
-              name="lastName"
+              name="last_name"
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, value, onBlur } }) => (
+              render={({ field }) => (
                 <View>
                   <TextField.Root>
                     <TextField.Label>Sobrenome</TextField.Label>
                     <TextField.Container
-                      error={errors.lastName?.message !== undefined}>
+                      error={errors.last_name?.message !== undefined}>
                       <TextField.Input
                         placeholder="Sobrenome"
-                        value={value}
-                        onChangeText={onChange}
-                        onBlur={onBlur}
+                        onChangeValue={field.onChange}
+                        returnKeyType="next"
+                        {...field}
                       />
                     </TextField.Container>
                   </TextField.Root>
 
-                  <TextField.Helper message={errors.lastName?.message} />
+                  <TextField.Helper message={errors.last_name?.message} />
                 </View>
               )}
             />
@@ -206,7 +217,7 @@ export default function SignIn() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, value, onBlur } }) => (
+              render={({ field }) => (
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Telefone</TextField.Label>
@@ -214,11 +225,11 @@ export default function SignIn() {
                       error={errors.phone?.message !== undefined}>
                       <TextField.Input
                         placeholder="Telefone"
-                        value={value}
-                        onChangeText={onChange}
                         inputMode="tel"
                         keyboardType="phone-pad"
-                        onBlur={onBlur}
+                        onChangeValue={field.onChange}
+                        returnKeyType="next"
+                        {...field}
                       />
                     </TextField.Container>
                   </TextField.Root>
@@ -236,7 +247,7 @@ export default function SignIn() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, value, onBlur } }) => (
+              render={({ field }) => (
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>E-mail</TextField.Label>
@@ -244,11 +255,11 @@ export default function SignIn() {
                       error={errors.email?.message !== undefined}>
                       <TextField.Input
                         placeholder="E-mail"
-                        value={value}
-                        onChangeText={onChange}
                         inputMode="email"
                         keyboardType="email-address"
-                        onBlur={onBlur}
+                        onChangeValue={field.onChange}
+                        returnKeyType="next"
+                        {...field}
                       />
                     </TextField.Container>
                   </TextField.Root>
@@ -266,7 +277,7 @@ export default function SignIn() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, value, onBlur } }) => (
+              render={({ field }) => (
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Palavra-passe</TextField.Label>
@@ -274,10 +285,9 @@ export default function SignIn() {
                       error={errors.password?.message !== undefined}>
                       <TextField.Input
                         placeholder="Palavra-passe"
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
                         secureTextEntry={!passwordVisible}
+                        onChangeValue={field.onChange}
+                        {...field}
                       />
                       <TouchableOpacity
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
