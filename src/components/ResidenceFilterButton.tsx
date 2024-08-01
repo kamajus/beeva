@@ -7,6 +7,7 @@ import constants from '@/constants'
 interface IResidenceFilterButton {
   kind?: IResidenceFilterEnum
   setKind?: React.Dispatch<React.SetStateAction<IResidenceFilterEnum>>
+  disabled?: boolean
   paddingHorizontal?: number
   excludedOptions?: string[]
 }
@@ -42,7 +43,7 @@ export default function ResidenceFilterButton(props: IResidenceFilterButton) {
                   'mr-0': data[data.length - 1] === item,
                 },
               )}
-              onPress={() => onButtonActive(item.value)}>
+              onPress={() => !props.disabled && onButtonActive(item.value)}>
               <Text
                 className={clsx('font-poppins-medium text-black text-sm', {
                   'text-white': props.kind === item.value,

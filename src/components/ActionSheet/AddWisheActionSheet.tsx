@@ -20,6 +20,7 @@ import Button from '@/components/Button'
 import IconButton from '@/components/IconButton'
 import ResidenceFilterButton from '@/components/ResidenceFilterButton'
 import TextField from '@/components/TextField'
+import PlaceInputProvider from '@/contexts/PlaceInputProvider'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 import { WisheRepository } from '@/repositories/wishe.repository'
@@ -147,22 +148,24 @@ export default function AddWisheActionSheet(props: SheetProps) {
                   required: true,
                 }}
                 render={({ field }) => (
-                  <View>
-                    <TextField.Place
-                      editable={!isSubmitting}
-                      error={errors.location?.message !== undefined}
-                      placeholder="Onde está localizada?"
-                      autoFocus
-                      returnKeyType="next"
-                      onChangeLocation={(value: string) => {
-                        setValue('location', value)
-                        clearErrors('location')
-                      }}
-                      {...field}
-                    />
+                  <PlaceInputProvider>
+                    <View>
+                      <TextField.Place
+                        editable={!isSubmitting}
+                        error={errors.location?.message !== undefined}
+                        placeholder="Onde está localizada?"
+                        autoFocus
+                        returnKeyType="next"
+                        onChangeLocation={(value: string) => {
+                          setValue('location', value)
+                          clearErrors('location')
+                        }}
+                        {...field}
+                      />
 
-                    <TextField.Helper message={errors.location?.message} />
-                  </View>
+                      <TextField.Helper message={errors.location?.message} />
+                    </View>
+                  </PlaceInputProvider>
                 )}
               />
             </View>
@@ -178,6 +181,7 @@ export default function AddWisheActionSheet(props: SheetProps) {
                   <ResidenceFilterButton
                     excludedOptions={['all']}
                     paddingHorizontal={16}
+                    disabled={isSubmitting}
                     kind={value as IResidenceFilterEnum}
                     setKind={(kind) => onChange(kind)}
                   />
@@ -199,6 +203,7 @@ export default function AddWisheActionSheet(props: SheetProps) {
                     <RadioButton
                       value="rent"
                       isChecked={value === 'rent'}
+                      disabled={isSubmitting}
                       onPress={() => onChange('rent')}
                     />
                   )}
@@ -214,6 +219,7 @@ export default function AddWisheActionSheet(props: SheetProps) {
                     <RadioButton
                       value="sell"
                       isChecked={value === 'sell'}
+                      disabled={isSubmitting}
                       onPress={() => onChange('sell')}
                     />
                   )}
@@ -229,7 +235,11 @@ export default function AddWisheActionSheet(props: SheetProps) {
                 name="min_price"
                 render={({ field }) => (
                   <TextField.Container error={errors.min_price !== undefined}>
-                    <TextField.Currency returnKeyType="next" {...field} />
+                    <TextField.Currency
+                      editable={!isSubmitting}
+                      returnKeyType="next"
+                      {...field}
+                    />
                   </TextField.Container>
                 )}
               />
@@ -243,7 +253,11 @@ export default function AddWisheActionSheet(props: SheetProps) {
                 name="max_price"
                 render={({ field }) => (
                   <TextField.Container error={errors.max_price !== undefined}>
-                    <TextField.Currency returnKeyType="next" {...field} />
+                    <TextField.Currency
+                      editable={!isSubmitting}
+                      returnKeyType="next"
+                      {...field}
+                    />
                   </TextField.Container>
                 )}
               />
