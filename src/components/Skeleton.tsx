@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useEffect, useMemo } from 'react'
+import { FC, ReactNode, useEffect, useMemo } from 'react'
 import {
   View,
   StyleSheet,
@@ -16,11 +16,11 @@ const { width } = Dimensions.get('window')
 const AnimatedLG = Animated.createAnimatedComponent(LinearGradient)
 
 interface SkeletonComponentProps extends ViewProps {
-  children?: React.ReactNode
+  children?: ReactNode
   style?: StyleProp<ViewStyle>
 }
 
-const SkeletonComponent: React.FC<SkeletonComponentProps> = ({
+const SkeletonComponent: FC<SkeletonComponentProps> = ({
   children,
   style,
   ...props

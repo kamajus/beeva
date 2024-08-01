@@ -1,18 +1,29 @@
-import { TextInputProps } from 'react-native'
+import React, { forwardRef } from 'react'
+import { TextInput, TextInputProps } from 'react-native'
+import { twMerge } from 'tailwind-merge'
 
-import TextFieldInput from './TextFieldInput'
+import constants from '@/constants'
 
-export default function TextFieldArea(props: TextInputProps) {
-  return (
-    <TextFieldInput
-      multiline
-      style={{
-        height: 260,
-        paddingVertical: 16,
-        textAlignVertical: 'top',
-        fontFamily: 'poppins-medium',
-      }}
-      {...props}
-    />
-  )
+interface ITextFieldInput extends TextInputProps {
+  onChangeValue?: (value: string) => void
 }
+
+const TextFieldArea = forwardRef<TextInput, ITextFieldInput>(
+  function TextFieldArea({ className, onChangeValue, ...props }, ref) {
+    return (
+      <TextInput
+        ref={ref}
+        cursorColor={constants.colors.primary}
+        className={twMerge(
+          'flex flex-1 h-60 w-full px-2 py-4 text-sm font-poppins-medium',
+          className,
+        )}
+        onChangeText={onChangeValue}
+        style={{ textAlignVertical: 'top' }}
+        {...props}
+      />
+    )
+  },
+)
+
+export default TextFieldArea
