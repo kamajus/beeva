@@ -18,12 +18,13 @@ import ResidenceForm, {
   residenceSchema,
 } from '@/components/ResidenceForm'
 import { supabase } from '@/config/supabase'
+import PlaceInputProvider from '@/contexts/PlaceInputProvider'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
-export default function Editor() {
+function EditorWithoutPlaceProvider() {
   const navigation = useNavigation()
   const { id } = useLocalSearchParams<{ id?: string }>()
 
@@ -81,8 +82,8 @@ export default function Editor() {
     setForceExiting(true)
     navigation.goBack()
     handleCallNotification(
-      'Residência respostado',
-      'A residência foi respostada com sucesso.',
+      'Residência editada',
+      'A residência foi editada com sucesso.',
     )
   }
 
@@ -280,5 +281,13 @@ export default function Editor() {
 
       <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
     </View>
+  )
+}
+
+export default function Editor() {
+  return (
+    <PlaceInputProvider>
+      <EditorWithoutPlaceProvider />
+    </PlaceInputProvider>
   )
 }

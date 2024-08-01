@@ -14,13 +14,22 @@ interface TextFieldCurrencyProps {
   value: number
   onChange: (value: number) => void
   returnKeyType?: ReturnKeyTypeOptions
+  editable?: boolean
   autoFocus?: boolean
   onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void
 }
 
 const TextFieldCurrency = forwardRef<CurrencyInput, TextFieldCurrencyProps>(
   function TextFieldCurrency(
-    { className, value, returnKeyType, autoFocus, onChange, ...props },
+    {
+      className,
+      value,
+      returnKeyType,
+      autoFocus,
+      editable,
+      onChange,
+      ...props
+    },
     ref: Ref<CurrencyInput>,
   ) {
     return (
@@ -29,6 +38,7 @@ const TextFieldCurrency = forwardRef<CurrencyInput, TextFieldCurrencyProps>(
         onChangeValue={(value) => onChange(value)}
         returnKeyType={returnKeyType}
         autoFocus={autoFocus}
+        editable={editable}
         delimiter="."
         separator=","
         precision={2}

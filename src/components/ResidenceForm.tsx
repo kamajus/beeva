@@ -112,7 +112,11 @@ export default function ResidenceForm({
                 <TextField.Root>
                   <TextField.Label isRequired>Preço</TextField.Label>
                   <TextField.Container error={errors.price !== undefined}>
-                    <TextField.Currency {...field} autoFocus />
+                    <TextField.Currency
+                      editable={!isSubmitting}
+                      {...field}
+                      autoFocus
+                    />
                   </TextField.Container>
                 </TextField.Root>
 
@@ -187,6 +191,7 @@ export default function ResidenceForm({
                 <RadioButton
                   value="rent"
                   isChecked={value === 'rent'}
+                  disabled={isSubmitting}
                   onPress={() => onChange('rent')}
                 />
               )}
@@ -202,6 +207,7 @@ export default function ResidenceForm({
                 <RadioButton
                   value="sell"
                   isChecked={value === 'sell'}
+                  disabled={isSubmitting}
                   onPress={() => onChange('sell')}
                 />
               )}
@@ -221,6 +227,7 @@ export default function ResidenceForm({
               <ResidenceFilterButton
                 excludedOptions={['all']}
                 paddingHorizontal={16}
+                disabled={isSubmitting}
                 kind={value as IResidenceKindEnum}
                 setKind={(kind) => onChange(kind)}
               />
