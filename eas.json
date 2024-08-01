@@ -5,11 +5,13 @@
   "build": {
     "preview": {
       "android": {
+        "image": "latest",
         "buildType": "apk"
       }
     },
     "preview2": {
       "android": {
+        "image": "latest",
         "gradleCommand": ":app:assembleRelease"
       }
     },
@@ -19,7 +21,14 @@
     "preview4": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {
+      "android": {
+        "image": "latest"
+      },
+      "ios": {
+        "image": "latest"
+      }
+    }
   }
  }
  
