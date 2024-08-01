@@ -44,14 +44,21 @@ export default function SearchActionSheet(props: SheetProps) {
           </Text>
         </View>
 
-        <View className="flex gap-y-9 px-4">
+        <View className="flex gap-y-9">
           <View>
-            <TextField.Label isRequired>Tipo de residência</TextField.Label>
-            <ResidenceFilterButton kind={kind} setKind={setKind} />
+            <TextField.Label className="px-4">
+              Tipo de residência
+            </TextField.Label>
+            <ResidenceFilterButton
+              excludedOptions={['all']}
+              kind={kind}
+              setKind={setKind}
+              paddingHorizontal={16}
+            />
           </View>
 
-          <View>
-            <TextField.Label isRequired>Tipo de venda</TextField.Label>
+          <View className="px-4">
+            <TextField.Label>Tipo de venda</TextField.Label>
             <View className="flex flex-row justify-between items-center">
               <Text className="text-sm font-poppins-regular">Arrendamento</Text>
               <RadioButton
@@ -71,7 +78,7 @@ export default function SearchActionSheet(props: SheetProps) {
             </View>
           </View>
 
-          <View>
+          <View className="px-4">
             <TextField.Label>Preço minimo</TextField.Label>
             <TextField.Container>
               <TextField.Currency
@@ -83,7 +90,7 @@ export default function SearchActionSheet(props: SheetProps) {
             </TextField.Container>
           </View>
 
-          <View>
+          <View className="px-4">
             <TextField.Label>Preço máximo</TextField.Label>
             <TextField.Container>
               <TextField.Currency
@@ -95,7 +102,7 @@ export default function SearchActionSheet(props: SheetProps) {
             </TextField.Container>
           </View>
 
-          <View className="flex flex-row justify-between items-center gap-x-2">
+          <View className="flex flex-row justify-between items-center gap-x-2 px-4">
             <Button
               onPress={() => {
                 setFilter({

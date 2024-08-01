@@ -4,7 +4,15 @@ import * as FileSystem from 'expo-file-system'
 import * as ImagePicker from 'expo-image-picker'
 import * as Notifications from 'expo-notifications'
 import { router } from 'expo-router'
-import { createContext, useEffect, useState, useCallback, useMemo } from 'react'
+import {
+  createContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  Dispatch,
+  SetStateAction,
+} from 'react'
 
 import { IResidence, INotification, IUser } from '@/@types'
 import { supabase } from '@/config/supabase'
@@ -19,7 +27,7 @@ import { useResidenceStore } from '@/store/ResidenceStore'
 
 type SupabaseContextProps = {
   user: IUser | null
-  setUser: React.Dispatch<React.SetStateAction<IUser | null>> | null
+  setUser: Dispatch<SetStateAction<IUser | null>> | null
   session: Session | null
   initialized?: boolean
   signUp: (

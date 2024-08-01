@@ -1,6 +1,5 @@
 import clsx from 'clsx'
 import * as ImagePicker from 'expo-image-picker'
-import { Dispatch, SetStateAction } from 'react'
 import { FlatList, Image, Pressable, View } from 'react-native'
 
 import Button from '@/components/Button'
@@ -9,23 +8,23 @@ import IconButton from '@/components/IconButton'
 interface IGaleryGrid {
   images: ImagePicker.ImagePickerAsset[]
   cover: string | null | undefined
-  setCover: Dispatch<React.SetStateAction<string | null | undefined>>
-  setImages: Dispatch<SetStateAction<ImagePicker.ImagePickerAsset[]>>
-  setImagesToDelete?: Dispatch<React.SetStateAction<string[]>>
   imagesToDelete?: string[]
   disabled?: boolean
-  setPhotoChanged?: Dispatch<React.SetStateAction<boolean>>
+  changeImages: (images: ImagePicker.ImagePickerAsset[]) => void
+  changeCoverImage: (value: string) => void
+  deleteImages?: (value: string[]) => void
+  handlePhotoChanged?: (value: boolean) => void
 }
 
 export default function Galery({
   images,
-  setImages,
   cover,
-  setCover,
-  disabled,
-  setImagesToDelete,
   imagesToDelete,
-  setPhotoChanged,
+  disabled,
+  changeCoverImage,
+  changeImages,
+  deleteImages,
+  handlePhotoChanged,
 }: IGaleryGrid) {
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -38,13 +37,13 @@ export default function Galery({
 
     if (!result.canceled) {
       if (!images || images.length === 0) {
-        setCover(result.assets[0].uri)
+        changeCoverImage(result.assets[0].uri)
       }
 
-      setImages([...images, ...result.assets])
+      changeImages([...images, ...result.assets])
 
-      if (setPhotoChanged) {
-        setPhotoChanged(true)
+      if (handlePhotoChanged) {
+        handlePhotoChanged(true)
       }
     }
   }
@@ -59,20 +58,20 @@ export default function Galery({
             <Pressable
               className="relative mb-4"
               onLongPress={() => {
-                setImages(images.filter((other) => other !== item))
+                changeImages(images.filter((other) => other !== item))
 
-                if (imagesToDelete && setImagesToDelete) {
+                if (imagesToDelete && deleteImages) {
                   if (
                     item.uri.includes(
                       `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
                     )
                   ) {
-                    setImagesToDelete([...imagesToDelete, item.uri])
+                    deleteImages([...imagesToDelete, item.uri])
                   }
                 }
 
                 if (cover === item.uri) {
-                  setCover(undefined)
+                  changeCoverImage(undefined)
                 }
               }}>
               {/* eslint-disable-next-line jsx-a11y/alt-text */}
@@ -91,7 +90,7 @@ export default function Galery({
                 name="Star"
                 size={18}
                 onPress={() => {
-                  setCover(item.uri)
+                  changeCoverImage(item.uri)
                 }}
                 className={clsx('absolute top-[4px] right-3', {
                   hidden: disabled,

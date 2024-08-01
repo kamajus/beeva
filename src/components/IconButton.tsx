@@ -1,5 +1,5 @@
 import { icons } from 'lucide-react-native'
-import React, { forwardRef } from 'react'
+import { forwardRef } from 'react'
 import {
   TouchableOpacityProps,
   TouchableOpacity,

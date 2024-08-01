@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/alt-text */
 import Carousel from 'pinar'
-import React from 'react'
 import { Image, StyleProp, ViewStyle } from 'react-native'
 
 import Skeleton from './Skeleton'

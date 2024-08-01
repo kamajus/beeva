@@ -17,7 +17,7 @@ export default function TextFieldContainer({
     <View
       className={twMerge(
         clsx(
-          'w-full px-2 flex-row items-center bg-input border-2 border-input rounded',
+          'w-full px-2 flex-row items-center bg-input border-2 border-input rounded relative',
           {
             'focus:border-alert': error && !disableFocus,
             'focus:border-primary': !error && !disableFocus,

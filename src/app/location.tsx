@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import debounce from 'lodash.debounce'
 import { History, MapPin } from 'lucide-react-native'
 import { useEffect, useState, useCallback } from 'react'
 import { KeyboardAvoidingView, ScrollView, Text, View } from 'react-native'
@@ -23,46 +24,43 @@ export default function LocationSearch() {
     }[]
   >([])
 
-  const getData = useCallback(async () => {
-    await placeApi
-      .get(
-        `/search?featureType&countrycodes=AO&limit=15&format=json&q=${searchQuery}`,
-      )
-      .then((res) => {
-        const history: {
-          origin: 'search'
-          value: string
-        }[] = []
-
-        for (const value of res.data) {
-          history.push({
-            origin: 'search',
-            value: value.display_name,
-          })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchData = useCallback(
+    debounce(async (query: string) => {
+      if (query.length > 0) {
+        try {
+          const response = await placeApi.get(
+            `/search?featureType&countrycodes=AO&limit=15&format=json&q=${query}`,
+          )
+          const results = response.data.map(
+            (item: { display_name: string }) => ({
+              origin: 'search',
+              value: item.display_name,
+            }),
+          )
+          setDataSource(results)
+        } catch {
+          setDataSource([])
         }
-
-        setDataSource(history)
-      })
-  }, [searchQuery])
+      } else {
+        setDataSource([])
+      }
+    }, 300), // Ajuste o tempo de debounce conforme necessário
+    [],
+  )
 
   async function getHistoric() {
     const history = await AsyncStorage.getItem('history')
-
     if (history) {
       const data: {
         origin: 'history'
         value: string
-      }[] = []
-
-      for (const value of Array(JSON.parse(history))) {
-        for (const i of value) {
-          data.push({
-            origin: 'history',
-            value: i,
-          })
-        }
-      }
-
+      }[] = JSON.parse(history)
+        .flat()
+        .map((item: string) => ({
+          origin: 'history',
+          value: item,
+        }))
       setHistoricSearch(data)
     }
   }
@@ -72,10 +70,8 @@ export default function LocationSearch() {
   }, [])
 
   useEffect(() => {
-    if (searchQuery.length > 0) {
-      getData()
-    }
-  }, [getData, searchQuery])
+    fetchData(searchQuery)
+  }, [fetchData, searchQuery])
 
   return (
     <View className="w-full bg-white">
