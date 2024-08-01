@@ -12,6 +12,7 @@ import ResidenceForm, {
   IFormData,
   residenceSchema,
 } from '@/components/ResidenceForm'
+import PlaceInputProvider from '@/contexts/PlaceInputProvider'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 import { NotificationRepository } from '@/repositories/notification.repository'
@@ -19,7 +20,7 @@ import { ResidenceNotificationRepository } from '@/repositories/residence.notifi
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
-export default function Editor() {
+function EditorWithoutPlaceProvider() {
   const formHandler = useForm({
     resolver: zodResolver(residenceSchema),
     defaultValues: {
@@ -87,7 +88,7 @@ export default function Editor() {
         const notification = await notificationRepository.create({
           user_id: session.user.id,
           title: 'Residência postada',
-          description: 'A sua residência foi postada com sucesso.',
+          description: 'A residência foi postada com sucesso.',
           type: 'residence-posted',
           was_readed: false,
         })
@@ -185,5 +186,13 @@ export default function Editor() {
         onBackPress={handleBackPress}
       />
     </View>
+  )
+}
+
+export default function Editor() {
+  return (
+    <PlaceInputProvider>
+      <EditorWithoutPlaceProvider />
+    </PlaceInputProvider>
   )
 }

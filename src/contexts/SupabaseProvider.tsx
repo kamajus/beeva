@@ -105,7 +105,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       phone,
       password,
     })
-
     if (data.user) return data.user
     throw error
   }
@@ -138,10 +137,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
 
           if (image.uri === cover && !uploadError && session) {
             const coverURL = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`
-
-            await residenceRepository.update(id, {
-              cover: coverURL,
-            })
+            await residenceRepository.update(id, { cover: coverURL })
           }
 
           if (uploadError) {
@@ -149,7 +145,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
               'Erro a realizar postagem',
               'Houve um problema ao tentar carregar as imagens que você forneceu.',
               'Ok',
-              () => {},
             )
           }
         } catch {
@@ -165,17 +160,13 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     }
 
     if (session) {
-      await residenceRepository.update(id, {
-        photos: imagesToAppend,
-      })
+      await residenceRepository.update(id, { photos: imagesToAppend })
     }
   }
 
   const saveResidence = async (residence: IResidence, saved: boolean) => {
     if (saved) {
-      await savedResidenceRepository.create({
-        residence_id: residence.id,
-      })
+      await savedResidenceRepository.create({ residence_id: residence.id })
       addToResidences(residence, 'saved')
     } else {
       await savedResidenceRepository.delete({
@@ -197,7 +188,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         residence_id: residenceId,
         user_id: session.user.id,
       })
-
       removeLovedResidence(residenceId)
     }
   }
@@ -207,15 +197,11 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       email,
       password,
     })
-
     if (error) {
       let redirect: string
-
-      if (error.status) {
-        if (error.message === 'Email not confirmed') {
-          supabase.auth.resend({ email, type: 'signup' })
-          redirect = `/verification/${email}`
-        }
+      if (error.status && error.message === 'Email not confirmed') {
+        supabase.auth.resend({ email, type: 'signup' })
+        redirect = `/verification/${email}`
       }
 
       // eslint-disable-next-line no-throw-literal
@@ -234,7 +220,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         emailRedirectTo: 'https://example.com/welcome',
       },
     })
-
     if (error) throw error
   }
 
@@ -270,8 +255,44 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     })
   }
 
-  useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange(async (_, session) => {
+  const setupUserChannel = (userId: string) => {
+    supabase
+      .channel('users')
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public' },
+        async (payload: { new: IUser }) => {
+          if (payload.new.id === userId) {
+            setUser(payload.new)
+          }
+        },
+      )
+      .subscribe()
+  }
+
+  const setupNotificationsChannel = useCallback(
+    (userId: string) => {
+      supabase
+        .channel('notifications')
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public' },
+          async (payload: { new: INotification }) => {
+            if (payload.new.user_id === userId && payload.new?.title) {
+              updateNotifications(payload.new)
+              handleCallNotification(payload.new.title, payload.new.description)
+            }
+          },
+        )
+        .subscribe()
+    },
+    [updateNotifications],
+  )
+
+  const setupAuthListener = useCallback(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_, session) => {
       console.log('Auth state changed')
       console.log(session)
 
@@ -283,6 +304,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           if (!userData) {
             await supabase.auth.signOut()
             router.replace('/signin')
+            return
           }
 
           const notificationsData = await notificationRepository.findByUserId(
@@ -290,38 +312,8 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           )
           setNotifications(notificationsData)
 
-          supabase
-            .channel('users')
-            .on(
-              'postgres_changes',
-              { event: 'UPDATE', schema: 'public' },
-              async (payload: { new: IUser }) => {
-                if (payload.new.id === session.user.id) {
-                  setUser(payload.new)
-                }
-              },
-            )
-            .subscribe()
-
-          supabase
-            .channel('notifications')
-            .on(
-              'postgres_changes',
-              { event: 'INSERT', schema: 'public' },
-              async (payload: { new: INotification }) => {
-                if (
-                  payload.new.user_id === session.user.id &&
-                  payload.new?.title
-                ) {
-                  updateNotifications(payload.new)
-                  handleCallNotification(
-                    payload.new.title,
-                    payload.new.description,
-                  )
-                }
-              },
-            )
-            .subscribe()
+          setupUserChannel(session.user.id)
+          setupNotificationsChannel(session.user.id)
         } catch {
           await supabase.auth.signOut()
           router.replace('/signin')
@@ -334,11 +326,18 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       setInitialized(true)
     })
 
-    return () => {
-      data.subscription.unsubscribe()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    return subscription
+  }, [
+    notificationRepository,
+    setNotifications,
+    setupNotificationsChannel,
+    userRepository,
+  ])
+
+  useEffect(() => {
+    const authListener = setupAuthListener()
+    return () => authListener.unsubscribe()
+  }, [setupAuthListener])
 
   useEffect(() => {
     supabase
@@ -351,11 +350,9 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
             if (userResidences.some((r) => r.id === payload.new.id)) {
               addToResidences(payload.new, 'user')
             }
-
             if (savedResidences.some((r) => r.id === payload.new.id)) {
               addToResidences(payload.new, 'saved')
             }
-
             if (
               Object.values(cachedResidences).some(
                 ({ residence: r }) => r.id === payload.new.id,
@@ -373,7 +370,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     cachedResidences,
     addToResidences,
     pushResidence,
-    session,
   ])
 
   return (

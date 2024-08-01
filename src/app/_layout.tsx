@@ -20,6 +20,7 @@ export default function RootLayout() {
             <Stack.Screen name="notification" />
             <Stack.Screen name="(settings)" />
             <Stack.Screen name="verification/[email]" />
+            <Stack.Screen name="editor/[id]" />
             <Stack.Screen name="location" />
           </Stack>
         </SupabaseProvider>
