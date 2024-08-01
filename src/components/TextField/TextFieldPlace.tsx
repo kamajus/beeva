@@ -12,8 +12,11 @@ import {
 import TextFieldContainer from './TextFieldContainer'
 import TextFieldInput from './TextFieldInput'
 import TextFieldLabel from './TextFieldLabel'
+import IconButton from '../IconButton'
 
 import { placeApi } from '@/config/axios'
+import constants from '@/constants'
+import { usePlaceInput } from '@/hooks/usePlaceInput'
 
 interface IDropDown {
   dataSource: string[]
@@ -80,9 +83,13 @@ const DropDown = ({ updateValue, dataSource, onPress }: IDropDown) => (
 )
 
 const TextFieldPlace = forwardRef<TextInput, ITextFieldPlace>(
-  function TextFieldPlace({ error, onChangeLocation, ...props }, ref) {
+  function TextFieldPlace(
+    { error, onChangeLocation, value: propsValue, editable, ...props },
+    ref,
+  ) {
     const [dataSource, setDataSource] = useState<string[]>([])
-    const [searching, setOpen] = useState(false)
+    const { open, lock, setOpen, setValue, setLock, resetField } =
+      usePlaceInput()
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const fetchPlaces = useCallback(
@@ -101,19 +108,15 @@ const TextFieldPlace = forwardRef<TextInput, ITextFieldPlace>(
     )
 
     const onSearch = (text: string) => {
-      onChangeLocation(text)
-
-      if (text) {
-        setOpen(true)
-        fetchPlaces(text)
-      } else {
-        setOpen(false)
-        setDataSource([])
-      }
+      setValue(text)
+      setOpen(!!text)
+      fetchPlaces(text)
     }
 
     const handleUpdateValue = (value: string) => {
       onChangeLocation(value)
+      setValue(value)
+      setLock(true)
     }
 
     return (
@@ -125,12 +128,25 @@ const TextFieldPlace = forwardRef<TextInput, ITextFieldPlace>(
               <TextFieldInput
                 ref={ref}
                 onChangeText={onSearch}
+                {...props}
+                defaultValue={propsValue}
                 keyboardType="web-search"
                 returnKeyType="search"
-                {...props}
+                editable={lock ? false : editable}
               />
+              {lock && (
+                <IconButton
+                  name="Pencil"
+                  className="bg-transparent"
+                  color={constants.colors.primary}
+                  onPress={() => {
+                    resetField()
+                    onChangeLocation('')
+                  }}
+                />
+              )}
             </TextFieldContainer>
-            {searching && (
+            {open && (
               <DropDown
                 onPress={() => setOpen(false)}
                 updateValue={handleUpdateValue}
