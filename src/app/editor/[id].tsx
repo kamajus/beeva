@@ -1,15 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as ImagePicker from 'expo-image-picker'
-import { useLocalSearchParams, useNavigation } from 'expo-router'
-import React, { useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { StatusBar, View } from 'react-native'
-
 import {
-  beforeRemoveEventType,
-  IResidenceKindEnum,
-  IResidenceStateEnum,
-} from '@/@types'
+  router,
+  useFocusEffect,
+  useLocalSearchParams,
+  useNavigation,
+} from 'expo-router'
+import { useCallback, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { StatusBar, View, BackHandler } from 'react-native'
+
+import { IResidenceKindEnum, IResidenceStateEnum } from '@/@types'
+import Form from '@/components/Form'
 import Header from '@/components/Header'
 import ResidenceForm, {
   IFormData,
@@ -32,12 +34,7 @@ export default function Editor() {
     cachedResidences.find(({ residence: r }) => r.id === id),
   )
 
-  const {
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors, isDirty, isSubmitting },
-  } = useForm({
+  const formHandler = useForm({
     resolver: zodResolver(residenceSchema),
     defaultValues: {
       description: defaultData?.residence.description || '',
@@ -51,6 +48,12 @@ export default function Editor() {
         : 'rent',
     },
   })
+
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty, isSubmitting },
+  } = formHandler
 
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>(
     defaultData?.residence.photos
@@ -74,6 +77,15 @@ export default function Editor() {
 
   const residenceRepository = useMemo(() => new ResidenceRepository(), [])
 
+  function handleGoBack() {
+    setForceExiting(true)
+    navigation.goBack()
+    handleCallNotification(
+      'Residência respostado',
+      'A residência foi respostada com sucesso.',
+    )
+  }
+
   async function onSubmit(formData: IFormData) {
     const hasSelectedImages = images.length > 0
     const isCoverChanged = defaultData?.residence.cover !== cover
@@ -96,12 +108,7 @@ export default function Editor() {
         await uploadResidencesImage(id, cover, images)
       }
 
-      setForceExiting(true)
-      navigation.goBack()
-      handleCallNotification(
-        'Residência respostado',
-        'A residência foi respostada com sucesso.',
-      )
+      handleGoBack()
     } else {
       if (!hasSelectedImages) {
         alert.showAlert(
@@ -189,74 +196,86 @@ export default function Editor() {
     setImagesToDelete([])
   }
 
-  useEffect(() => {
-    function handleBeforeRemove(e: beforeRemoveEventType) {
-      e.preventDefault()
+  const handleBackPress = useCallback(() => {
+    const hasSelectedImages =
+      defaultData?.residence.photos &&
+      defaultData?.residence.photos?.length > images.length
 
-      const hasSelectedImages =
-        defaultData?.residence.photos &&
-        defaultData?.residence.photos?.length > images.length
+    const isCoverChanged = defaultData?.residence.cover !== cover
+    const hasDeletedImages = imagesToDelete.length > 0
 
-      const isCoverChanged = defaultData?.residence.cover !== cover
-      const hasDeletedImages = imagesToDelete.length > 0
-
-      if (forceExiting) return
-
-      if (
-        !isSubmitting &&
+    if (
+      (!isSubmitting &&
         !isDirty &&
         !isCoverChanged &&
         !hasDeletedImages &&
-        !hasSelectedImages
-      ) {
-        navigation.dispatch(e.data.action)
-        return
-      }
-
+        !hasSelectedImages) ||
+      forceExiting
+    ) {
+      router.back()
+      return true
+    } else {
       alert.showAlert(
         'Descartar alterações?',
-        'Você possui alterações não salvas, tens certeza de que deseja descartá-las?',
+        'Você possui alterações não salvas, tem certeza de que deseja descartá-las?',
         'Sim',
-        () => navigation.dispatch(e.data.action),
+        () => {
+          router.back()
+        },
         'Não',
       )
-    }
-
-    navigation.addListener('beforeRemove', handleBeforeRemove)
-    return () => {
-      navigation.removeListener('beforeRemove', handleBeforeRemove)
+      return true
     }
   }, [
-    isDirty,
     defaultData,
-    isSubmitting,
-    forceExiting,
-    navigation,
     images,
     cover,
     imagesToDelete,
+    isSubmitting,
+    isDirty,
+    forceExiting,
     alert,
   ])
 
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        handleBackPress,
+      )
+
+      return () => subscription.remove()
+    }, [handleBackPress]),
+  )
+
   return (
     <View className="relative bg-white">
-      <ResidenceForm
-        control={control}
-        isSubmitting={isSubmitting}
-        errors={errors}
-        images={images}
-        setImages={setImages}
-        cover={cover}
-        setCover={setCover}
-        imagesToDelete={imagesToDelete}
-        setImagesToDelete={setImagesToDelete}
-        setPhotoChanged={setPhotoChanged}
-      />
+      <Form handler={formHandler}>
+        <ResidenceForm
+          handler={formHandler}
+          images={images}
+          cover={cover}
+          imagesToDelete={imagesToDelete}
+          changeImages={(images) => {
+            setImages(images)
+          }}
+          changeCoverImage={(cover) => {
+            setCover(cover)
+          }}
+          deleteImages={(images) => {
+            setImagesToDelete(images)
+          }}
+          handlePhotoChanged={(value) => {
+            setPhotoChanged(value)
+          }}
+        />
+      </Form>
 
       <Header.Action
         title="Editando a residência"
         loading={isSubmitting}
         onPress={handleSubmit(onSubmit)}
+        onBackPress={handleBackPress}
       />
 
       <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />

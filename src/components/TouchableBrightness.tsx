@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { router } from 'expo-router'
-import React, { ReactNode, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import {
   View,
   TouchableWithoutFeedback,

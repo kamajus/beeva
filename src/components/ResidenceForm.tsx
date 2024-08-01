@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker'
-import { Controller, Control, FieldErrors } from 'react-hook-form'
+import { Controller } from 'react-hook-form'
+import type { UseFormReturn } from 'react-hook-form'
 import { View, ScrollView, Text } from 'react-native'
 import * as z from 'zod'
 
@@ -8,7 +9,6 @@ import ResidenceFilterButton from './ResidenceFilterButton'
 import { IResidenceKindEnum } from '@/@types'
 import GaleryGrid from '@/components/GaleryGrid'
 import RadioButton from '@/components/RadioButton'
-import SearchPlace from '@/components/SearchPlace'
 import TextField from '@/components/TextField'
 import constants from '@/constants'
 
@@ -58,63 +58,61 @@ export const residenceSchema = z.object({
 })
 
 interface IResidenceForm {
-  control: Control<
+  handler: UseFormReturn<
     {
       description: string
       location: string
-      price: number
-      kind: string
       state: string
+      kind: string
+      price: number
     },
-    unknown
+    unknown,
+    undefined
   >
-  isSubmitting: boolean
-  errors: FieldErrors<{
-    description: string
-    location: string
-    state: string
-    kind: string
-    price: number
-  }>
   cover: string
-  setCover: (value: string) => void
   images: ImagePicker.ImagePickerAsset[]
-  setImages: (value: ImagePicker.ImagePickerAsset[]) => void
   imagesToDelete?: string[]
-  setImagesToDelete?: (value: string[]) => void
-  setPhotoChanged?: (value: boolean) => void
+  changeImages: (images: ImagePicker.ImagePickerAsset[]) => void
+  changeCoverImage: (value: string) => void
+  deleteImages?: (value: string[]) => void
+  handlePhotoChanged?: (value: boolean) => void
 }
 export default function ResidenceForm({
-  control,
-  isSubmitting,
-  errors,
+  handler,
   images,
-  setImages,
   cover,
-  setCover,
   imagesToDelete,
-  setImagesToDelete,
-  setPhotoChanged,
+  changeImages,
+  changeCoverImage,
+  deleteImages,
+  handlePhotoChanged,
 }: IResidenceForm) {
+  const {
+    formState: { isSubmitting, errors },
+    control,
+    setValue,
+    clearErrors,
+  } = handler
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       style={{ marginTop: constants.customHeaderDistance }}
       className="bg-white">
-      <View className="flex gap-y-9 px-4 mt-[2%] bg-white">
-        <View>
+      <View className="flex gap-y-9 mt-[2%] bg-white">
+        <View className="px-4">
           <Controller
             control={control}
             name="price"
             rules={{
               required: true,
             }}
-            render={({ field: { value, onChange } }) => (
+            render={({ field }) => (
               <View>
                 <TextField.Root>
                   <TextField.Label isRequired>Preço</TextField.Label>
                   <TextField.Container error={errors.price !== undefined}>
-                    <TextField.Currency value={value} onChange={onChange} />
+                    <TextField.Currency {...field} autoFocus />
                   </TextField.Container>
                 </TextField.Root>
 
@@ -124,25 +122,25 @@ export default function ResidenceForm({
           />
         </View>
 
-        <View>
+        <View className="px-4">
           <Controller
             control={control}
             name="location"
             rules={{
               required: true,
             }}
-            render={({ field: { onChange, onBlur, value } }) => (
+            render={({ field }) => (
               <View>
-                <View>
-                  <SearchPlace
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    editable={!isSubmitting}
-                    value={value}
-                    placeholder="Onde está localizada?"
-                    error={errors.location?.message !== undefined}
-                  />
-                </View>
+                <TextField.Place
+                  editable={!isSubmitting}
+                  error={errors.location?.message !== undefined}
+                  placeholder="Onde está localizada?"
+                  onChangeLocation={(value: string) => {
+                    setValue('location', value)
+                    clearErrors('location')
+                  }}
+                  {...field}
+                />
 
                 <TextField.Helper message={errors.location?.message} />
               </View>
@@ -150,14 +148,14 @@ export default function ResidenceForm({
           />
         </View>
 
-        <View>
+        <View className="px-4">
           <Controller
             control={control}
             name="description"
             rules={{
               required: true,
             }}
-            render={({ field: { onChange, onBlur, value } }) => (
+            render={({ field }) => (
               <View>
                 <TextField.Root>
                   <TextField.Label isRequired>Descrição</TextField.Label>
@@ -165,10 +163,9 @@ export default function ResidenceForm({
                     error={errors.description?.message !== undefined}>
                     <TextField.Area
                       placeholder="Quais são as carateristicas dela???"
-                      value={value}
-                      onBlur={onBlur}
-                      onChangeText={onChange}
                       editable={!isSubmitting}
+                      onChangeValue={field.onChange}
+                      {...field}
                     />
                   </TextField.Container>
                 </TextField.Root>
@@ -179,7 +176,7 @@ export default function ResidenceForm({
           />
         </View>
 
-        <View>
+        <View className="px-4">
           <TextField.Label isRequired>Tipo de venda</TextField.Label>
           <View className="flex flex-row justify-between items-center">
             <Text className="text-sm font-poppins-regular">Arrendamento</Text>
@@ -214,14 +211,16 @@ export default function ResidenceForm({
         </View>
 
         <View>
-          <TextField.Label>Tipo de residência</TextField.Label>
+          <TextField.Label className="pl-4" isRequired>
+            Tipo de residência
+          </TextField.Label>
           <Controller
             control={control}
             name="kind"
             render={({ field: { value, onChange } }) => (
               <ResidenceFilterButton
-                excludeAllOption
-                paddingHorizontal={0}
+                excludedOptions={['all']}
+                paddingHorizontal={16}
                 kind={value as IResidenceKindEnum}
                 setKind={(kind) => onChange(kind)}
               />
@@ -230,7 +229,7 @@ export default function ResidenceForm({
           <TextField.Helper message={errors.kind?.message} />
         </View>
 
-        <View className="mb-6">
+        <View className="mb-6 px-4">
           <TextField.Label
             style={{ display: images.length > 0 ? 'flex' : 'none' }}>
             Galeria
@@ -238,12 +237,12 @@ export default function ResidenceForm({
           <GaleryGrid
             cover={cover}
             images={images}
-            setCover={setCover}
-            setImages={setImages}
+            changeCoverImage={changeCoverImage}
+            changeImages={changeImages}
             disabled={isSubmitting}
-            setImagesToDelete={setImagesToDelete}
+            deleteImages={deleteImages}
             imagesToDelete={imagesToDelete}
-            setPhotoChanged={setPhotoChanged}
+            handlePhotoChanged={handlePhotoChanged}
           />
         </View>
       </View>

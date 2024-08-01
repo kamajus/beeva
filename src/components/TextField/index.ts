@@ -4,6 +4,7 @@ import TextFieldCurrency from './TextFieldCurrency'
 import TextFieldHelper from './TextFieldHelper'
 import TextFieldInput from './TextFieldInput'
 import TextFieldLabel from './TextFieldLabel'
+import TextFieldPlace from './TextFieldPlace'
 import TextFieldRoot from './TextFieldRoot'
 
 const TextField = {
@@ -13,6 +14,7 @@ const TextField = {
   Input: TextFieldInput,
   Currency: TextFieldCurrency,
   Area: TextFieldArea,
+  Place: TextFieldPlace,
   Helper: TextFieldHelper,
 }
 

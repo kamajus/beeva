@@ -1,4 +1,4 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
 import { useState } from 'react'
@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import * as yup from 'yup'
+import * as z from 'zod'
 
 import Button from '@/components/Button'
 import TextField from '@/components/TextField'
@@ -22,21 +22,23 @@ interface FormData {
   password: string
 }
 
-const schema = yup.object({
-  email: yup
-    .string()
-    .email('Preencha com um e-mail válido')
-    .required('O e-mail é obrigatório')
-    .trim(),
-  password: yup
-    .string()
-    .required('A palavra-passe é obrigatória')
+const schema = z.object({
+  email: z
+    .string({
+      required_error: 'O email é obrigatória',
+      invalid_type_error: 'Email inválido',
+    })
+    .email('Email inválido'),
+  password: z
+    .string({
+      required_error: 'A palavra-passe é obrigatória',
+      invalid_type_error: 'Palavra-passe inválida',
+    })
     .min(8, 'A palavra-passe deve ter pelo menos 8 caracteres')
-    .matches(
+    .regex(
       /^(?=.*[a-zA-Z])(?=.*\d)/,
       'A palavra-passe deve conter pelo menos uma letra e um número',
-    )
-    .trim(),
+    ),
 })
 
 export default function SignIn() {
@@ -46,7 +48,11 @@ export default function SignIn() {
     control,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: yupResolver(schema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+    resolver: zodResolver(schema),
   })
 
   const [passwordVisible, setPasswordVisible] = useState(false)
@@ -80,7 +86,7 @@ export default function SignIn() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field }) => (
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>E-mail</TextField.Label>
@@ -88,9 +94,10 @@ export default function SignIn() {
                       error={errors.email?.message !== undefined}>
                       <TextField.Input
                         placeholder="E-mail"
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
+                        onChangeValue={field.onChange}
+                        returnKeyType="next"
+                        autoFocus
+                        {...field}
                       />
                     </TextField.Container>
                   </TextField.Root>
@@ -107,7 +114,7 @@ export default function SignIn() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
+              render={({ field }) => (
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>Palavra-passe</TextField.Label>
@@ -115,10 +122,9 @@ export default function SignIn() {
                       error={errors.password?.message !== undefined}>
                       <TextField.Input
                         placeholder="Palavra-passe"
-                        value={value}
-                        onBlur={onBlur}
-                        onChangeText={onChange}
                         secureTextEntry={!passwordVisible}
+                        onChangeValue={field.onChange}
+                        {...field}
                       />
                       <TouchableOpacity
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

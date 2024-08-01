@@ -1,7 +1,7 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, View } from 'react-native'
-import * as yup from 'yup'
+import * as z from 'zod'
 
 import Button from '@/components/Button'
 import Header from '@/components/Header'
@@ -13,11 +13,13 @@ interface FormData {
   email: string
 }
 
-const schema = yup.object({
-  email: yup
-    .string()
-    .email('Preencha com um e-mail válido')
-    .required('O e-mail é obrigatório'),
+const schema = z.object({
+  email: z
+    .string({
+      required_error: 'O campo de email é obrigatório',
+      invalid_type_error: 'Email inválido',
+    })
+    .email('Preencha com um e-mail válido'),
 })
 
 export default function Confirmation() {
@@ -27,7 +29,10 @@ export default function Confirmation() {
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: yupResolver(schema),
+    defaultValues: {
+      email: '',
+    },
+    resolver: zodResolver(schema),
   })
   const alert = useAlert()
 
@@ -65,7 +70,7 @@ export default function Confirmation() {
               rules={{
                 required: true,
               }}
-              render={({ field: { onChange, value, onBlur } }) => (
+              render={({ field }) => (
                 <View>
                   <TextField.Root>
                     <TextField.Label isRequired>E-mail</TextField.Label>
@@ -73,11 +78,11 @@ export default function Confirmation() {
                       error={errors.email?.message !== undefined}>
                       <TextField.Input
                         placeholder="E-mail"
-                        value={value}
-                        onChangeText={onChange}
                         inputMode="email"
                         keyboardType="email-address"
-                        onBlur={onBlur}
+                        autoFocus
+                        onChangeValue={field.onChange}
+                        {...field}
                       />
                     </TextField.Container>
                   </TextField.Root>

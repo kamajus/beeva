@@ -1,9 +1,7 @@
-import { StyleProp, ViewStyle, View, Text, TextStyle } from 'react-native'
+import { StyleProp, View, Text, TextStyle, TextProps } from 'react-native'
 
-interface ITextFieldLabel {
-  children: string
+interface ITextFieldLabel extends TextProps {
   isRequired?: boolean
-  style?: StyleProp<ViewStyle>
   textStyle?: StyleProp<TextStyle>
 }
 

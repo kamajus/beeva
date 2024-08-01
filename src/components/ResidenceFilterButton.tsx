@@ -8,12 +8,14 @@ interface IResidenceFilterButton {
   kind?: IResidenceFilterEnum
   setKind?: React.Dispatch<React.SetStateAction<IResidenceFilterEnum>>
   paddingHorizontal?: number
-  excludeAllOption?: boolean
+  excludedOptions?: string[]
 }
 
 export default function ResidenceFilterButton(props: IResidenceFilterButton) {
-  const data = props.excludeAllOption
-    ? constants.categories.filter((category) => category.value !== 'all')
+  const data = props.excludedOptions
+    ? constants.categories.filter(
+        (category) => !props.excludedOptions.includes(category.value),
+      )
     : constants.categories
 
   function onButtonActive(value: IResidenceFilterEnum) {

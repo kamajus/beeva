@@ -1,11 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as ImagePicker from 'expo-image-picker'
 import { router, useFocusEffect } from 'expo-router'
-import React, { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BackHandler, View } from 'react-native'
 
 import { IResidenceKindEnum, IResidenceStateEnum } from '@/@types'
+import Form from '@/components/Form'
 import Header from '@/components/Header'
 import ResidenceForm, {
   IFormData,
@@ -19,12 +20,7 @@ import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
 export default function Editor() {
-  const {
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors, isSubmitting, isDirty },
-  } = useForm({
+  const formHandler = useForm({
     resolver: zodResolver(residenceSchema),
     defaultValues: {
       description: '',
@@ -34,6 +30,12 @@ export default function Editor() {
       price: 0,
     },
   })
+
+  const {
+    handleSubmit,
+    reset,
+    formState: { isSubmitting, isDirty },
+  } = formHandler
 
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([])
   const resetResidenceCache = useResidenceStore(
@@ -131,6 +133,7 @@ export default function Editor() {
       !hasSelectedImages &&
       images.length === 0
     ) {
+      resetFields()
       router.back()
       return true
     } else {
@@ -146,10 +149,10 @@ export default function Editor() {
       )
       return true
     }
-  }, [images.length, isDirty, isSubmitting, resetFields, alert])
+  }, [images, isDirty, isSubmitting, resetFields, alert])
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       const subscription = BackHandler.addEventListener(
         'hardwareBackPress',
         handleBackPress,
@@ -161,15 +164,19 @@ export default function Editor() {
 
   return (
     <View className="relative bg-white">
-      <ResidenceForm
-        control={control}
-        isSubmitting={isSubmitting}
-        errors={errors}
-        images={images}
-        setImages={setImages}
-        cover={cover}
-        setCover={setCover}
-      />
+      <Form handler={formHandler}>
+        <ResidenceForm
+          handler={formHandler}
+          images={images}
+          cover={cover}
+          changeImages={(images) => {
+            setImages(images)
+          }}
+          changeCoverImage={(cover) => {
+            setCover(cover)
+          }}
+        />
+      </Form>
 
       <Header.Action
         title="Postar residência"
