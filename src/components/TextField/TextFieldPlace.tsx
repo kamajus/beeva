@@ -42,7 +42,7 @@ const DropDownItem = ({ value, onPress, updateValue }: IDropDownItem) => {
 
 const TextFieldPlace = forwardRef<TextInput, ITextFieldPlace>(
   function TextFieldPlace(
-    { error, onChangeLocation, value, editable, ...props },
+    { error, onChangeLocation, onBlur, value, editable, ...props },
     ref,
   ) {
     const [dataSource, setDataSource] = useState<string[]>([])
@@ -66,7 +66,6 @@ const TextFieldPlace = forwardRef<TextInput, ITextFieldPlace>(
     )
 
     const onSearch = (text: string) => {
-      onChangeText(text)
       setOpen(!!text)
       fetchPlaces(text)
     }
@@ -88,10 +87,14 @@ const TextFieldPlace = forwardRef<TextInput, ITextFieldPlace>(
             <TextFieldInput
               ref={ref}
               onChangeText={onSearch}
-              value={value}
+              defaultValue={value}
               keyboardType="web-search"
               returnKeyType="search"
               editable={lock ? false : editable}
+              onBlur={(e) => {
+                setOpen(false)
+                onBlur(e)
+              }}
               {...props}
             />
             {lock && (
@@ -111,7 +114,6 @@ const TextFieldPlace = forwardRef<TextInput, ITextFieldPlace>(
             <View className="w-full rounded shadow-xl transition absolute top-16 z-50">
               <FlatList
                 keyboardShouldPersistTaps="handled"
-                className="bg-white rounded"
                 scrollEnabled={false}
                 data={dataSource}
                 style={{
@@ -121,6 +123,7 @@ const TextFieldPlace = forwardRef<TextInput, ITextFieldPlace>(
                   shadowRadius: 3.84,
                   elevation: 5,
                   borderRadius: 4,
+                  backgroundColor: '#ffffff',
                 }}
                 renderItem={(value) => (
                   <DropDownItem

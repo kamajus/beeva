@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { router } from 'expo-router'
+import { Href, router } from 'expo-router'
 import { ReactNode, useState } from 'react'
 import {
   View,
@@ -9,7 +9,7 @@ import {
 
 interface TouchableBrightnessProps extends TouchableOpacityProps {
   children: ReactNode
-  href?: string
+  href?: Href<string>
   onPress?: () => void
 }
 

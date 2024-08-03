@@ -290,12 +290,12 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_, session) => {
+      console.log(`session on onAuthChange: ${session}`)
+
       if (session) {
         try {
           const userData = await userRepository.findById(session.user.id)
           setUser(userData)
-
-          console.log(userData)
 
           if (!userData) {
             await supabase.auth.signOut()
@@ -306,8 +306,9 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           const notificationsData = await notificationRepository.findByUserId(
             session.user.id,
           )
-          setNotifications(notificationsData)
 
+          setSession(session)
+          setNotifications(notificationsData)
           setupUserChannel(session.user.id)
           setupNotificationsChannel(session.user.id)
         } catch {
@@ -315,10 +316,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           router.replace('/signin')
         }
       } else {
-        setUser(null)
+        await supabase.auth.signOut()
+        router.replace('/signin')
       }
 
-      setSession(session)
       setInitialized(true)
     })
 

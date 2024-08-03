@@ -98,7 +98,6 @@ export default function ResidenceForm({
   return (
     <ScrollView
       keyboardShouldPersistTaps="handled"
-      nestedScrollEnabled
       style={{ marginTop: constants.customHeaderDistance }}
       className="bg-white">
       <View className="flex gap-y-9 mt-[2%] bg-white">
