@@ -18,6 +18,7 @@ const TextFieldInput = forwardRef<TextInput, ITextFieldInput>(
           'flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium',
           className,
         )}
+        autoCapitalize="none"
         onChangeText={onChangeValue}
         {...props}
       />

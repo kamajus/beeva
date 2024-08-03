@@ -1,28 +1,16 @@
 import debounce from 'lodash.debounce'
 import React, { forwardRef, useState, useCallback } from 'react'
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  TouchableWithoutFeedback,
-  TextInputProps,
-  TextInput,
-} from 'react-native'
+import { View, Text, TextInputProps, TextInput, FlatList } from 'react-native'
 
 import TextFieldContainer from './TextFieldContainer'
 import TextFieldInput from './TextFieldInput'
 import TextFieldLabel from './TextFieldLabel'
 import IconButton from '../IconButton'
+import TouchableBrightness from '../TouchableBrightness'
 
 import { placeApi } from '@/config/axios'
 import constants from '@/constants'
 import { usePlaceInput } from '@/hooks/usePlaceInput'
-
-interface IDropDown {
-  dataSource: string[]
-  updateValue: (value: string) => void
-  onPress: () => void
-}
 
 interface ITextFieldPlace extends TextInputProps {
   onChangeLocation: (value: string) => void
@@ -40,55 +28,25 @@ interface IDropDownItem {
 }
 
 const DropDownItem = ({ value, onPress, updateValue }: IDropDownItem) => {
-  const [isActive, setIsActive] = useState(false)
-
   return (
-    <View>
-      <TouchableOpacity
-        onPressIn={() => setIsActive(true)}
-        onPressOut={() => setIsActive(false)}
-        onPress={() => {
-          updateValue(value)
-          onPress()
-        }}
-        style={{ backgroundColor: isActive ? '#dcdcdc' : 'transparent' }}
-        className="w-full pl-1 pt-1">
-        <Text className="text-black p-4 font-poppins-medium">{value}</Text>
-      </TouchableOpacity>
-    </View>
+    <TouchableBrightness
+      onPress={() => {
+        updateValue(value)
+        onPress()
+      }}
+      className="w-full pl-1 pt-1">
+      <Text className="text-black p-4 font-poppins-medium">{value}</Text>
+    </TouchableBrightness>
   )
 }
 
-const DropDown = ({ updateValue, dataSource, onPress }: IDropDown) => (
-  <TouchableOpacity className="w-full shadow-xl transition absolute top-16 z-50">
-    <View
-      className="w-full bg-white rounded"
-      style={{
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-      }}>
-      {dataSource.map((value, index) => (
-        <DropDownItem
-          key={index}
-          value={value}
-          onPress={onPress}
-          updateValue={updateValue}
-        />
-      ))}
-    </View>
-  </TouchableOpacity>
-)
-
 const TextFieldPlace = forwardRef<TextInput, ITextFieldPlace>(
   function TextFieldPlace(
-    { error, onChangeLocation, value: propsValue, editable, ...props },
+    { error, onChangeLocation, value, editable, ...props },
     ref,
   ) {
     const [dataSource, setDataSource] = useState<string[]>([])
-    const { open, lock, setOpen, setValue, setLock, resetField } =
+    const { open, lock, setOpen, setLock, resetField, onChangeText } =
       usePlaceInput()
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -108,54 +66,78 @@ const TextFieldPlace = forwardRef<TextInput, ITextFieldPlace>(
     )
 
     const onSearch = (text: string) => {
-      setValue(text)
+      onChangeText(text)
       setOpen(!!text)
       fetchPlaces(text)
     }
 
-    const handleUpdateValue = (value: string) => {
-      onChangeLocation(value)
-      setValue(value)
-      setLock(true)
-    }
+    const handleUpdateValue = useCallback(
+      (value: string) => {
+        onChangeLocation(value)
+        onChangeText(value)
+        setLock(true)
+      },
+      [onChangeLocation, setLock, onChangeText],
+    )
 
     return (
-      <TouchableWithoutFeedback onPress={() => setOpen(false)}>
-        <View className="z-50">
-          <TextFieldLabel isRequired>Localização</TextFieldLabel>
-          <View className="w-full relative items-center flex-row">
-            <TextFieldContainer error={error}>
-              <TextFieldInput
-                ref={ref}
-                onChangeText={onSearch}
-                {...props}
-                defaultValue={propsValue}
-                keyboardType="web-search"
-                returnKeyType="search"
-                editable={lock ? false : editable}
-              />
-              {lock && (
-                <IconButton
-                  name="Pencil"
-                  className="bg-transparent"
-                  color={constants.colors.primary}
-                  onPress={() => {
-                    resetField()
-                    onChangeLocation('')
-                  }}
-                />
-              )}
-            </TextFieldContainer>
-            {open && (
-              <DropDown
-                onPress={() => setOpen(false)}
-                updateValue={handleUpdateValue}
-                dataSource={dataSource}
+      <View className="z-50">
+        <TextFieldLabel>Localização</TextFieldLabel>
+        <View className="w-full relative items-center flex-row">
+          <TextFieldContainer error={error}>
+            <TextFieldInput
+              ref={ref}
+              onChangeText={onSearch}
+              value={value}
+              keyboardType="web-search"
+              returnKeyType="search"
+              editable={lock ? false : editable}
+              {...props}
+            />
+            {lock && (
+              <IconButton
+                name="Pencil"
+                className="bg-transparent"
+                color={constants.colors.primary}
+                onPress={() => {
+                  resetField()
+                  onChangeLocation('')
+                }}
               />
             )}
-          </View>
+          </TextFieldContainer>
+
+          {open && dataSource.length > 0 && (
+            <View className="w-full rounded shadow-xl transition absolute top-16 z-50">
+              <FlatList
+                keyboardShouldPersistTaps="handled"
+                className="bg-white rounded"
+                scrollEnabled={false}
+                data={dataSource}
+                style={{
+                  shadowColor: '#000000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 3.84,
+                  elevation: 5,
+                  borderRadius: 4,
+                }}
+                renderItem={(value) => (
+                  <DropDownItem
+                    key={value.index}
+                    value={value.item}
+                    onPress={() => {
+                      setOpen(false)
+                      handleUpdateValue(value.item)
+                    }}
+                    updateValue={handleUpdateValue}
+                  />
+                )}
+              />
+            </View>
+          )}
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     )
   },
 )

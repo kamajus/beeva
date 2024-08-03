@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
 import { useMemo, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
@@ -14,6 +14,7 @@ import {
 import * as z from 'zod'
 
 import Button from '@/components/Button'
+import ButtonLink from '@/components/ButtonLink'
 import TextField from '@/components/TextField'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
@@ -79,7 +80,7 @@ export default function SignIn() {
     handleSubmit,
     control,
     setError,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({
     defaultValues: {
       email: '',
@@ -96,10 +97,12 @@ export default function SignIn() {
   const { signUp } = useSupabase()
 
   const [passwordVisible, setPasswordVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const userRepository = useMemo(() => new UserRepository(), [])
 
   function onSubmit(data: FormData) {
+    setLoading(true)
     signUp(data.email, data.phone, data.password)
       .then(async (userData) => {
         if (userData) {
@@ -145,6 +148,9 @@ export default function SignIn() {
           'Ok',
         )
       })
+      .finally(() => {
+        setLoading(false)
+      })
   }
 
   return (
@@ -152,7 +158,7 @@ export default function SignIn() {
       <View className="px-7 mt-[15%] bg-white">
         <Text className="text-xl font-poppins-semibold mb-5">Criar conta</Text>
 
-        <View className="flex flex-col gap-y-3">
+        <View className="flex flex-col gap-y-5">
           <View>
             <Controller
               control={control}
@@ -163,13 +169,15 @@ export default function SignIn() {
               render={({ field }) => (
                 <View>
                   <TextField.Root>
-                    <TextField.Label isRequired>Nome</TextField.Label>
+                    <TextField.Label>Nome</TextField.Label>
                     <TextField.Container
                       error={errors.first_name?.message !== undefined}>
                       <TextField.Input
                         placeholder="Nome"
                         onChangeValue={field.onChange}
                         returnKeyType="next"
+                        autoCapitalize="characters"
+                        editable={!loading}
                         autoFocus
                         {...field}
                       />
@@ -199,6 +207,8 @@ export default function SignIn() {
                         placeholder="Sobrenome"
                         onChangeValue={field.onChange}
                         returnKeyType="next"
+                        autoCapitalize="characters"
+                        editable={!loading}
                         {...field}
                       />
                     </TextField.Container>
@@ -220,7 +230,7 @@ export default function SignIn() {
               render={({ field }) => (
                 <View>
                   <TextField.Root>
-                    <TextField.Label isRequired>Telefone</TextField.Label>
+                    <TextField.Label>Telefone</TextField.Label>
                     <TextField.Container
                       error={errors.phone?.message !== undefined}>
                       <TextField.Input
@@ -229,6 +239,7 @@ export default function SignIn() {
                         keyboardType="phone-pad"
                         onChangeValue={field.onChange}
                         returnKeyType="next"
+                        editable={!loading}
                         {...field}
                       />
                     </TextField.Container>
@@ -250,7 +261,7 @@ export default function SignIn() {
               render={({ field }) => (
                 <View>
                   <TextField.Root>
-                    <TextField.Label isRequired>E-mail</TextField.Label>
+                    <TextField.Label>E-mail</TextField.Label>
                     <TextField.Container
                       error={errors.email?.message !== undefined}>
                       <TextField.Input
@@ -259,6 +270,7 @@ export default function SignIn() {
                         keyboardType="email-address"
                         onChangeValue={field.onChange}
                         returnKeyType="next"
+                        editable={!loading}
                         {...field}
                       />
                     </TextField.Container>
@@ -280,18 +292,21 @@ export default function SignIn() {
               render={({ field }) => (
                 <View>
                   <TextField.Root>
-                    <TextField.Label isRequired>Palavra-passe</TextField.Label>
+                    <TextField.Label>Palavra-passe</TextField.Label>
                     <TextField.Container
                       error={errors.password?.message !== undefined}>
                       <TextField.Input
                         placeholder="Palavra-passe"
                         secureTextEntry={!passwordVisible}
                         onChangeValue={field.onChange}
+                        editable={!loading}
                         {...field}
                       />
                       <TouchableOpacity
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        onPress={() => setPasswordVisible(!passwordVisible)}>
+                        onPress={() =>
+                          !loading && setPasswordVisible(!passwordVisible)
+                        }>
                         {passwordVisible ? (
                           <Eye color="#374151" size={30} />
                         ) : (
@@ -321,18 +336,18 @@ export default function SignIn() {
           </Text>
 
           <Button
-            loading={isSubmitting}
+            loading={loading}
             onPress={handleSubmit(onSubmit)}
             title="Continuar"
           />
 
-          <View className="flex justify-center items-center flex-row gap-2 w-full mt-5 mb-5">
-            <Text className="font-poppins-medium text-gray-700">
-              Já tem uma conta?
-            </Text>
-            <Link className="text-primary font-poppins-medium" href="/signin">
-              Entrar
-            </Link>
+          <View className="flex justify-center items-center flex-row gap-2 w-full mt-5 mb-8">
+            <ButtonLink href="/signin" disabled={loading}>
+              <Text className="font-poppins-medium text-gray-700">
+                Já tem uma conta?
+              </Text>
+              <Text className="text-primary font-poppins-medium">Entrar</Text>
+            </ButtonLink>
           </View>
         </View>
       </View>

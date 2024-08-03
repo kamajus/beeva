@@ -21,7 +21,7 @@ import Form from '@/components/Form'
 import Header from '@/components/Header'
 import TextField from '@/components/TextField'
 import { supabase } from '@/config/supabase'
-import Constants from '@/constants'
+import constants from '@/constants'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 import { UserRepository } from '@/repositories/user.repository'
@@ -138,8 +138,8 @@ export default function Perfil() {
 
       if (session?.user.email !== data.email) {
         alert.showAlert(
-          'Atenção',
-          'Por favor, confirme o e-mail que foi enviado para você. Após a confirmação, seu endereço de e-mail será atualizado.',
+          'Sucesso',
+          'Foi enviando um email com as instruções para conseguir alterar o seu email.',
           'Ok',
         )
 
@@ -198,7 +198,7 @@ export default function Perfil() {
           })
 
         if (!error && data) {
-          const photoUrl = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/avatars/${user.id}`
+          const photoUrl = `${constants.storageUrl}/avatars/${user.id}`
 
           await updatePerfil({
             first_name: data.first_name,
@@ -262,9 +262,7 @@ export default function Perfil() {
   return (
     <View style={{ height }} className="bg-white">
       <KeyboardAvoidingView behavior="padding">
-        <ScrollView
-          style={{ marginTop: Constants.customHeaderDistance }}
-          showsVerticalScrollIndicator={false}>
+        <ScrollView style={{ marginTop: constants.customHeaderDistance }}>
           <Form
             className="flex gap-y-9 px-4 mt-[2%] mb-12 bg-white"
             handler={formHandler}>
@@ -319,7 +317,7 @@ export default function Perfil() {
                 render={({ field }) => (
                   <View>
                     <TextField.Root>
-                      <TextField.Label isRequired>Nome</TextField.Label>
+                      <TextField.Label>Nome</TextField.Label>
                       <TextField.Container
                         error={errors.first_name?.message !== undefined}>
                         <TextField.Input
@@ -346,7 +344,7 @@ export default function Perfil() {
                 render={({ field }) => (
                   <View>
                     <TextField.Root>
-                      <TextField.Label isRequired>Sobrenome</TextField.Label>
+                      <TextField.Label>Sobrenome</TextField.Label>
                       <TextField.Container
                         error={errors.last_name?.message !== undefined}>
                         <TextField.Input
@@ -373,7 +371,7 @@ export default function Perfil() {
                 render={({ field }) => (
                   <View>
                     <TextField.Root>
-                      <TextField.Label isRequired>Email</TextField.Label>
+                      <TextField.Label>Email</TextField.Label>
                       <TextField.Container
                         error={errors.email?.message !== undefined}>
                         <TextField.Input
@@ -402,7 +400,7 @@ export default function Perfil() {
                   render={({ field }) => (
                     <View>
                       <TextField.Root>
-                        <TextField.Label isRequired>Telefone</TextField.Label>
+                        <TextField.Label>Telefone</TextField.Label>
                         <TextField.Container
                           error={errors.phone?.message !== undefined}>
                           <TextField.Input

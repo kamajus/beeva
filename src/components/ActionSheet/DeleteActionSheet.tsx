@@ -77,9 +77,7 @@ export default function DeleteActionSheet(props: SheetProps) {
         resetResidenceCache()
         router.replace('/signin')
       }
-      reset({
-        password: '',
-      })
+      reset()
     } else {
       setError(
         'password',

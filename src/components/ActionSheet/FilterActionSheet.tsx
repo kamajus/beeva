@@ -14,7 +14,7 @@ import ResidenceFilterButton from '@/components/ResidenceFilterButton'
 import TextField from '@/components/TextField'
 import { useCache } from '@/hooks/useCache'
 
-export default function SearchActionSheet(props: SheetProps) {
+export default function FilterActionSheet(props: SheetProps) {
   const { filter, setFilter } = useCache()
 
   const [kind, setKind] = useState<IResidenceFilterEnum>(
@@ -37,7 +37,7 @@ export default function SearchActionSheet(props: SheetProps) {
           <IconButton
             name="X"
             size={20}
-            onPress={() => SheetManager.hide('search-sheet')}
+            onPress={() => SheetManager.hide('filter-search-sheet')}
           />
           <Text className="font-poppins-semibold text-lg">
             Filtrar pesquisa
@@ -112,7 +112,7 @@ export default function SearchActionSheet(props: SheetProps) {
                 setMinPrice(undefined)
                 setState(undefined)
                 setKind('all')
-                SheetManager.hide('search-sheet')
+                SheetManager.hide('filter-search-sheet')
               }}
               className="bg-alert flex-1"
               title="Remover filtros"
@@ -126,7 +126,7 @@ export default function SearchActionSheet(props: SheetProps) {
                   minPrice,
                   state,
                 })
-                SheetManager.hide('search-sheet')
+                SheetManager.hide('filter-search-sheet')
               }}
               className="bg-primary flex-1"
               title="Aplicar"

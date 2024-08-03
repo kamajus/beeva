@@ -39,7 +39,7 @@ export default function TouchableBrightness({
       }}
       {...props}>
       <View
-        className={clsx('bg-white', {
+        className={clsx('bg-white rounded', {
           'bg-input': isPressed,
         })}>
         {children}

@@ -96,7 +96,8 @@ export default function ResidenceForm({
 
   return (
     <ScrollView
-      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      nestedScrollEnabled
       style={{ marginTop: constants.customHeaderDistance }}
       className="bg-white">
       <View className="flex gap-y-9 mt-[2%] bg-white">
@@ -110,7 +111,7 @@ export default function ResidenceForm({
             render={({ field }) => (
               <View>
                 <TextField.Root>
-                  <TextField.Label isRequired>Preço</TextField.Label>
+                  <TextField.Label>Preço</TextField.Label>
                   <TextField.Container error={errors.price !== undefined}>
                     <TextField.Currency
                       editable={!isSubmitting}
@@ -162,7 +163,7 @@ export default function ResidenceForm({
             render={({ field }) => (
               <View>
                 <TextField.Root>
-                  <TextField.Label isRequired>Descrição</TextField.Label>
+                  <TextField.Label>Descrição</TextField.Label>
                   <TextField.Container
                     error={errors.description?.message !== undefined}>
                     <TextField.Area
@@ -181,7 +182,7 @@ export default function ResidenceForm({
         </View>
 
         <View className="px-4">
-          <TextField.Label isRequired>Tipo de venda</TextField.Label>
+          <TextField.Label>Tipo de venda</TextField.Label>
           <View className="flex flex-row justify-between items-center">
             <Text className="text-sm font-poppins-regular">Arrendamento</Text>
             <Controller
@@ -217,9 +218,7 @@ export default function ResidenceForm({
         </View>
 
         <View>
-          <TextField.Label className="pl-4" isRequired>
-            Tipo de residência
-          </TextField.Label>
+          <TextField.Label className="pl-4">Tipo de residência</TextField.Label>
           <Controller
             control={control}
             name="kind"
