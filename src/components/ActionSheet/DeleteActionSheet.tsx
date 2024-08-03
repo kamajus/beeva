@@ -123,6 +123,7 @@ export default function DeleteActionSheet(props: SheetProps) {
                       <TextField.Input
                         placeholder="*su**a**s3nh*"
                         onChangeValue={field.onChange}
+                        onSubmitEditing={handleSubmit(onSubmit)}
                         {...field}
                       />
                     </TextField.Container>

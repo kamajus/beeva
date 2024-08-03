@@ -80,6 +80,7 @@ export default function SignIn() {
     handleSubmit,
     control,
     setError,
+    setFocus,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -178,6 +179,7 @@ export default function SignIn() {
                         returnKeyType="next"
                         autoCapitalize="characters"
                         editable={!loading}
+                        onSubmitEditing={() => setFocus('last_name')}
                         autoFocus
                         {...field}
                       />
@@ -209,6 +211,7 @@ export default function SignIn() {
                         returnKeyType="next"
                         autoCapitalize="characters"
                         editable={!loading}
+                        onSubmitEditing={() => setFocus('phone')}
                         {...field}
                       />
                     </TextField.Container>
@@ -239,6 +242,7 @@ export default function SignIn() {
                         keyboardType="phone-pad"
                         onChangeValue={field.onChange}
                         returnKeyType="next"
+                        onSubmitEditing={() => setFocus('email')}
                         editable={!loading}
                         {...field}
                       />
@@ -270,6 +274,7 @@ export default function SignIn() {
                         keyboardType="email-address"
                         onChangeValue={field.onChange}
                         returnKeyType="next"
+                        onSubmitEditing={() => setFocus('password')}
                         editable={!loading}
                         {...field}
                       />
@@ -300,6 +305,7 @@ export default function SignIn() {
                         secureTextEntry={!passwordVisible}
                         onChangeValue={field.onChange}
                         editable={!loading}
+                        onSubmitEditing={handleSubmit(onSubmit)}
                         {...field}
                       />
                       <TouchableOpacity

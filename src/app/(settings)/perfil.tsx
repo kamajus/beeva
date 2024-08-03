@@ -92,6 +92,7 @@ export default function Perfil() {
     handleSubmit,
     control,
     reset,
+    setFocus,
     formState: { errors, isDirty, isSubmitting },
   } = formHandler
 
@@ -324,6 +325,8 @@ export default function Perfil() {
                           placeholder="Degite o teu nome"
                           editable={!isSubmitting}
                           onChangeValue={field.onChange}
+                          returnKeyType="next"
+                          onSubmitEditing={() => setFocus('last_name')}
                           {...field}
                         />
                       </TextField.Container>
@@ -351,6 +354,8 @@ export default function Perfil() {
                           placeholder="Degite o teu sobrenome"
                           editable={!isSubmitting}
                           onChangeValue={field.onChange}
+                          returnKeyType="next"
+                          onSubmitEditing={() => setFocus('email')}
                           {...field}
                         />
                       </TextField.Container>
@@ -378,6 +383,8 @@ export default function Perfil() {
                           placeholder="Degite o endereço de email"
                           editable={!isSubmitting}
                           onChangeValue={field.onChange}
+                          returnKeyType="next"
+                          onSubmitEditing={() => setFocus('phone')}
                           {...field}
                         />
                       </TextField.Container>
@@ -408,6 +415,7 @@ export default function Perfil() {
                             keyboardType="numeric"
                             editable={!isSubmitting}
                             onChangeValue={field.onChange}
+                            onSubmitEditing={handleSubmit(onSubmit)}
                             {...field}
                           />
                         </TextField.Container>

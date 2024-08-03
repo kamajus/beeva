@@ -12,10 +12,11 @@ import constants from '@/constants'
 interface TextFieldCurrencyProps {
   className?: string
   value: number
-  onChange: (value: number) => void
   returnKeyType?: ReturnKeyTypeOptions
   editable?: boolean
   autoFocus?: boolean
+  onChange: (value: number) => void
+  onSubmitEditing?: () => void
   onBlur?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void
 }
 
@@ -26,6 +27,7 @@ const TextFieldCurrency = forwardRef<CurrencyInput, TextFieldCurrencyProps>(
       value,
       returnKeyType,
       autoFocus,
+      onSubmitEditing,
       editable,
       onChange,
       ...props
@@ -45,6 +47,7 @@ const TextFieldCurrency = forwardRef<CurrencyInput, TextFieldCurrencyProps>(
         minValue={0}
         placeholder="0.00 kz"
         cursorColor={constants.colors.primary}
+        onSubmitEditing={onSubmitEditing}
         className={twMerge(
           'flex flex-1 h-14 w-full px-2 text-sm font-poppins-medium',
           className,
