@@ -1,11 +1,11 @@
 import { registerSheet } from 'react-native-actions-sheet'
 
-import AddWisheActionSheet from './AddWisheActionSheet'
+import CreateWisheActionSheet from './CreateWisheActionSheet'
 import DeleteActionSheet from './DeleteActionSheet'
-import SearchActionSheet from './SearchActionSheet'
+import FilterActionSheet from './FilterActionSheet'
 
-registerSheet('search-sheet', SearchActionSheet)
-registerSheet('create-wishe-sheet', AddWisheActionSheet)
+registerSheet('filter-search-sheet', FilterActionSheet)
+registerSheet('create-wishe-sheet', CreateWisheActionSheet)
 registerSheet('account-delete-sheet', DeleteActionSheet)
 
 export {}

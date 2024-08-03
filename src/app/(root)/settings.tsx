@@ -14,7 +14,7 @@ import {
 import Avatar from '@/components/Avatar'
 import Header from '@/components/Header'
 import TouchableBrightness from '@/components/TouchableBrightness'
-import Constants from '@/constants'
+import constants from '@/constants'
 import { useAlert } from '@/hooks/useAlert'
 import { useCache } from '@/hooks/useCache'
 import { useSupabase } from '@/hooks/useSupabase'
@@ -127,7 +127,7 @@ export default function Settings() {
               ) : (
                 <ActivityIndicator
                   animating
-                  color={Constants.colors.primary}
+                  color={constants.colors.primary}
                   size={30}
                 />
               )}

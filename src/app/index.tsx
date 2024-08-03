@@ -21,14 +21,10 @@ export default function App() {
 
   useEffect(() => {
     const handleRedirect = () => {
-      console.log('Handling redirect...')
-      console.log(`fontsLoaded: ${fontsLoaded}`)
-      console.log(`fontError: ${fontError}`)
       console.log(`initialized: ${initialized}`)
       console.log(`session: ${session}`)
 
       if (fontsLoaded && !fontError && initialized) {
-        console.log('Redirecting...')
         if (session) {
           replace('/(root)/home')
         } else {

@@ -1,5 +1,3 @@
-import { EventArg } from '@react-navigation/native'
-
 import { Database } from '@/@types/supabase'
 
 export type IResidence = Database['public']['Tables']['residences']['Row']
@@ -23,16 +21,3 @@ export interface ICachedResidence {
   residence: IResidence
   user?: IUser
 }
-
-export type beforeRemoveEventType = EventArg<
-  'beforeRemove',
-  true,
-  {
-    action: Readonly<{
-      type: string
-      payload?: object | undefined
-      source?: string | undefined
-      target?: string | undefined
-    }>
-  }
->

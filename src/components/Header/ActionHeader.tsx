@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react-native'
 import { Text, View } from 'react-native'
 
 import IconButton from '@/components/IconButton'
-import Constants from '@/constants'
+import constants from '@/constants'
 
 interface IActionHeader {
   title: string
@@ -33,7 +33,7 @@ export default function ActionHeader({
         name="Check"
         size={20}
         onPress={onPress}
-        color={Constants.colors.primary}
+        color={constants.colors.primary}
         loading={loading}
       />
     </View>

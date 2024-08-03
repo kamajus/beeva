@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { router } from 'expo-router'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, View } from 'react-native'
 import * as z from 'zod'
@@ -48,22 +49,24 @@ export default function Confirmation() {
     } else {
       alert.showAlert(
         'Sucesso',
-        'Foi enviando um email para você conseguir alterar a sua senha.',
+        'Foi enviando um email com as instruções para conseguir alterar a sua senha.',
         'Ok',
+        () => {
+          if (router.canGoBack()) {
+            router.back()
+            reset()
+          }
+        },
       )
     }
-
-    reset({
-      email: '',
-    })
   }
 
   return (
     <View className="bg-white h-full">
       <Header.Normal title="Recuperar minha conta" />
-      <ScrollView className="bg-white mt-4 px-6">
+      <ScrollView className="bg-white mt-[5%] px-6">
         <View>
-          <View>
+          <View className="mb-5">
             <Controller
               control={control}
               name="email"
@@ -73,7 +76,7 @@ export default function Confirmation() {
               render={({ field }) => (
                 <View>
                   <TextField.Root>
-                    <TextField.Label isRequired>E-mail</TextField.Label>
+                    <TextField.Label>E-mail</TextField.Label>
                     <TextField.Container
                       error={errors.email?.message !== undefined}>
                       <TextField.Input
@@ -82,6 +85,8 @@ export default function Confirmation() {
                         keyboardType="email-address"
                         autoFocus
                         onChangeValue={field.onChange}
+                        onSubmitEditing={handleSubmit(onSubmit)}
+                        editable={!isSubmitting}
                         {...field}
                       />
                     </TextField.Container>

@@ -16,6 +16,7 @@ import {
 
 import { IResidence, INotification, IUser } from '@/@types'
 import { supabase } from '@/config/supabase'
+import constants from '@/constants'
 import { useAlert } from '@/hooks/useAlert'
 import { useCache } from '@/hooks/useCache'
 import { LovedResidenceRepository } from '@/repositories/loved.residence.repository'
@@ -117,26 +118,22 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     const imagesToAppend: string[] = []
 
     for (const image of images) {
-      if (
-        !image.uri.includes(
-          `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co`,
-        )
-      ) {
+      if (!image.uri.startsWith(`https://`)) {
         try {
           const base64 = await FileSystem.readAsStringAsync(image.uri, {
             encoding: 'base64',
           })
           const filePath = `${user.id}/${id}/${Date.now()}`
-          const { data: photo, error: uploadError } = await supabase.storage
+          const { data, error: uploadError } = await supabase.storage
             .from('residences')
             .upload(filePath, decode(base64), { contentType: 'image/png' })
 
-          imagesToAppend.push(
-            `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`,
-          )
+          const photoPath = `${constants.storageUrl}/${data.fullPath}`
+
+          imagesToAppend.push(photoPath)
 
           if (image.uri === cover && !uploadError && session) {
-            const coverURL = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/${photo?.path}`
+            const coverURL = photoPath
             await residenceRepository.update(id, { cover: coverURL })
           }
 
@@ -293,13 +290,12 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_, session) => {
-      console.log('Auth state changed')
-      console.log(session)
-
       if (session) {
         try {
           const userData = await userRepository.findById(session.user.id)
           setUser(userData)
+
+          console.log(userData)
 
           if (!userData) {
             await supabase.auth.signOut()

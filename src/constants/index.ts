@@ -13,6 +13,8 @@ const colors = {
 // Calculates the distance between the custom navigation header and screen
 const customHeaderDistance = expoConstants.statusBarHeight * 2 + 30
 
+const storageUrl = `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public`
+
 const categories: Categories = [
   {
     name: 'Todos',
@@ -44,5 +46,6 @@ const categories: Categories = [
 export default {
   colors,
   categories,
+  storageUrl,
   customHeaderDistance,
 }

@@ -3,7 +3,8 @@ import * as ImagePicker from 'expo-image-picker'
 import { router, useFocusEffect } from 'expo-router'
 import { useCallback, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { BackHandler, View } from 'react-native'
+import type { UseFormReturn } from 'react-hook-form'
+import { BackHandler, TouchableWithoutFeedback, View } from 'react-native'
 
 import { IResidenceKindEnum, IResidenceStateEnum } from '@/@types'
 import Form from '@/components/Form'
@@ -14,34 +15,42 @@ import ResidenceForm, {
 } from '@/components/ResidenceForm'
 import PlaceInputProvider from '@/contexts/PlaceInputProvider'
 import { useAlert } from '@/hooks/useAlert'
+import { usePlaceInput } from '@/hooks/usePlaceInput'
 import { useSupabase } from '@/hooks/useSupabase'
 import { NotificationRepository } from '@/repositories/notification.repository'
 import { ResidenceNotificationRepository } from '@/repositories/residence.notification.repository'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
-function EditorWithoutPlaceProvider() {
-  const formHandler = useForm({
-    resolver: zodResolver(residenceSchema),
-    defaultValues: {
-      description: '',
-      location: '',
-      state: 'rent',
-      kind: 'apartment',
-      price: 0,
+interface IEditorWithouPlaceProvider {
+  formHandler: UseFormReturn<
+    {
+      description: string
+      location: string
+      state: string
+      kind: string
+      price: number
     },
-  })
-
-  const {
-    handleSubmit,
-    reset,
-    formState: { isSubmitting, isDirty },
-  } = formHandler
-
+    unknown,
+    undefined
+  >
+}
+function EditorWithoutPlaceProvider({
+  formHandler,
+}: IEditorWithouPlaceProvider) {
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([])
   const resetResidenceCache = useResidenceStore(
     (state) => state.resetResidenceCache,
   )
+
+  const {
+    reset,
+    handleSubmit,
+    formState: { isSubmitting, isDirty },
+  } = formHandler
+
+  const { setOpen: setOpenLocationField, resetField: resetLocationField } =
+    usePlaceInput()
 
   const [cover, setCover] = useState<string | null>(null)
 
@@ -57,19 +66,16 @@ function EditorWithoutPlaceProvider() {
   )
 
   const resetFields = useCallback(() => {
-    reset({
-      description: '',
-      location: '',
-      state: 'rent',
-      kind: 'apartment',
-      price: 0,
-    })
+    resetLocationField()
+    reset()
 
     setCover(null)
     setImages([])
-  }, [reset])
+  }, [reset, resetLocationField])
 
   async function onSubmit(formData: IFormData) {
+    setOpenLocationField(false)
+
     if (images.length !== 0 && cover && session) {
       try {
         const data = await residenceRepository.create({
@@ -128,6 +134,8 @@ function EditorWithoutPlaceProvider() {
   const handleBackPress = useCallback(() => {
     const hasSelectedImages = images.length > 0
 
+    setOpenLocationField(false)
+
     if (
       !isSubmitting &&
       !isDirty &&
@@ -150,7 +158,7 @@ function EditorWithoutPlaceProvider() {
       )
       return true
     }
-  }, [images, isDirty, isSubmitting, resetFields, alert])
+  }, [images, isDirty, isSubmitting, resetFields, alert, setOpenLocationField])
 
   useFocusEffect(
     useCallback(() => {
@@ -164,35 +172,53 @@ function EditorWithoutPlaceProvider() {
   )
 
   return (
-    <View className="relative bg-white">
-      <Form handler={formHandler}>
-        <ResidenceForm
-          handler={formHandler}
-          images={images}
-          cover={cover}
-          changeImages={(images) => {
-            setImages(images)
-          }}
-          changeCoverImage={(cover) => {
-            setCover(cover)
-          }}
-        />
-      </Form>
+    <TouchableWithoutFeedback onPress={() => setOpenLocationField(false)}>
+      <View className="relative bg-white">
+        <Form handler={formHandler}>
+          <ResidenceForm
+            handler={formHandler}
+            images={images}
+            cover={cover}
+            changeImages={(images) => {
+              setImages(images)
+            }}
+            changeCoverImage={(cover) => {
+              setCover(cover)
+            }}
+          />
+        </Form>
 
-      <Header.Action
-        title="Postar residência"
-        loading={isSubmitting}
-        onPress={handleSubmit(onSubmit)}
-        onBackPress={handleBackPress}
-      />
-    </View>
+        <Header.Action
+          title="Postar residência"
+          loading={isSubmitting}
+          onPress={handleSubmit(onSubmit)}
+          onBackPress={handleBackPress}
+        />
+      </View>
+    </TouchableWithoutFeedback>
   )
 }
 
 export default function Editor() {
+  const formHandler = useForm({
+    resolver: zodResolver(residenceSchema),
+    defaultValues: {
+      description: '',
+      location: '',
+      state: 'rent',
+      kind: 'apartment',
+      price: 0,
+    },
+  })
+
+  const { setValue } = formHandler
+
   return (
-    <PlaceInputProvider>
-      <EditorWithoutPlaceProvider />
+    <PlaceInputProvider
+      onChangeText={(value) => {
+        setValue('location', value)
+      }}>
+      <EditorWithoutPlaceProvider formHandler={formHandler} />
     </PlaceInputProvider>
   )
 }
