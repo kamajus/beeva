@@ -4,6 +4,7 @@ import { FlatList, Image, Pressable, View } from 'react-native'
 
 import Button from '@/components/Button'
 import IconButton from '@/components/IconButton'
+import constants from '@/constants'
 
 interface IGaleryGrid {
   images: ImagePicker.ImagePickerAsset[]
@@ -61,11 +62,7 @@ export default function Galery({
                 changeImages(images.filter((other) => other !== item))
 
                 if (imagesToDelete && deleteImages) {
-                  if (
-                    item.uri.includes(
-                      `https://${process.env.EXPO_PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/residences/`,
-                    )
-                  ) {
+                  if (item.uri.includes(constants.storageUrl)) {
                     deleteImages([...imagesToDelete, item.uri])
                   }
                 }

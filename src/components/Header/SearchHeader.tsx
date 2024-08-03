@@ -44,7 +44,7 @@ export default function SearchHeader({ value, filter }: ISearchHeader) {
           <IconButton
             name="SlidersHorizontal"
             size={20}
-            onPress={() => SheetManager.show('search-sheet')}
+            onPress={() => SheetManager.show('filter-search-sheet')}
           />
           <View
             className={clsx(

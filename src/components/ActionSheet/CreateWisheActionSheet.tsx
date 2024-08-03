@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo } from 'react'
 import { useForm, Controller } from 'react-hook-form'
-import { ScrollView, Text, View } from 'react-native'
+import type { UseFormReturn } from 'react-hook-form'
+import { ScrollView, Text, TouchableWithoutFeedback, View } from 'react-native'
 import ActionSheet, {
   SheetProps,
   SheetManager,
@@ -22,6 +23,7 @@ import ResidenceFilterButton from '@/components/ResidenceFilterButton'
 import TextField from '@/components/TextField'
 import PlaceInputProvider from '@/contexts/PlaceInputProvider'
 import { useAlert } from '@/hooks/useAlert'
+import { usePlaceInput } from '@/hooks/usePlaceInput'
 import { useSupabase } from '@/hooks/useSupabase'
 import { WisheRepository } from '@/repositories/wishe.repository'
 import { useWisheStore } from '@/store/WisheStore'
@@ -72,7 +74,23 @@ const schema = z
     },
   )
 
-export default function AddWisheActionSheet(props: SheetProps) {
+interface ICreateWisheWithoutPlaceProvider {
+  formHandler: UseFormReturn<
+    {
+      min_price: number
+      max_price: number
+      location: string
+      kind: string
+      state: string
+    },
+    unknown,
+    undefined
+  >
+}
+
+function CreateWisheWithoutPlaceProvider({
+  formHandler,
+}: ICreateWisheWithoutPlaceProvider) {
   interface IFormData {
     kind: IResidenceKindEnum
     state: IResidenceStateEnum
@@ -81,21 +99,11 @@ export default function AddWisheActionSheet(props: SheetProps) {
     max_price: number
   }
 
-  const formHandler = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      min_price: 0,
-      max_price: NaN,
-      location: '',
-      kind: 'apartment',
-      state: 'rent',
-    },
-  })
-
   const {
     control,
     handleSubmit,
     setValue,
+    setFocus,
     clearErrors,
     reset,
     formState: { errors, isSubmitting },
@@ -105,6 +113,8 @@ export default function AddWisheActionSheet(props: SheetProps) {
   const addToWishList = useWisheStore((state) => state.addToWishList)
 
   const { handleCallNotification } = useSupabase()
+
+  const { setOpen: setOpenLocationField } = usePlaceInput()
 
   const alert = useAlert()
 
@@ -127,8 +137,10 @@ export default function AddWisheActionSheet(props: SheetProps) {
   }
 
   return (
-    <ActionSheet id={props.sheetId}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <TouchableWithoutFeedback onPress={() => setOpenLocationField(false)}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}>
         <Form handler={formHandler}>
           <View className="flex flex-row items-center gap-x-1 px-2 py-4 mb-5 border-b border-b-gray-300">
             <IconButton
@@ -148,30 +160,29 @@ export default function AddWisheActionSheet(props: SheetProps) {
                   required: true,
                 }}
                 render={({ field }) => (
-                  <PlaceInputProvider>
-                    <View>
-                      <TextField.Place
-                        editable={!isSubmitting}
-                        error={errors.location?.message !== undefined}
-                        placeholder="Onde está localizada?"
-                        autoFocus
-                        returnKeyType="next"
-                        onChangeLocation={(value: string) => {
-                          setValue('location', value)
-                          clearErrors('location')
-                        }}
-                        {...field}
-                      />
+                  <View>
+                    <TextField.Place
+                      editable={!isSubmitting}
+                      error={errors.location?.message !== undefined}
+                      placeholder="Onde está localizada?"
+                      autoFocus
+                      returnKeyType="next"
+                      onSubmitEditing={() => setFocus('min_price')}
+                      onChangeLocation={(value: string) => {
+                        setValue('location', value)
+                        clearErrors('location')
+                      }}
+                      {...field}
+                    />
 
-                      <TextField.Helper message={errors.location?.message} />
-                    </View>
-                  </PlaceInputProvider>
+                    <TextField.Helper message={errors.location?.message} />
+                  </View>
                 )}
               />
             </View>
 
             <View>
-              <TextField.Label isRequired className="px-4">
+              <TextField.Label className="px-4">
                 Tipo de residência
               </TextField.Label>
               <Controller
@@ -191,7 +202,7 @@ export default function AddWisheActionSheet(props: SheetProps) {
             </View>
 
             <View className="px-4">
-              <TextField.Label isRequired>Tipo de venda</TextField.Label>
+              <TextField.Label>Tipo de venda</TextField.Label>
               <View className="flex flex-row justify-between items-center">
                 <Text className="text-sm font-poppins-regular">
                   Arrendamento
@@ -229,7 +240,7 @@ export default function AddWisheActionSheet(props: SheetProps) {
             </View>
 
             <View className="px-4">
-              <TextField.Label isRequired>Preço mínimo</TextField.Label>
+              <TextField.Label>Preço mínimo</TextField.Label>
               <Controller
                 control={control}
                 name="min_price"
@@ -238,6 +249,7 @@ export default function AddWisheActionSheet(props: SheetProps) {
                     <TextField.Currency
                       editable={!isSubmitting}
                       returnKeyType="next"
+                      onSubmitEditing={() => setFocus('max_price')}
                       {...field}
                     />
                   </TextField.Container>
@@ -247,7 +259,7 @@ export default function AddWisheActionSheet(props: SheetProps) {
             </View>
 
             <View className="px-4">
-              <TextField.Label isRequired>Preço máximo</TextField.Label>
+              <TextField.Label>Preço máximo</TextField.Label>
               <Controller
                 control={control}
                 name="max_price"
@@ -255,7 +267,7 @@ export default function AddWisheActionSheet(props: SheetProps) {
                   <TextField.Container error={errors.max_price !== undefined}>
                     <TextField.Currency
                       editable={!isSubmitting}
-                      returnKeyType="next"
+                      onSubmitEditing={handleSubmit(onSubmit)}
                       {...field}
                     />
                   </TextField.Container>
@@ -274,6 +286,32 @@ export default function AddWisheActionSheet(props: SheetProps) {
           </View>
         </Form>
       </ScrollView>
+    </TouchableWithoutFeedback>
+  )
+}
+
+export default function CreateWisheActionSheet(props: SheetProps) {
+  const formHandler = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      min_price: 0,
+      max_price: NaN,
+      location: '',
+      kind: 'apartment',
+      state: 'rent',
+    },
+  })
+
+  const { setValue } = formHandler
+
+  return (
+    <ActionSheet id={props.sheetId}>
+      <PlaceInputProvider
+        onChangeText={(value) => {
+          setValue('location', value)
+        }}>
+        <CreateWisheWithoutPlaceProvider formHandler={formHandler} />
+      </PlaceInputProvider>
     </ActionSheet>
   )
 }

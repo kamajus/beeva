@@ -77,9 +77,7 @@ export default function DeleteActionSheet(props: SheetProps) {
         resetResidenceCache()
         router.replace('/signin')
       }
-      reset({
-        password: '',
-      })
+      reset()
     } else {
       setError(
         'password',
@@ -125,6 +123,7 @@ export default function DeleteActionSheet(props: SheetProps) {
                       <TextField.Input
                         placeholder="*su**a**s3nh*"
                         onChangeValue={field.onChange}
+                        onSubmitEditing={handleSubmit(onSubmit)}
                         {...field}
                       />
                     </TextField.Container>

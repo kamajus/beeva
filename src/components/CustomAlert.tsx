@@ -12,18 +12,23 @@ interface IDialogProps {
   visible: boolean
   title?: string
   message?: string
-  onDismiss: () => void
+  onClose: () => void
   buttons?: { text: string; onPress: () => void }[]
 }
 
 const Dialog: React.FC<IDialogProps> = ({
+  visible,
   title,
   message,
-  onDismiss,
+  onClose,
   buttons = [],
 }) => {
   return (
-    <Modal animationType="slide" transparent visible onRequestClose={onDismiss}>
+    <Modal
+      animationType="slide"
+      visible={visible}
+      transparent
+      onRequestClose={onClose}>
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
           {title && (
@@ -50,7 +55,7 @@ const Dialog: React.FC<IDialogProps> = ({
                 }}
                 onPress={() => {
                   button.onPress()
-                  onDismiss()
+                  onClose()
                 }}
                 title={button.text}
               />
@@ -71,7 +76,7 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: inputWidth,
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     borderRadius: 10,
     padding: 20,
     shadowColor: '#000000',
@@ -95,14 +100,14 @@ const styles = StyleSheet.create({
 })
 
 interface ICustomAlertProps {
-  title?: string
-  message?: string
-  primaryLabel?: string
+  title: string
+  message: string
+  primaryLabel: string
   onPressPrimary?: () => void
   secondaryLabel?: string
   onPressSecondary?: () => void
-  alertVisible?: boolean
-  setAlertVisible?: React.Dispatch<React.SetStateAction<boolean>>
+  alertVisible: boolean
+  onClose: () => void
 }
 
 const CustomAlert: React.FC<ICustomAlertProps> = ({
@@ -113,7 +118,7 @@ const CustomAlert: React.FC<ICustomAlertProps> = ({
   secondaryLabel,
   onPressSecondary,
   alertVisible,
-  setAlertVisible,
+  onClose,
 }) => {
   const buttons = [
     {
@@ -136,14 +141,10 @@ const CustomAlert: React.FC<ICustomAlertProps> = ({
 
   return (
     <Dialog
-      visible={alertVisible || false}
+      visible={alertVisible}
       title={title}
       message={message}
-      onDismiss={() => {
-        if (setAlertVisible) {
-          setAlertVisible(false)
-        }
-      }}
+      onClose={onClose}
       buttons={buttons.filter((button) => button.text !== '')}
     />
   )

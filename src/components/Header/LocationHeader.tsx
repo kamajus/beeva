@@ -1,4 +1,4 @@
-import Constants from 'expo-constants'
+import expoConstants from 'expo-constants'
 import { router } from 'expo-router'
 import { ArrowLeft } from 'lucide-react-native'
 import { Dispatch, SetStateAction } from 'react'
@@ -20,7 +20,7 @@ export default function LocationHeader({
   return (
     <View>
       <View
-        style={{ marginTop: Constants.statusBarHeight }}
+        style={{ marginTop: expoConstants.statusBarHeight }}
         className="w-full py-4 px-4 flex justify-center items-center flex-row">
         <TextField.Root>
           <TextField.Container
@@ -34,7 +34,6 @@ export default function LocationHeader({
               onChangeText={setSearchQuery}
               placeholder="Qual é a localização?"
               keyboardType="web-search"
-              returnKeyType="search"
               autoFocus
             />
           </TextField.Container>
