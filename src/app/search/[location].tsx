@@ -9,7 +9,7 @@ import NoData from '@/assets/images/no-data'
 import Header from '@/components/Header'
 import HomeCard from '@/components/HomeCard'
 import { supabase } from '@/config/supabase'
-import Constants from '@/constants'
+import constants from '@/constants'
 import { useCache } from '@/hooks/useCache'
 
 export default function Search() {
@@ -147,7 +147,7 @@ export default function Search() {
             <View className="h-2/3 flex items-center justify-center">
               <ActivityIndicator
                 animating
-                color={Constants.colors.primary}
+                color={constants.colors.primary}
                 size={40}
               />
             </View>

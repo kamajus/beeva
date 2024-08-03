@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useRouter } from 'expo-router'
+import { Link, useNavigation, useRouter } from 'expo-router'
 import { Eye, EyeOff } from 'lucide-react-native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import {
   ScrollView,
@@ -13,6 +13,7 @@ import {
 import * as z from 'zod'
 
 import Button from '@/components/Button'
+import ButtonLink from '@/components/ButtonLink'
 import TextField from '@/components/TextField'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
@@ -46,7 +47,8 @@ export default function SignIn() {
   const {
     handleSubmit,
     control,
-    formState: { errors, isSubmitting },
+    reset,
+    formState: { errors },
   } = useForm({
     defaultValues: {
       email: '',
@@ -56,29 +58,44 @@ export default function SignIn() {
   })
 
   const [passwordVisible, setPasswordVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const navigation = useNavigation()
+
   const { signInWithPassword } = useSupabase()
   const alert = useAlert()
 
   function onSubmit({ email, password }: FormData) {
+    setLoading(true)
     signInWithPassword(email, password)
       .then(() => router.replace('/(root)/home'))
       .catch((response) => {
         if (response.redirect) router.replace(response.redirect)
         else {
           alert.showAlert('Erro na autenticação', response.message, 'Ok')
+          reset()
         }
       })
+      .finally(() => {
+        setLoading(false)
+      })
   }
+
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      reset()
+    })
+  }, [navigation, reset])
 
   return (
     <ScrollView className="bg-white">
       <View className="px-7 mt-[15%] bg-white">
         <Text className="font-poppins-semibold text-xl mb-5">
-          Iniciar sessão
+          Bem vindo ao Beeva
         </Text>
 
         <View className="w-full" />
-        <View className="flex flex-col gap-y-1">
+        <View className="flex flex-col gap-y-5">
           <View>
             <Controller
               control={control}
@@ -89,13 +106,14 @@ export default function SignIn() {
               render={({ field }) => (
                 <View>
                   <TextField.Root>
-                    <TextField.Label isRequired>E-mail</TextField.Label>
+                    <TextField.Label>E-mail</TextField.Label>
                     <TextField.Container
                       error={errors.email?.message !== undefined}>
                       <TextField.Input
                         placeholder="E-mail"
-                        onChangeValue={field.onChange}
                         returnKeyType="next"
+                        onChangeValue={field.onChange}
+                        editable={!loading}
                         autoFocus
                         {...field}
                       />
@@ -107,7 +125,7 @@ export default function SignIn() {
             />
           </View>
 
-          <View className="mb-4">
+          <View>
             <Controller
               control={control}
               name="password"
@@ -117,18 +135,21 @@ export default function SignIn() {
               render={({ field }) => (
                 <View>
                   <TextField.Root>
-                    <TextField.Label isRequired>Palavra-passe</TextField.Label>
+                    <TextField.Label>Palavra-passe</TextField.Label>
                     <TextField.Container
                       error={errors.password?.message !== undefined}>
                       <TextField.Input
                         placeholder="Palavra-passe"
                         secureTextEntry={!passwordVisible}
                         onChangeValue={field.onChange}
+                        editable={!loading}
                         {...field}
                       />
                       <TouchableOpacity
                         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        onPress={() => setPasswordVisible(!passwordVisible)}>
+                        onPress={() =>
+                          !loading && setPasswordVisible(!passwordVisible)
+                        }>
                         {passwordVisible ? (
                           <Eye color="#374151" size={30} />
                         ) : (
@@ -144,26 +165,26 @@ export default function SignIn() {
             />
           </View>
 
-          <Link
-            href="/forgotPassword"
-            className="text-primary font-poppins-medium mb-4">
-            Esqueceste a tua palavra-passe?
+          <Link href="/recovery" className="text-primary font-poppins-medium">
+            Problemas de conexão?
           </Link>
 
           <Button
-            loading={isSubmitting}
+            loading={loading}
             onPress={handleSubmit(onSubmit)}
             title="Entrar"
           />
         </View>
 
         <View className="flex justify-center items-center flex-row gap-2 w-full mt-5">
-          <Text className="font-poppins-medium text-gray-700">
-            Ainda não tem uma conta?
-          </Text>
-          <Link className="text-primary font-poppins-medium" href="/signup">
-            Crie uma
-          </Link>
+          <ButtonLink href="/signup" disabled={loading}>
+            <Text className="font-poppins-medium text-gray-700">
+              Ainda não tem uma conta?
+            </Text>
+            <Link className="text-primary font-poppins-medium" href="/signup">
+              Crie uma
+            </Link>
+          </ButtonLink>
         </View>
       </View>
 

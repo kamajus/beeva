@@ -31,7 +31,7 @@ export default function Saved() {
   const { height } = Dimensions.get('screen')
   const [refreshing, setRefreshing] = useState(false)
 
-  const [loadingSaved, setLoadingSaved] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const getSavedResidences = useCallback(async () => {
     const savedResidencesData = await savedResidenceRepository.findByUserId(
@@ -50,20 +50,20 @@ export default function Saved() {
     setRefreshing(true)
     setTimeout(() => {
       setRefreshing(false)
-      setLoadingSaved(true)
+      setLoading(true)
       ;(async function () {
         await getSavedResidences().finally(() => {
-          setLoadingSaved(false)
+          setLoading(false)
         })
       })()
     }, 1000)
   }, [getSavedResidences])
 
   useEffect(() => {
-    setLoadingSaved(true)
+    setLoading(true)
     ;(async function () {
       await getSavedResidences().finally(() => {
-        setLoadingSaved(false)
+        setLoading(false)
       })
     })()
   }, [getSavedResidences])
@@ -74,7 +74,7 @@ export default function Saved() {
         <Header.Normal showIcon={false} title="Guardados por mim" />
       </View>
 
-      {!loadingSaved ? (
+      {!loading ? (
         <ScrollView
           style={{ padding: 16, marginTop: constants.customHeaderDistance }}
           className="bg-white h-full"
