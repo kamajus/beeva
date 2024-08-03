@@ -21,12 +21,11 @@ export default function App() {
 
   useEffect(() => {
     const handleRedirect = () => {
-      console.log(`initialized: ${initialized}`)
-      console.log(`session: ${session}`)
+      console.log(`session on index: ${session}`)
 
       if (fontsLoaded && !fontError && initialized) {
         if (session) {
-          replace('/(root)/home')
+          replace('/home')
         } else {
           replace('/signin')
         }
