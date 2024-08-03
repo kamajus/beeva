@@ -307,7 +307,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
             session.user.id,
           )
 
-          setSession(session)
           setNotifications(notificationsData)
           setupUserChannel(session.user.id)
           setupNotificationsChannel(session.user.id)
@@ -320,6 +319,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         router.replace('/signin')
       }
 
+      setSession(session)
       setInitialized(true)
     })
 
