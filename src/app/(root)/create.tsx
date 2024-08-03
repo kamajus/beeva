@@ -67,7 +67,6 @@ function EditorWithoutPlaceProvider({
 
   const resetFields = useCallback(() => {
     resetLocationField()
-
     reset()
 
     setCover(null)

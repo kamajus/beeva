@@ -51,12 +51,14 @@ export default function Confirmation() {
         'Sucesso',
         'Foi enviando um email com as instruções para conseguir alterar a sua senha.',
         'Ok',
+        () => {
+          if (router.canGoBack()) {
+            router.back()
+            reset()
+          }
+        },
       )
-
-      if (router.canGoBack()) router.back()
     }
-
-    reset()
   }
 
   return (
@@ -83,6 +85,7 @@ export default function Confirmation() {
                         keyboardType="email-address"
                         autoFocus
                         onChangeValue={field.onChange}
+                        onSubmitEditing={handleSubmit(onSubmit)}
                         editable={!isSubmitting}
                         {...field}
                       />

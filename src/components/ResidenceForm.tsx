@@ -91,6 +91,7 @@ export default function ResidenceForm({
     formState: { isSubmitting, errors },
     control,
     setValue,
+    setFocus,
     clearErrors,
   } = handler
 
@@ -116,6 +117,8 @@ export default function ResidenceForm({
                     <TextField.Currency
                       editable={!isSubmitting}
                       {...field}
+                      returnKeyType="next"
+                      onSubmitEditing={() => setFocus('location')}
                       autoFocus
                     />
                   </TextField.Container>
@@ -140,6 +143,8 @@ export default function ResidenceForm({
                   editable={!isSubmitting}
                   error={errors.location?.message !== undefined}
                   placeholder="Onde está localizada?"
+                  returnKeyType="next"
+                  onSubmitEditing={() => setFocus('description')}
                   onChangeLocation={(value: string) => {
                     setValue('location', value)
                     clearErrors('location')

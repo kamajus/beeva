@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMemo } from 'react'
 import { useForm, Controller } from 'react-hook-form'
+import type { UseFormReturn } from 'react-hook-form'
 import { ScrollView, Text, TouchableWithoutFeedback, View } from 'react-native'
 import ActionSheet, {
   SheetProps,
@@ -73,7 +74,23 @@ const schema = z
     },
   )
 
-export default function CreateWisheActionSheet(props: SheetProps) {
+interface ICreateWisheWithoutPlaceProvider {
+  formHandler: UseFormReturn<
+    {
+      min_price: number
+      max_price: number
+      location: string
+      kind: string
+      state: string
+    },
+    unknown,
+    undefined
+  >
+}
+
+function CreateWisheWithoutPlaceProvider({
+  formHandler,
+}: ICreateWisheWithoutPlaceProvider) {
   interface IFormData {
     kind: IResidenceKindEnum
     state: IResidenceStateEnum
@@ -82,21 +99,11 @@ export default function CreateWisheActionSheet(props: SheetProps) {
     max_price: number
   }
 
-  const formHandler = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      min_price: 0,
-      max_price: NaN,
-      location: '',
-      kind: 'apartment',
-      state: 'rent',
-    },
-  })
-
   const {
     control,
     handleSubmit,
     setValue,
+    setFocus,
     clearErrors,
     reset,
     formState: { errors, isSubmitting },
@@ -130,159 +137,181 @@ export default function CreateWisheActionSheet(props: SheetProps) {
   }
 
   return (
-    <ActionSheet id={props.sheetId}>
-      <TouchableWithoutFeedback onPress={() => setOpenLocationField(false)}>
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
-          <Form handler={formHandler}>
-            <View className="flex flex-row items-center gap-x-1 px-2 py-4 mb-5 border-b border-b-gray-300">
-              <IconButton
-                name="X"
-                size={20}
-                onPress={() => SheetManager.hide('create-wishe-sheet')}
+    <TouchableWithoutFeedback onPress={() => setOpenLocationField(false)}>
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}>
+        <Form handler={formHandler}>
+          <View className="flex flex-row items-center gap-x-1 px-2 py-4 mb-5 border-b border-b-gray-300">
+            <IconButton
+              name="X"
+              size={20}
+              onPress={() => SheetManager.hide('create-wishe-sheet')}
+            />
+            <Text className="font-poppins-semibold text-lg">Criar desejo</Text>
+          </View>
+
+          <View className="flex gap-y-9">
+            <View className="px-4">
+              <Controller
+                control={control}
+                name="location"
+                rules={{
+                  required: true,
+                }}
+                render={({ field }) => (
+                  <View>
+                    <TextField.Place
+                      editable={!isSubmitting}
+                      error={errors.location?.message !== undefined}
+                      placeholder="Onde está localizada?"
+                      autoFocus
+                      returnKeyType="next"
+                      onSubmitEditing={() => setFocus('min_price')}
+                      onChangeLocation={(value: string) => {
+                        setValue('location', value)
+                        clearErrors('location')
+                      }}
+                      {...field}
+                    />
+
+                    <TextField.Helper message={errors.location?.message} />
+                  </View>
+                )}
               />
-              <Text className="font-poppins-semibold text-lg">
-                Criar desejo
-              </Text>
             </View>
 
-            <View className="flex gap-y-9">
-              <View className="px-4">
+            <View>
+              <TextField.Label className="px-4">
+                Tipo de residência
+              </TextField.Label>
+              <Controller
+                control={control}
+                name="kind"
+                render={({ field: { value, onChange } }) => (
+                  <ResidenceFilterButton
+                    excludedOptions={['all']}
+                    paddingHorizontal={16}
+                    disabled={isSubmitting}
+                    kind={value as IResidenceFilterEnum}
+                    setKind={(kind) => onChange(kind)}
+                  />
+                )}
+              />
+              <TextField.Helper message={errors.kind?.message} />
+            </View>
+
+            <View className="px-4">
+              <TextField.Label>Tipo de venda</TextField.Label>
+              <View className="flex flex-row justify-between items-center">
+                <Text className="text-sm font-poppins-regular">
+                  Arrendamento
+                </Text>
                 <Controller
                   control={control}
-                  name="location"
-                  rules={{
-                    required: true,
-                  }}
-                  render={({ field }) => (
-                    <PlaceInputProvider>
-                      <View>
-                        <TextField.Place
-                          editable={!isSubmitting}
-                          error={errors.location?.message !== undefined}
-                          placeholder="Onde está localizada?"
-                          autoFocus
-                          returnKeyType="next"
-                          onChangeLocation={(value: string) => {
-                            setValue('location', value)
-                            clearErrors('location')
-                          }}
-                          {...field}
-                        />
-
-                        <TextField.Helper message={errors.location?.message} />
-                      </View>
-                    </PlaceInputProvider>
-                  )}
-                />
-              </View>
-
-              <View>
-                <TextField.Label className="px-4">
-                  Tipo de residência
-                </TextField.Label>
-                <Controller
-                  control={control}
-                  name="kind"
+                  name="state"
                   render={({ field: { value, onChange } }) => (
-                    <ResidenceFilterButton
-                      excludedOptions={['all']}
-                      paddingHorizontal={16}
+                    <RadioButton
+                      value="rent"
+                      isChecked={value === 'rent'}
                       disabled={isSubmitting}
-                      kind={value as IResidenceFilterEnum}
-                      setKind={(kind) => onChange(kind)}
+                      onPress={() => onChange('rent')}
                     />
                   )}
                 />
-                <TextField.Helper message={errors.kind?.message} />
               </View>
 
-              <View className="px-4">
-                <TextField.Label>Tipo de venda</TextField.Label>
-                <View className="flex flex-row justify-between items-center">
-                  <Text className="text-sm font-poppins-regular">
-                    Arrendamento
-                  </Text>
-                  <Controller
-                    control={control}
-                    name="state"
-                    render={({ field: { value, onChange } }) => (
-                      <RadioButton
-                        value="rent"
-                        isChecked={value === 'rent'}
-                        disabled={isSubmitting}
-                        onPress={() => onChange('rent')}
-                      />
-                    )}
-                  />
-                </View>
-
-                <View className="flex flex-row justify-between items-center">
-                  <Text className="text-sm font-poppins-regular">À venda</Text>
-                  <Controller
-                    control={control}
-                    name="state"
-                    render={({ field: { value, onChange } }) => (
-                      <RadioButton
-                        value="sell"
-                        isChecked={value === 'sell'}
-                        disabled={isSubmitting}
-                        onPress={() => onChange('sell')}
-                      />
-                    )}
-                  />
-                </View>
-                <TextField.Helper message={errors.state?.message} />
-              </View>
-
-              <View className="px-4">
-                <TextField.Label>Preço mínimo</TextField.Label>
+              <View className="flex flex-row justify-between items-center">
+                <Text className="text-sm font-poppins-regular">À venda</Text>
                 <Controller
                   control={control}
-                  name="min_price"
-                  render={({ field }) => (
-                    <TextField.Container error={errors.min_price !== undefined}>
-                      <TextField.Currency
-                        editable={!isSubmitting}
-                        returnKeyType="next"
-                        {...field}
-                      />
-                    </TextField.Container>
+                  name="state"
+                  render={({ field: { value, onChange } }) => (
+                    <RadioButton
+                      value="sell"
+                      isChecked={value === 'sell'}
+                      disabled={isSubmitting}
+                      onPress={() => onChange('sell')}
+                    />
                   )}
                 />
-                <TextField.Helper message={errors.min_price?.message} />
               </View>
-
-              <View className="px-4">
-                <TextField.Label>Preço máximo</TextField.Label>
-                <Controller
-                  control={control}
-                  name="max_price"
-                  render={({ field }) => (
-                    <TextField.Container error={errors.max_price !== undefined}>
-                      <TextField.Currency
-                        editable={!isSubmitting}
-                        returnKeyType="next"
-                        {...field}
-                      />
-                    </TextField.Container>
-                  )}
-                />
-                <TextField.Helper message={errors.max_price?.message} />
-              </View>
-
-              <View className="flex flex-row justify-between items-center px-4">
-                <Button
-                  onPress={handleSubmit(onSubmit)}
-                  className="bg-primary flex-1"
-                  title="Adicionar na lista de desejos"
-                />
-              </View>
+              <TextField.Helper message={errors.state?.message} />
             </View>
-          </Form>
-        </ScrollView>
-      </TouchableWithoutFeedback>
+
+            <View className="px-4">
+              <TextField.Label>Preço mínimo</TextField.Label>
+              <Controller
+                control={control}
+                name="min_price"
+                render={({ field }) => (
+                  <TextField.Container error={errors.min_price !== undefined}>
+                    <TextField.Currency
+                      editable={!isSubmitting}
+                      returnKeyType="next"
+                      onSubmitEditing={() => setFocus('max_price')}
+                      {...field}
+                    />
+                  </TextField.Container>
+                )}
+              />
+              <TextField.Helper message={errors.min_price?.message} />
+            </View>
+
+            <View className="px-4">
+              <TextField.Label>Preço máximo</TextField.Label>
+              <Controller
+                control={control}
+                name="max_price"
+                render={({ field }) => (
+                  <TextField.Container error={errors.max_price !== undefined}>
+                    <TextField.Currency
+                      editable={!isSubmitting}
+                      onSubmitEditing={handleSubmit(onSubmit)}
+                      {...field}
+                    />
+                  </TextField.Container>
+                )}
+              />
+              <TextField.Helper message={errors.max_price?.message} />
+            </View>
+
+            <View className="flex flex-row justify-between items-center px-4">
+              <Button
+                onPress={handleSubmit(onSubmit)}
+                className="bg-primary flex-1"
+                title="Adicionar na lista de desejos"
+              />
+            </View>
+          </View>
+        </Form>
+      </ScrollView>
+    </TouchableWithoutFeedback>
+  )
+}
+
+export default function CreateWisheActionSheet(props: SheetProps) {
+  const formHandler = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      min_price: 0,
+      max_price: NaN,
+      location: '',
+      kind: 'apartment',
+      state: 'rent',
+    },
+  })
+
+  const { setValue } = formHandler
+
+  return (
+    <ActionSheet id={props.sheetId}>
+      <PlaceInputProvider
+        onChangeText={(value) => {
+          setValue('location', value)
+        }}>
+        <CreateWisheWithoutPlaceProvider formHandler={formHandler} />
+      </PlaceInputProvider>
     </ActionSheet>
   )
 }
