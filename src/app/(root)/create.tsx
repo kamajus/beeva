@@ -4,7 +4,7 @@ import { router, useFocusEffect } from 'expo-router'
 import { useCallback, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
-import { BackHandler, TouchableWithoutFeedback, View } from 'react-native'
+import { BackHandler, View } from 'react-native'
 
 import { IResidenceKindEnum, IResidenceStateEnum } from '@/@types'
 import Form from '@/components/Form'
@@ -106,7 +106,7 @@ function EditorWithoutPlaceProvider({
 
         resetFields()
         resetResidenceCache()
-        router.replace(`/(root)/home`)
+        router.replace('/home')
       } catch {
         alert.showAlert(
           'Erro a realizar postagem',
@@ -172,30 +172,28 @@ function EditorWithoutPlaceProvider({
   )
 
   return (
-    <TouchableWithoutFeedback onPress={() => setOpenLocationField(false)}>
-      <View className="relative bg-white">
-        <Form handler={formHandler}>
-          <ResidenceForm
-            handler={formHandler}
-            images={images}
-            cover={cover}
-            changeImages={(images) => {
-              setImages(images)
-            }}
-            changeCoverImage={(cover) => {
-              setCover(cover)
-            }}
-          />
-        </Form>
-
-        <Header.Action
-          title="Postar residência"
-          loading={isSubmitting}
-          onPress={handleSubmit(onSubmit)}
-          onBackPress={handleBackPress}
+    <View className="relative bg-white">
+      <Form handler={formHandler}>
+        <ResidenceForm
+          handler={formHandler}
+          images={images}
+          cover={cover}
+          changeImages={(images) => {
+            setImages(images)
+          }}
+          changeCoverImage={(cover) => {
+            setCover(cover)
+          }}
         />
-      </View>
-    </TouchableWithoutFeedback>
+      </Form>
+
+      <Header.Action
+        title="Postar residência"
+        loading={isSubmitting}
+        onPress={handleSubmit(onSubmit)}
+        onBackPress={handleBackPress}
+      />
+    </View>
   )
 }
 
