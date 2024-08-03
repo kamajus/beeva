@@ -9,12 +9,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
-import {
-  StatusBar,
-  View,
-  BackHandler,
-  TouchableWithoutFeedback,
-} from 'react-native'
+import { StatusBar, View, BackHandler } from 'react-native'
 
 import { IResidenceKindEnum, IResidenceStateEnum } from '@/@types'
 import Form from '@/components/Form'
@@ -285,43 +280,41 @@ function EditorWithoutPlaceProvider({
   }, [defaultData, navigation, reset])
 
   return (
-    <TouchableWithoutFeedback onPress={() => setOpenLocationField(false)}>
-      <View className="relative bg-white">
-        {!loading ? (
-          <Form handler={formHandler}>
-            <ResidenceForm
-              handler={formHandler}
-              images={images}
-              cover={cover}
-              imagesToDelete={imagesToDelete}
-              changeImages={(images) => {
-                setImages(images)
-              }}
-              changeCoverImage={(cover) => {
-                setCover(cover)
-              }}
-              deleteImages={(images) => {
-                setImagesToDelete(images)
-              }}
-              handlePhotoChanged={(value) => {
-                setPhotoChanged(value)
-              }}
-            />
-          </Form>
-        ) : (
-          <LoadScreen />
-        )}
+    <View className="relative bg-white">
+      {!loading ? (
+        <Form handler={formHandler}>
+          <ResidenceForm
+            handler={formHandler}
+            images={images}
+            cover={cover}
+            imagesToDelete={imagesToDelete}
+            changeImages={(images) => {
+              setImages(images)
+            }}
+            changeCoverImage={(cover) => {
+              setCover(cover)
+            }}
+            deleteImages={(images) => {
+              setImagesToDelete(images)
+            }}
+            handlePhotoChanged={(value) => {
+              setPhotoChanged(value)
+            }}
+          />
+        </Form>
+      ) : (
+        <LoadScreen />
+      )}
 
-        <Header.Action
-          title="Editando a residência"
-          loading={isSubmitting}
-          onPress={handleSubmit(onSubmit)}
-          onBackPress={handleBackPress}
-        />
+      <Header.Action
+        title="Editando a residência"
+        loading={isSubmitting}
+        onPress={handleSubmit(onSubmit)}
+        onBackPress={handleBackPress}
+      />
 
-        <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
-      </View>
-    </TouchableWithoutFeedback>
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
+    </View>
   )
 }
 
