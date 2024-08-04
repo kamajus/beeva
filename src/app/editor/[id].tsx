@@ -26,7 +26,7 @@ import { useAlert } from '@/hooks/useAlert'
 import { usePlaceInput } from '@/hooks/usePlaceInput'
 import { useSupabase } from '@/hooks/useSupabase'
 import { ResidenceRepository } from '@/repositories/residence.repository'
-import { useResidenceStore } from '@/store/ResidenceStore'
+import { useOpenedResidenceStore } from '@/store/OpenedResidenceStore'
 
 interface IEditorWithouPlaceProvider {
   formHandler: UseFormReturn<
@@ -47,11 +47,11 @@ function EditorWithoutPlaceProvider({
   const navigation = useNavigation()
   const { id } = useLocalSearchParams<{ id?: string }>()
 
-  const cachedResidences = useResidenceStore((state) => state.cachedResidences)
+  const openedResidences = useOpenedResidenceStore((state) => state.residences)
   const [forceExiting, setForceExiting] = useState(false)
 
   const [defaultData, setDefaultData] = useState(
-    cachedResidences.find(({ residence: r }) => r.id === id),
+    openedResidences.find(({ residence: r }) => r.id === id),
   )
 
   const {
@@ -183,7 +183,7 @@ function EditorWithoutPlaceProvider({
 
     setImages(images.filter((image) => !imagesToDelete.includes(image.uri)))
 
-    const residences = cachedResidences.map(({ residence }) => {
+    const residences = openedResidences.map(({ residence }) => {
       if (residence.id === id && residence.photos) {
         const photos = residence.photos.filter(
           (image) => !imagesToDelete.includes(image),

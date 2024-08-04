@@ -5,7 +5,8 @@ import { View, Dimensions } from 'react-native'
 
 import IconButton from '@/components/IconButton'
 import { useSupabase } from '@/hooks/useSupabase'
-import { useResidenceStore } from '@/store/ResidenceStore'
+import { useOpenedResidenceStore } from '@/store/OpenedResidenceStore'
+import { useSavedResidenceStore } from '@/store/SavedResidenceStore'
 
 interface ICarouselHeader {
   owner_id: string
@@ -13,11 +14,10 @@ interface ICarouselHeader {
 }
 
 export default function CarouselHeader(props: ICarouselHeader) {
-  const cachedResidences = useResidenceStore((state) => state.cachedResidences)
-  const savedResidences = useResidenceStore((state) => state.savedResidences)
-  const residenceSavedStatus = useResidenceStore(
-    (state) => state.residenceSavedStatus,
-  )
+  const openedResidences = useOpenedResidenceStore((state) => state.residences)
+
+  const savedResidences = useSavedResidenceStore((state) => state.residences)
+  const residenceSavedStatus = useSavedResidenceStore((state) => state.status)
 
   const { saveResidence, user } = useSupabase()
 
@@ -25,7 +25,7 @@ export default function CarouselHeader(props: ICarouselHeader) {
 
   const { width } = Dimensions.get('window')
 
-  const residence = cachedResidences.find(
+  const residence = openedResidences.find(
     ({ residence }) => residence.id === props.residence_id,
   )?.residence
 

@@ -9,9 +9,7 @@ import Button from '@/components/Button'
 import TextField from '@/components/TextField'
 import { supabase } from '@/config/supabase'
 import { useAlert } from '@/hooks/useAlert'
-import { useCache } from '@/hooks/useCache'
 import { useSupabase } from '@/hooks/useSupabase'
-import { useResidenceStore } from '@/store/ResidenceStore'
 
 interface IFormData {
   password: string
@@ -32,11 +30,6 @@ const schema = z.object({
 })
 
 export default function DeleteActionSheet(props: SheetProps) {
-  const resetResidenceCache = useResidenceStore(
-    (state) => state.resetResidenceCache,
-  )
-  const { resetCache } = useCache()
-
   const {
     handleSubmit,
     control,
@@ -75,10 +68,7 @@ export default function DeleteActionSheet(props: SheetProps) {
             'Parece que aconteceu algum erro no processo de eliminação da sua conta, tente novamente mais tarde.',
         })
       } else {
-        signOut().then(() => {
-          resetCache()
-          resetResidenceCache()
-        })
+        signOut()
       }
       reset()
     } else {

@@ -10,6 +10,7 @@ import PublishedSince from '@/components/PublishedSince'
 import TouchableBrightness from '@/components/TouchableBrightness'
 import constants from '@/constants'
 import { ResidenceNotificationRepository } from '@/repositories/residence.notification.repository'
+import { useResidenceNotificationStore } from '@/store/ResidenceNotificationStore'
 
 interface INotificationIcons {
   [key: string]: keyof typeof icons
@@ -32,6 +33,12 @@ const NotificationBoxLink = ({
   notificationType,
   notificationId,
 }: INotificationBoxLink) => {
+  const getByNotificationId = useResidenceNotificationStore(
+    (state) => state.getByNotificationId,
+  )
+  const addResidenceNotification = useResidenceNotificationStore(
+    (state) => state.add,
+  )
   const residenceNotificationRepository = useMemo(
     () => new ResidenceNotificationRepository(),
     [],
@@ -44,18 +51,33 @@ const NotificationBoxLink = ({
       notificationType === 'wishe-found'
     ) {
       const fetchData = async () => {
-        const data = await residenceNotificationRepository.find({
-          notification_id: notificationId,
-        })
+        const residenceNotification = getByNotificationId(notificationId)
 
-        if (data.length !== 0) {
-          setResidenceId(data[0].residence_id)
+        if (!residenceNotification) {
+          const data = await residenceNotificationRepository.find({
+            notification_id: notificationId,
+          })
+
+          if (data.length !== 0) {
+            setResidenceId(data[0].residence_id)
+            addResidenceNotification(data[0])
+          }
+        }
+
+        if (residenceNotification) {
+          setResidenceId(residenceNotification.residence_id)
         }
       }
 
       fetchData()
     }
-  }, [notificationType, notificationId, residenceNotificationRepository])
+  }, [
+    notificationType,
+    notificationId,
+    residenceNotificationRepository,
+    getByNotificationId,
+    addResidenceNotification,
+  ])
 
   const handlePress = () => {
     if (residenceId) {

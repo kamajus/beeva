@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import { Inter_400Regular, Inter_500Medium } from '@expo-google-fonts/inter'
 import {
   useFonts,
   Poppins_400Regular,
@@ -14,8 +13,6 @@ export default function useLoadFonts() {
     'poppins-medium': Poppins_500Medium,
     'poppins-semibold': Poppins_600SemiBold,
     'poppins-bold': Poppins_700Bold,
-    'inter-regular': Inter_400Regular,
-    'inter-medium': Inter_500Medium,
   })
 
   return { fontsLoaded, fontError }
