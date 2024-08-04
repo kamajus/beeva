@@ -46,7 +46,10 @@ type SupabaseContextProps = {
   signOut: () => Promise<void>
   saveResidence: (residence: IResidence, saved: boolean) => Promise<void>
   loveResidence: (residenceId: string, saved: boolean) => Promise<void>
-  handleCallNotification: (title: string, body: string) => void
+  handleCallNotification: (notification: {
+    title: string
+    body: string
+  }) => void
 }
 
 type SupabaseProviderProps = {
@@ -138,18 +141,18 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           }
 
           if (uploadError) {
-            alert.showAlert(
-              'Erro a realizar postagem',
-              'Houve um problema ao tentar carregar as imagens que você forneceu.',
-              'Ok',
-            )
+            alert.showAlert({
+              title: 'Erro a realizar postagem',
+              message:
+                'Houve um problema ao tentar carregar as imagens que você forneceu.',
+            })
           }
         } catch {
-          alert.showAlert(
-            'Erro a realizar postagem',
-            'Houve um problema ao tentar carregar as imagens que você forneceu.',
-            'Ok',
-          )
+          alert.showAlert({
+            title: 'Erro a realizar postagem',
+            message:
+              'Houve um problema ao tentar carregar as imagens que você forneceu.',
+          })
         }
       } else {
         imagesToAppend.push(image.uri)
@@ -221,8 +224,14 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   }
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
+    await supabase.auth
+      .signOut()
+      .then(() => {
+        router.replace('/signin')
+      })
+      .catch((error) => {
+        console.error(error)
+      })
   }
 
   const updateNotifications = useCallback(
@@ -245,14 +254,17 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     [setNotifications],
   )
 
-  const handleCallNotification = (title: string, body: string) => {
+  const handleCallNotification = (notification: {
+    title: string
+    body: string
+  }) => {
     Notifications.scheduleNotificationAsync({
-      content: { title, body },
+      content: { title: notification.title, body: notification.body },
       trigger: null,
     })
   }
 
-  const setupUserChannel = (userId: string) => {
+  const setupUserChannel = useCallback((userId: string) => {
     supabase
       .channel('users')
       .on(
@@ -265,7 +277,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         },
       )
       .subscribe()
-  }
+  }, [])
 
   const setupNotificationsChannel = useCallback(
     (userId: string) => {
@@ -277,7 +289,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           async (payload: { new: INotification }) => {
             if (payload.new.user_id === userId && payload.new?.title) {
               updateNotifications(payload.new)
-              handleCallNotification(payload.new.title, payload.new.description)
+              handleCallNotification({
+                title: payload.new.title,
+                body: payload.new.description,
+              })
             }
           },
         )
@@ -286,55 +301,41 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     [updateNotifications],
   )
 
-  const setupAuthListener = useCallback(() => {
+  useEffect(() => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_, session) => {
-      console.log(`session on onAuthChange: ${session}`)
-
       if (session) {
         try {
-          const userData = await userRepository.findById(session.user.id)
-          setUser(userData)
+          await userRepository.findById(session.user.id).then((data) => {
+            setUser(data)
+          })
 
-          if (!userData) {
-            await supabase.auth.signOut()
-            router.replace('/signin')
-            return
-          }
+          await notificationRepository
+            .findByUserId(session.user.id)
+            .then((data) => {
+              setNotifications(data)
+            })
 
-          const notificationsData = await notificationRepository.findByUserId(
-            session.user.id,
-          )
-
-          setNotifications(notificationsData)
+          setSession(session)
           setupUserChannel(session.user.id)
           setupNotificationsChannel(session.user.id)
         } catch {
-          await supabase.auth.signOut()
-          router.replace('/signin')
+          await signOut().catch(() => {})
         }
-      } else {
-        await supabase.auth.signOut()
-        router.replace('/signin')
       }
 
-      setSession(session)
       setInitialized(true)
     })
 
-    return subscription
+    return () => subscription.unsubscribe()
   }, [
     notificationRepository,
     setNotifications,
     setupNotificationsChannel,
+    setupUserChannel,
     userRepository,
   ])
-
-  useEffect(() => {
-    const authListener = setupAuthListener()
-    return () => authListener.unsubscribe()
-  }, [setupAuthListener])
 
   useEffect(() => {
     supabase

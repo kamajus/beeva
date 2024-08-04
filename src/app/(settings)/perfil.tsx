@@ -127,9 +127,8 @@ export default function Perfil() {
     phone: string | undefined
     photo_url?: string
   }) {
-    setAllowExiting(false)
-
     try {
+      setAllowExiting(false)
       userRepository.update(user.id, {
         first_name: data.first_name,
         last_name: data.last_name,
@@ -138,11 +137,11 @@ export default function Perfil() {
       })
 
       if (session?.user.email !== data.email) {
-        alert.showAlert(
-          'Sucesso',
-          'Foi enviando um email com as instruções para conseguir alterar o seu email.',
-          'Ok',
-        )
+        alert.showAlert({
+          title: 'Sucesso',
+          message:
+            'Foi enviando um email com as instruções para conseguir alterar o seu email.',
+        })
 
         supabase.auth.updateUser({
           email: data.email,
@@ -155,11 +154,11 @@ export default function Perfil() {
         })
       }
     } catch {
-      alert.showAlert(
-        'Erro a atualizar informações',
-        'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
-        'Ok',
-      )
+      alert.showAlert({
+        title: 'Erro a atualizar informações',
+        message:
+          'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
+      })
     }
 
     if (setUser && user) {
@@ -211,11 +210,11 @@ export default function Perfil() {
         }
 
         if (error) {
-          alert.showAlert(
-            'Erro a atualizar informações',
-            'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
-            'Ok',
-          )
+          alert.showAlert({
+            title: 'Erro a atualizar informações',
+            message:
+              'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
+          })
         }
       } else {
         await updatePerfil({
@@ -240,13 +239,16 @@ export default function Perfil() {
 
           e.preventDefault()
 
-          alert.showAlert(
-            'Descartar alterações?',
-            'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',
-            'Descartar',
-            () => navigation.dispatch(e.data.action),
-            'Não sair',
-          )
+          alert.showAlert({
+            title: 'Descartar alterações?',
+            message:
+              'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',
+            primaryLabel: 'Descartar',
+            secondaryLabel: 'Não sair',
+            onPressPrimary() {
+              navigation.dispatch(e.data.action)
+            },
+          })
         }
       }),
     [

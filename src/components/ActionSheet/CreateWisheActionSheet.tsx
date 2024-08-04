@@ -120,13 +120,15 @@ function CreateWisheWithoutPlaceProvider({
       const wisheData = await wisheRepository.create(data)
       addToWishList(wisheData)
 
-      handleCallNotification('Desejo criado', 'O desejo foi criado com sucesso')
+      handleCallNotification({
+        title: 'Desejo criado',
+        body: 'O desejo foi criado com sucesso',
+      })
     } catch {
-      alert.showAlert(
-        'Erro a realizar postagem',
-        'Occoreu um erro ao adicionar o item na lista de desejos.',
-        'Ok',
-      )
+      alert.showAlert({
+        title: 'Erro a realizar postagem',
+        message: 'Occoreu um erro ao adicionar o item na lista de desejos.',
+      })
     }
 
     reset()

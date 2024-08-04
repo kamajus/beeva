@@ -21,8 +21,6 @@ export default function App() {
 
   useEffect(() => {
     const handleRedirect = () => {
-      console.log(`session on index: ${session}`)
-
       if (fontsLoaded && !fontError && initialized) {
         if (session) {
           replace('/home')
