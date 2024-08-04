@@ -17,7 +17,7 @@ import IconButton from '@/components/IconButton'
 import Filter from '@/components/ResidenceFilterButton'
 import TextField from '@/components/TextField'
 import constants from '@/constants'
-import { useCache } from '@/hooks/useCache'
+import { useNotificationStore } from '@/store/NotificationStore'
 
 export default function House() {
   const [refreshing, setRefreshing] = useState(false)
@@ -30,7 +30,7 @@ export default function House() {
     }, 2000)
   }, [])
 
-  const { notifications } = useCache()
+  const notifications = useNotificationStore((state) => state.notifications)
 
   return (
     <ScrollView
@@ -96,9 +96,7 @@ export default function House() {
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
-            renderItem={({ item }) => (
-              <HomeCard.Card {...item} cardType="big" />
-            )}
+            renderItem={({ item }) => <HomeCard.Card {...item} type="big" />}
           />
         </HomeCard.Root>
 
@@ -110,9 +108,7 @@ export default function House() {
             data={RESIDENCE_DATA}
             className="mt-5 w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
-            renderItem={({ item }) => (
-              <HomeCard.Card {...item} cardType="small" />
-            )}
+            renderItem={({ item }) => <HomeCard.Card {...item} type="small" />}
           />
         </HomeCard.Root>
 
@@ -123,9 +119,7 @@ export default function House() {
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
-            renderItem={({ item }) => (
-              <HomeCard.Card {...item} cardType="small" />
-            )}
+            renderItem={({ item }) => <HomeCard.Card {...item} type="small" />}
           />
         </HomeCard.Root>
 
@@ -136,9 +130,7 @@ export default function House() {
             data={RESIDENCE_DATA}
             className="w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
-            renderItem={({ item }) => (
-              <HomeCard.Card {...item} cardType="small" />
-            )}
+            renderItem={({ item }) => <HomeCard.Card {...item} type="small" />}
           />
         </HomeCard.Root>
       </View>

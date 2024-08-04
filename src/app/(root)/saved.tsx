@@ -15,11 +15,11 @@ import constants from '@/constants'
 import { useSupabase } from '@/hooks/useSupabase'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { SavedResidenceRepository } from '@/repositories/saved.residence.repository'
-import { useResidenceStore } from '@/store/ResidenceStore'
+import { useSavedResidenceStore } from '@/store/SavedResidenceStore'
 
 export default function Saved() {
-  const savedResidences = useResidenceStore((state) => state.savedResidences)
-  const addToResidences = useResidenceStore((state) => state.addToResidences)
+  const savedResidences = useSavedResidenceStore((state) => state.residences)
+  const addSavedResidence = useSavedResidenceStore((state) => state.add)
 
   const residenceRepository = useMemo(() => new ResidenceRepository(), [])
   const savedResidenceRepository = useMemo(
@@ -41,10 +41,10 @@ export default function Saved() {
     if (savedResidencesData) {
       for (const item of savedResidencesData) {
         const saved = await residenceRepository.findById(item.residence_id)
-        addToResidences(saved, 'saved')
+        addSavedResidence(saved)
       }
     }
-  }, [savedResidenceRepository, user, residenceRepository, addToResidences])
+  }, [savedResidenceRepository, user, residenceRepository, addSavedResidence])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)

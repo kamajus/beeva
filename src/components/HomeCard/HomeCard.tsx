@@ -8,17 +8,16 @@ import IconButton from '@/components/IconButton'
 import Skeleton from '@/components/Skeleton'
 import { formatMoney } from '@/functions/format'
 import { useSupabase } from '@/hooks/useSupabase'
-import { useResidenceStore } from '@/store/ResidenceStore'
+import { useSavedResidenceStore } from '@/store/SavedResidenceStore'
 
 interface IHomeCard extends IResidence {
-  cardType: 'search' | 'big' | 'small'
+  type: 'search' | 'big' | 'small'
 }
 
 export default function HomeCard(residence: IHomeCard) {
-  const savedResidences = useResidenceStore((state) => state.savedResidences)
-  const residenceSavedStatus = useResidenceStore(
-    (state) => state.residenceSavedStatus,
-  )
+  const savedResidences = useSavedResidenceStore((state) => state.residences)
+  const residenceSavedStatus = useSavedResidenceStore((state) => state.status)
+
   const { saveResidence, user } = useSupabase()
   const [saved, setSaved] = useState(false)
 
@@ -40,15 +39,15 @@ export default function HomeCard(residence: IHomeCard) {
             source={{ uri: String(residence.cover) }}
             alt={residence.description || ''}
             className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
-              'mt-0 w-[272px] h-[220px] mr-2': residence.cardType === 'big',
-              'mt-0 w-[172px] h-[190px] mr-2': residence.cardType === 'small',
+              'mt-0 w-[272px] h-[220px] mr-2': residence.type === 'big',
+              'mt-0 w-[172px] h-[190px] mr-2': residence.type === 'small',
             })}
           />
         ) : (
           <Skeleton
             className={clsx('mt-5 w-full h-[300px] rounded-2xl mb-2 relative', {
-              'mt-0 w-[272px] h-[220px] mr-2': residence.cardType === 'big',
-              'mt-0 w-[172px] h-[190px] mr-2': residence.cardType === 'small',
+              'mt-0 w-[272px] h-[220px] mr-2': residence.type === 'big',
+              'mt-0 w-[172px] h-[190px] mr-2': residence.type === 'small',
             })}
           />
         )}
@@ -87,7 +86,7 @@ export default function HomeCard(residence: IHomeCard) {
           residence.owner_id === user?.id || residence.owner_id === undefined
         }
         className={clsx('absolute top-[4px] right-3', {
-          'absolute top-6 right-1': residence.cardType === 'search',
+          'absolute top-6 right-1': residence.type === 'search',
         })}
         onPress={() => {
           async function handleSaveResidence() {

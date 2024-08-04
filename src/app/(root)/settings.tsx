@@ -15,18 +15,12 @@ import Header from '@/components/Header'
 import TouchableBrightness from '@/components/TouchableBrightness'
 import constants from '@/constants'
 import { useAlert } from '@/hooks/useAlert'
-import { useCache } from '@/hooks/useCache'
 import { useSupabase } from '@/hooks/useSupabase'
-import { useResidenceStore } from '@/store/ResidenceStore'
 
 export default function Settings() {
   const { width } = Dimensions.get('screen')
-  const resetResidenceCache = useResidenceStore(
-    (state) => state.resetResidenceCache,
-  )
   const { signOut, session, user } = useSupabase()
   const [exiting, setExiting] = useState(false)
-  const { resetCache } = useCache()
 
   const alert = useAlert()
 
@@ -108,10 +102,7 @@ export default function Settings() {
                 secondaryLabel: 'Cancelar',
                 onPressPrimary() {
                   setExiting(true)
-                  signOut().then(() => {
-                    resetCache()
-                    resetResidenceCache()
-                  })
+                  signOut()
                 },
               })
             }}>
