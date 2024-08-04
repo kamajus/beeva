@@ -18,17 +18,17 @@ export default function Settings() {
     const { error } = await supabase.auth.resetPasswordForEmail(email)
 
     if (error) {
-      alert.showAlert(
-        'Erro na autenticação',
-        'Ocorreu um erro ao tentar enviar o email para a alteração da palavra-passe, tente novamente mais tarde.',
-        'Ok',
-      )
+      alert.showAlert({
+        title: 'Erro na autenticação',
+        message:
+          'Ocorreu um erro ao tentar enviar o email para a alteração da palavra-passe, tente novamente mais tarde.',
+      })
     } else {
-      alert.showAlert(
-        'Sucesso',
-        'Foi enviando um email com intruções para alterar a sua palavra-passe.',
-        'Ok',
-      )
+      alert.showAlert({
+        title: 'Sucesso',
+        message:
+          'Foi enviando um email com intruções para alterar a sua palavra-passe.',
+      })
     }
   }
 
@@ -42,17 +42,18 @@ export default function Settings() {
         <ScrollView className="bg-white h-full">
           <TouchableBrightness
             onPress={() => {
-              alert.showAlert(
-                'Atenção',
-                'Você tem certeza que quer alterar a sua palavra-passe?',
-                'Sim',
-                () => {
+              alert.showAlert({
+                title: 'Atenção',
+                message:
+                  'Você tem certeza que quer alterar a sua palavra-passe?',
+                primaryLabel: 'Sim',
+                secondaryLabel: 'Cancelar',
+                onPressPrimary() {
                   if (session?.user.email) {
                     sendRecoveryEmail(session?.user.email)
                   }
                 },
-                'Cancelar',
-              )
+              })
             }}>
             <View
               style={{ width }}

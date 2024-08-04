@@ -1,5 +1,4 @@
 import expoConstants from 'expo-constants'
-import { useRouter } from 'expo-router'
 import { ChevronRight, ExternalLink, LogOut } from 'lucide-react-native'
 import { useState } from 'react'
 import {
@@ -29,7 +28,6 @@ export default function Settings() {
   const [exiting, setExiting] = useState(false)
   const { resetCache } = useCache()
 
-  const router = useRouter()
   const alert = useAlert()
 
   return (
@@ -39,7 +37,7 @@ export default function Settings() {
       </View>
 
       <ScrollView className="bg-white h-full">
-        <TouchableBrightness href="/(settings)/perfil">
+        <TouchableBrightness href="/perfil">
           <View
             style={{ width }}
             className="px-4 py-6 flex-row justify-between items-center">
@@ -77,7 +75,7 @@ export default function Settings() {
           </View>
         </TouchableBrightness>
 
-        <TouchableBrightness href="/(settings)/secure">
+        <TouchableBrightness href="/secure">
           <View
             style={{ width }}
             className="px-4 py-6 flex-row justify-between items-center">
@@ -103,22 +101,21 @@ export default function Settings() {
         {session && (
           <TouchableBrightness
             onPress={() => {
-              alert.showAlert(
-                'Atenção',
-                'Você tem certeza que deseja terminar sessão?',
-                'Sim',
-                () => {
+              alert.showAlert({
+                title: 'Atenção',
+                message: 'Você tem certeza que deseja terminar sessão?',
+                primaryLabel: 'Sim',
+                secondaryLabel: 'Cancelar',
+                onPressPrimary() {
                   setExiting(true)
                   signOut().then(() => {
                     resetCache()
                     resetResidenceCache()
-                    router.replace('/signin')
                   })
                 },
-                'Cancelar',
-              )
+              })
             }}>
-            <View className="w-full px-4 py-6 mb-4 flex-row justify-between items-center">
+            <View className="w-full px-4 py-6 mb-5 flex-row justify-between items-center">
               <Text className="text-base font-poppins-medium">
                 Terminar sessão
               </Text>

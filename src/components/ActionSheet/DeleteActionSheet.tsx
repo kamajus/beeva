@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { router } from 'expo-router'
 import { useState } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ScrollView, View, Text } from 'react-native'
@@ -11,6 +10,7 @@ import TextField from '@/components/TextField'
 import { supabase } from '@/config/supabase'
 import { useAlert } from '@/hooks/useAlert'
 import { useCache } from '@/hooks/useCache'
+import { useSupabase } from '@/hooks/useSupabase'
 import { useResidenceStore } from '@/store/ResidenceStore'
 
 interface IFormData {
@@ -36,6 +36,7 @@ export default function DeleteActionSheet(props: SheetProps) {
     (state) => state.resetResidenceCache,
   )
   const { resetCache } = useCache()
+
   const {
     handleSubmit,
     control,
@@ -50,6 +51,8 @@ export default function DeleteActionSheet(props: SheetProps) {
   })
 
   const [loading, setLoading] = useState(false)
+
+  const { signOut } = useSupabase()
   const alert = useAlert()
 
   async function onSubmit({ password }: IFormData) {
@@ -66,16 +69,16 @@ export default function DeleteActionSheet(props: SheetProps) {
     if (verifyResponse.data === true) {
       const { error } = await supabase.rpc('deleteUser')
       if (error) {
-        alert.showAlert(
-          'Erro',
-          'Parece que aconteceu algum erro no processo de eliminação da sua conta, tente novamente mais tarde.',
-          'Ok',
-        )
+        alert.showAlert({
+          title: 'Erro',
+          message:
+            'Parece que aconteceu algum erro no processo de eliminação da sua conta, tente novamente mais tarde.',
+        })
       } else {
-        supabase.auth.signOut()
-        resetCache()
-        resetResidenceCache()
-        router.replace('/signin')
+        signOut().then(() => {
+          resetCache()
+          resetResidenceCache()
+        })
       }
       reset()
     } else {

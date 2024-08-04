@@ -2,28 +2,21 @@ import React, { createContext, useState, ReactNode } from 'react'
 
 import CustomAlert from '@/components/CustomAlert'
 
-interface AlertObject {
+interface IAlertObject {
   title: string
   message: string
-  primaryLabel: string
+  primaryLabel?: string
   onPressPrimary?: () => void
   secondaryLabel?: string
   onPressSecondary?: () => void
 }
 
-interface AlertContextProps {
-  showAlert: (
-    title: string,
-    message: string,
-    primaryLabel: string,
-    onPressPrimary?: () => void,
-    secondaryLabel?: string,
-    onPressSecondary?: () => void,
-  ) => void
+interface IAlertContext {
+  showAlert: (props: IAlertObject) => void
   hideAlert: () => void
 }
 
-export const AlertContext = createContext<AlertContextProps>({
+export const AlertContext = createContext<IAlertContext>({
   hideAlert: () => {},
   showAlert: () => {},
 })
@@ -34,24 +27,10 @@ interface AlertProviderProps {
 
 export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
   const [alertVisible, setAlertVisible] = useState(false)
-  const [alertObject, setAlertObject] = useState<AlertObject | null>(null)
+  const [alertObject, setAlertObject] = useState<IAlertObject | null>(null)
 
-  const showAlert = (
-    title: string,
-    message: string,
-    primaryLabel: string,
-    onPressPrimary?: () => void,
-    secondaryLabel?: string,
-    onPressSecondary?: () => void,
-  ) => {
-    setAlertObject({
-      title,
-      message,
-      primaryLabel,
-      onPressPrimary,
-      secondaryLabel,
-      onPressSecondary,
-    })
+  const showAlert = ({ primaryLabel = 'Ok', ...props }: IAlertObject) => {
+    setAlertObject({ primaryLabel, ...props })
     setAlertVisible(true)
   }
 
