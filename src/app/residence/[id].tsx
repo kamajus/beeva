@@ -91,16 +91,15 @@ export default function ResidenceDetail() {
         }
 
         removeResidence(id)
-        handleCallNotification(
-          'Residência apagada',
-          'A residência foi apagada com sucesso',
-        )
+        handleCallNotification({
+          title: 'Residência apagada',
+          body: 'A residência foi apagada com sucesso',
+        })
       } catch {
-        alert.showAlert(
-          'Erro ao tentar apagar',
-          'Não foi possível apagar a residência, tente mais tarde.',
-          'Ok',
-        )
+        alert.showAlert({
+          message: 'Erro ao tentar apagar',
+          title: 'Não foi possível apagar a residência, tente mais tarde.',
+        })
       }
     }
   }, [
@@ -194,13 +193,16 @@ export default function ResidenceDetail() {
                 <IconButton
                   name="Trash"
                   onPress={() => {
-                    alert.showAlert(
-                      'Atenção',
-                      'Você tem certeza que quer apagar essa residência?',
-                      'Sim',
-                      () => deleteResidence(),
-                      'Cancelar',
-                    )
+                    alert.showAlert({
+                      title: 'Atenção',
+                      message:
+                        'Você tem certeza que quer apagar essa residência?',
+                      primaryLabel: 'Sim',
+                      secondaryLabel: 'Cancelar',
+                      onPressPrimary() {
+                        deleteResidence()
+                      },
+                    })
                   }}
                 />
                 {cachedData?.residence && (

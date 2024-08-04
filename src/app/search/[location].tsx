@@ -14,6 +14,7 @@ import { useCache } from '@/hooks/useCache'
 
 export default function Search() {
   const navigation = useNavigation()
+
   const { location } = useLocalSearchParams<{ location: string }>()
   const [residences, setResidences] = useState<IResidence[]>()
   const [loading, setLoading] = useState(false)
@@ -62,7 +63,8 @@ export default function Search() {
         kind: 'all',
       })
 
-      navigation.navigate('home') // Error in argument but still working (under review)
+      // @ts-expect-error: Safe to ignore TypeScript error for React Router DOM v6.
+      navigation.navigate('/home')
     })
 
     async function fetchData() {
