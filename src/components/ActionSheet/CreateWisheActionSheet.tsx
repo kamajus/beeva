@@ -109,7 +109,7 @@ function CreateWisheWithoutPlaceProvider({
   } = formHandler
 
   const wisheRepository = useMemo(() => new WisheRepository(), [])
-  const addToWishList = useWisheStore((state) => state.addToWishList)
+  const addWishe = useWisheStore((state) => state.add)
 
   const { handleCallNotification } = useSupabase()
 
@@ -118,7 +118,7 @@ function CreateWisheWithoutPlaceProvider({
   async function onSubmit(data: IFormData) {
     try {
       const wisheData = await wisheRepository.create(data)
-      addToWishList(wisheData)
+      addWishe(wisheData)
 
       handleCallNotification({
         title: 'Desejo criado',

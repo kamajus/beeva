@@ -18,13 +18,17 @@ import { IResidence, INotification, IUser } from '@/@types'
 import { supabase } from '@/config/supabase'
 import constants from '@/constants'
 import { useAlert } from '@/hooks/useAlert'
-import { useCache } from '@/hooks/useCache'
+import { useReset } from '@/hooks/useReset'
 import { LovedResidenceRepository } from '@/repositories/loved.residence.repository'
 import { NotificationRepository } from '@/repositories/notification.repository'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { SavedResidenceRepository } from '@/repositories/saved.residence.repository'
 import { UserRepository } from '@/repositories/user.repository'
-import { useResidenceStore } from '@/store/ResidenceStore'
+import { useLovedResidenceStore } from '@/store/LovedResidenceStore'
+import { useNotificationStore } from '@/store/NotificationStore'
+import { useOpenedResidenceStore } from '@/store/OpenedResidenceStore'
+import { useSavedResidenceStore } from '@/store/SavedResidenceStore'
+import { useUserResidenceStore } from '@/store/UserResidenceStore'
 
 type SupabaseContextProps = {
   user: IUser | null
@@ -73,23 +77,25 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
 
 export function SupabaseProvider({ children }: SupabaseProviderProps) {
   const alert = useAlert()
+
   const [user, setUser] = useState<IUser | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [initialized, setInitialized] = useState<boolean>(false)
-  const { setNotifications } = useCache()
 
-  const userResidences = useResidenceStore((state) => state.userResidences)
-  const cachedResidences = useResidenceStore((state) => state.cachedResidences)
-  const savedResidences = useResidenceStore((state) => state.savedResidences)
-  const addToResidences = useResidenceStore((state) => state.addToResidences)
-  const pushResidence = useResidenceStore((state) => state.pushResidence)
-  const removeResidence = useResidenceStore((state) => state.removeResidence)
-  const addToLovedResidences = useResidenceStore(
-    (state) => state.addToLovedResidences,
-  )
-  const removeLovedResidence = useResidenceStore(
-    (state) => state.removeLovedResidence,
-  )
+  const openedResidences = useOpenedResidenceStore((state) => state.residences)
+  const addOpenedResidence = useOpenedResidenceStore((state) => state.add)
+
+  const userResidences = useUserResidenceStore((state) => state.residences)
+  const addUserResidence = useUserResidenceStore((state) => state.add)
+
+  const savedResidences = useSavedResidenceStore((state) => state.residences)
+  const addSavedResidence = useSavedResidenceStore((state) => state.add)
+  const removeSavedResidence = useSavedResidenceStore((state) => state.remove)
+
+  const addLovedResidence = useLovedResidenceStore((state) => state.add)
+  const removeLovedResidence = useLovedResidenceStore((state) => state.remove)
+
+  const addNotification = useNotificationStore((state) => state.add)
 
   const userRepository = useMemo(() => new UserRepository(), [])
   const residenceRepository = useMemo(() => new ResidenceRepository(), [])
@@ -102,6 +108,8 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     [],
   )
   const notificationRepository = useMemo(() => new NotificationRepository(), [])
+
+  const { clearCache } = useReset()
 
   const signUp = async (email: string, phone: string, password: string) => {
     const { data, error } = await supabase.auth.signUp({
@@ -167,13 +175,13 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   const saveResidence = async (residence: IResidence, saved: boolean) => {
     if (saved) {
       await savedResidenceRepository.create({ residence_id: residence.id })
-      addToResidences(residence, 'saved')
+      addSavedResidence(residence)
     } else {
       await savedResidenceRepository.delete({
         residence_id: residence.id,
         user_id: session.user.id,
       })
-      removeResidence(residence.id)
+      removeSavedResidence(residence.id)
     }
   }
 
@@ -182,7 +190,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       const data = await lovedResidenceRepository.create({
         residence_id: residenceId,
       })
-      addToLovedResidences(data)
+      addLovedResidence(data)
     } else {
       await lovedResidenceRepository.delete({
         residence_id: residenceId,
@@ -223,36 +231,17 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     if (error) throw error
   }
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await supabase.auth
       .signOut()
       .then(() => {
         router.replace('/signin')
+        clearCache()
       })
       .catch((error) => {
         console.error(error)
       })
-  }
-
-  const updateNotifications = useCallback(
-    (notification: INotification) => {
-      setNotifications((prevNotifications) => {
-        const index = prevNotifications.findIndex(
-          (r) => r.id === notification.id,
-        )
-        if (index !== -1) {
-          return [
-            notification,
-            ...prevNotifications.slice(0, index),
-            ...prevNotifications.slice(index + 1),
-          ]
-        } else {
-          return [notification, ...prevNotifications]
-        }
-      })
-    },
-    [setNotifications],
-  )
+  }, [clearCache])
 
   const handleCallNotification = (notification: {
     title: string
@@ -288,7 +277,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           { event: 'INSERT', schema: 'public' },
           async (payload: { new: INotification }) => {
             if (payload.new.user_id === userId && payload.new?.title) {
-              updateNotifications(payload.new)
+              addNotification(payload.new)
               handleCallNotification({
                 title: payload.new.title,
                 body: payload.new.description,
@@ -298,7 +287,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         )
         .subscribe()
     },
-    [updateNotifications],
+    [addNotification],
   )
 
   useEffect(() => {
@@ -314,14 +303,16 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           await notificationRepository
             .findByUserId(session.user.id)
             .then((data) => {
-              setNotifications(data)
+              for (const item of data) {
+                addNotification(item)
+              }
             })
 
           setSession(session)
           setupUserChannel(session.user.id)
           setupNotificationsChannel(session.user.id)
         } catch {
-          await signOut().catch(() => {})
+          await signOut()
         }
       }
 
@@ -330,10 +321,11 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
 
     return () => subscription.unsubscribe()
   }, [
+    addNotification,
     notificationRepository,
-    setNotifications,
     setupNotificationsChannel,
     setupUserChannel,
+    signOut,
     userRepository,
   ])
 
@@ -346,17 +338,17 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         async (payload: { new: IResidence }) => {
           if (payload.new) {
             if (userResidences.some((r) => r.id === payload.new.id)) {
-              addToResidences(payload.new, 'user')
+              addUserResidence(payload.new)
             }
             if (savedResidences.some((r) => r.id === payload.new.id)) {
-              addToResidences(payload.new, 'saved')
+              addSavedResidence(payload.new)
             }
             if (
-              Object.values(cachedResidences).some(
+              Object.values(openedResidences).some(
                 ({ residence: r }) => r.id === payload.new.id,
               )
             ) {
-              pushResidence(payload.new)
+              addOpenedResidence(payload.new)
             }
           }
         },
@@ -365,9 +357,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   }, [
     userResidences,
     savedResidences,
-    cachedResidences,
-    addToResidences,
-    pushResidence,
+    openedResidences,
+    addUserResidence,
+    addSavedResidence,
+    addOpenedResidence,
   ])
 
   return (

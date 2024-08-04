@@ -24,17 +24,20 @@ import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { UserRepository } from '@/repositories/user.repository'
-import { useResidenceStore } from '@/store/ResidenceStore'
+import { useLovedResidenceStore } from '@/store/LovedResidenceStore'
+import { useOpenedResidenceStore } from '@/store/OpenedResidenceStore'
+import { useUserResidenceStore } from '@/store/UserResidenceStore'
 
 export default function ResidenceDetail() {
   const [refreshing, setRefreshing] = useState(false)
-  const cachedResidences = useResidenceStore((state) => state.cachedResidences)
-  const pushResidence = useResidenceStore((state) => state.pushResidence)
-  const removeResidence = useResidenceStore((state) => state.removeResidence)
-  const lovedResidences = useResidenceStore((state) => state.lovedResidences)
-  const residenceLovedStatus = useResidenceStore(
-    (state) => state.residenceLovedStatus,
-  )
+  const openedResidences = useOpenedResidenceStore((state) => state.residences)
+  const addOpenedResidence = useOpenedResidenceStore((state) => state.add)
+
+  const removeOpenedResidence = useOpenedResidenceStore((state) => state.remove)
+  const removeUserResidence = useUserResidenceStore((state) => state.remove)
+
+  const lovedResidences = useLovedResidenceStore((state) => state.residences)
+  const residenceLovedStatus = useLovedResidenceStore((state) => state.status)
 
   const userRepository = useMemo(() => new UserRepository(), [])
   const residenceRepository = useMemo(() => new ResidenceRepository(), [])
@@ -43,7 +46,7 @@ export default function ResidenceDetail() {
 
   const { handleCallNotification, loveResidence, user } = useSupabase()
   const [cachedData, setCachedData] = useState<ICachedResidence | undefined>(
-    cachedResidences.find((r) => r.residence.id === id),
+    openedResidences.find((r) => r.residence.id === id),
   )
 
   const alert = useAlert()
@@ -62,10 +65,10 @@ export default function ResidenceDetail() {
           user: userData,
         })
 
-        pushResidence(residenceData, userData)
+        addOpenedResidence(residenceData, userData)
       }
     }
-  }, [id, pushResidence, residenceRepository, userRepository])
+  }, [addOpenedResidence, id, residenceRepository, userRepository])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
@@ -90,7 +93,9 @@ export default function ResidenceDetail() {
           router.replace('/home')
         }
 
-        removeResidence(id)
+        removeOpenedResidence(id)
+        removeUserResidence(id)
+
         handleCallNotification({
           title: 'Residência apagada',
           body: 'A residência foi apagada com sucesso',
@@ -106,7 +111,8 @@ export default function ResidenceDetail() {
     cachedData,
     residenceRepository,
     id,
-    removeResidence,
+    removeOpenedResidence,
+    removeUserResidence,
     handleCallNotification,
     user,
     alert,
@@ -126,7 +132,7 @@ export default function ResidenceDetail() {
 
   useEffect(() => {
     const checkCachedData = () => {
-      const newData = cachedResidences.find((r) => r?.residence.id === id)
+      const newData = openedResidences.find((r) => r?.residence.id === id)
       if (newData) {
         setCachedData(newData)
       } else {
@@ -135,7 +141,7 @@ export default function ResidenceDetail() {
     }
 
     checkCachedData()
-  }, [cachedResidences, id, onRefresh])
+  }, [openedResidences, id, onRefresh])
 
   return (
     <ScrollView

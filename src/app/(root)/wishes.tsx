@@ -19,8 +19,8 @@ import { WisheRepository } from '@/repositories/wishe.repository'
 import { useWisheStore } from '@/store/WisheStore'
 
 export default function Wishes() {
-  const wishlist = useWisheStore((state) => state.wishlist)
-  const addToWishList = useWisheStore((state) => state.addToWishList)
+  const wishes = useWisheStore((state) => state.wishes)
+  const addWishe = useWisheStore((state) => state.add)
 
   const wisheRepository = useMemo(() => new WisheRepository(), [])
 
@@ -35,10 +35,10 @@ export default function Wishes() {
 
     if (data) {
       for (const item of data) {
-        addToWishList(item)
+        addWishe(item)
       }
     }
-  }, [addToWishList, user, wisheRepository])
+  }, [addWishe, user, wisheRepository])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)
@@ -88,13 +88,13 @@ export default function Wishes() {
             />
 
             <View className="w-full flex-1 flex items-center justify-center">
-              {wishlist.length > 0 ? (
+              {wishes.length > 0 ? (
                 <View
                   style={{
                     height: height - 74 - constants.customHeaderDistance,
                   }}
                   className="w-full flex-1">
-                  {wishlist.map(({ id, ...data }) => (
+                  {wishes.map(({ id, ...data }) => (
                     <View key={id} className="mt-3">
                       <WisheCard key={id} id={id} {...data} />
                     </View>

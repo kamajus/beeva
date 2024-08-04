@@ -14,11 +14,11 @@ import LoadScreen from '@/components/LoadScreen'
 import constants from '@/constants'
 import { useSupabase } from '@/hooks/useSupabase'
 import { ResidenceRepository } from '@/repositories/residence.repository'
-import { useResidenceStore } from '@/store/ResidenceStore'
+import { useUserResidenceStore } from '@/store/UserResidenceStore'
 
 export default function Residences() {
-  const userResidences = useResidenceStore((state) => state.userResidences)
-  const addToResidences = useResidenceStore((state) => state.addToResidences)
+  const userResidences = useUserResidenceStore((state) => state.residences)
+  const addUserResidence = useUserResidenceStore((state) => state.add)
 
   const { user } = useSupabase()
   const { height } = Dimensions.get('screen')
@@ -33,10 +33,10 @@ export default function Residences() {
 
     if (residencesData) {
       for (const residence of residencesData) {
-        addToResidences(residence, 'user')
+        addUserResidence(residence)
       }
     }
-  }, [residenceRepository, user, addToResidences])
+  }, [residenceRepository, user, addUserResidence])
 
   const onRefresh = useCallback(() => {
     setRefreshing(true)

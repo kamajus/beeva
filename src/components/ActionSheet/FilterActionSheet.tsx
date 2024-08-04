@@ -12,10 +12,10 @@ import Button from '@/components/Button'
 import IconButton from '@/components/IconButton'
 import ResidenceFilterButton from '@/components/ResidenceFilterButton'
 import TextField from '@/components/TextField'
-import { useCache } from '@/hooks/useCache'
+import { useSearchFilterStore } from '@/store/UseSearchFilter'
 
 export default function FilterActionSheet(props: SheetProps) {
-  const { filter, setFilter } = useCache()
+  const { filter, setFilter } = useSearchFilterStore()
 
   const [kind, setKind] = useState<IResidenceFilterEnum>(
     filter.kind ? filter.kind : 'all',

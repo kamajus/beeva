@@ -20,7 +20,7 @@ import { useSupabase } from '@/hooks/useSupabase'
 import { NotificationRepository } from '@/repositories/notification.repository'
 import { ResidenceNotificationRepository } from '@/repositories/residence.notification.repository'
 import { ResidenceRepository } from '@/repositories/residence.repository'
-import { useResidenceStore } from '@/store/ResidenceStore'
+import { useOpenedResidenceStore } from '@/store/OpenedResidenceStore'
 
 interface IEditorWithouPlaceProvider {
   formHandler: UseFormReturn<
@@ -39,9 +39,8 @@ function EditorWithoutPlaceProvider({
   formHandler,
 }: IEditorWithouPlaceProvider) {
   const [images, setImages] = useState<ImagePicker.ImagePickerAsset[]>([])
-  const resetResidenceCache = useResidenceStore(
-    (state) => state.resetResidenceCache,
-  )
+
+  const resetOpenedResidences = useOpenedResidenceStore((state) => state.reset)
 
   const {
     reset,
@@ -105,7 +104,7 @@ function EditorWithoutPlaceProvider({
         })
 
         resetFields()
-        resetResidenceCache()
+        resetOpenedResidences()
         router.replace('/home')
       } catch {
         alert.showAlert({

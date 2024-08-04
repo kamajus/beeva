@@ -3,41 +3,41 @@ import { create } from 'zustand'
 import { IWishe } from '@/@types'
 
 interface WisheState {
-  wishlist: IWishe[]
-  addToWishList: (item: IWishe) => void
-  removeFromWishe: (id: string) => void
-  resetWishListCache: () => void
+  wishes: IWishe[]
+  add: (item: IWishe) => void
+  remove: (id: string) => void
+  reset: () => void
 }
 
-export const useWisheStore = create<WisheState>((set, get) => ({
-  wishlist: [],
+export const useWisheStore = create<WisheState>((set) => ({
+  wishes: [],
 
-  addToWishList: (item) => {
+  add: (item) => {
     set((state) => {
-      const wishlist = [...state.wishlist]
-      const wisheIndex = wishlist.findIndex((w) => w.id === item.id)
+      const wishes = [...state.wishes]
+      const wisheIndex = wishes.findIndex((w) => w.id === item.id)
 
       if (wisheIndex > -1) {
-        wishlist[wisheIndex] = item
+        wishes[wisheIndex] = item
       } else {
-        wishlist.unshift(item)
+        wishes.unshift(item)
       }
 
       return {
-        wishlist,
+        wishes,
       }
     })
   },
 
-  removeFromWishe: (id: string) => {
+  remove: (id: string) => {
     set((state) => ({
-      wishlist: state.wishlist.filter((w) => w.id !== id),
+      wishes: state.wishes.filter((w) => w.id !== id),
     }))
   },
 
-  resetWishListCache: () => {
+  reset: () => {
     set(() => ({
-      wishlist: [],
+      wishes: [],
     }))
   },
 }))

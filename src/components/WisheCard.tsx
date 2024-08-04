@@ -13,7 +13,7 @@ import { useWisheStore } from '@/store/WisheStore'
 
 export default function WisheCard(props: IWishe) {
   const alert = useAlert()
-  const removeFromWishe = useWisheStore((state) => state.removeFromWishe)
+  const removeWishe = useWisheStore((state) => state.remove)
   const { handleCallNotification } = useSupabase()
 
   const wisheRepository = useMemo(() => new WisheRepository(), [])
@@ -21,7 +21,7 @@ export default function WisheCard(props: IWishe) {
   function deleteWishe(id: string) {
     try {
       wisheRepository.deleteById(id)
-      removeFromWishe(id)
+      removeWishe(id)
 
       handleCallNotification({
         title: 'Desejo apagado',
