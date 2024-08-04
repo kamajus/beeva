@@ -23,18 +23,20 @@ export default function WisheCard(props: IWishe) {
       wisheRepository.deleteById(id)
       removeFromWishe(id)
 
-      handleCallNotification(
-        'Desejo apagado',
-        'O desejo foi removido da lista de desejos',
-      )
+      handleCallNotification({
+        title: 'Desejo apagado',
+        body: 'O desejo foi removido da lista de desejos',
+      })
     } catch {
-      alert.showAlert('Atenção', 'Não foi possível apagar o teu desejo.', 'Ok')
+      alert.showAlert({
+        title: 'Atenção',
+        message: 'Não foi possível apagar o teu desejo.',
+      })
     }
   }
 
   function getFormattedPrice(price: number) {
     const formattedPrice = formatMoney(price)
-
     return props.state === 'rent' ? `${formattedPrice}/mês` : formattedPrice
   }
 
@@ -67,15 +69,15 @@ export default function WisheCard(props: IWishe) {
         name="Trash"
         color={constants.colors.alert}
         onPress={() => {
-          alert.showAlert(
-            'Atenção',
-            'Você tem certeza que queres apagar o teu desejo?',
-            'Sim',
-            () => {
+          alert.showAlert({
+            title: 'Atenção',
+            message: 'Você tem certeza que queres apagar o teu desejo?',
+            primaryLabel: 'Sim',
+            secondaryLabel: 'Cancelar',
+            onPressPrimary() {
               deleteWishe(props.id)
             },
-            'Cancelar',
-          )
+          })
         }}
         className="absolute top-3 right-3"
       />

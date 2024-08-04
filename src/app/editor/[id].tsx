@@ -90,10 +90,11 @@ function EditorWithoutPlaceProvider({
   function handleGoBack() {
     setForceExiting(true)
     navigation.goBack()
-    handleCallNotification(
-      'Residência editada',
-      'A residência foi editada com sucesso.',
-    )
+
+    handleCallNotification({
+      title: 'Residência editada',
+      body: 'A residência foi editada com sucesso.',
+    })
   }
 
   async function onSubmit(formData: IFormData) {
@@ -121,17 +122,16 @@ function EditorWithoutPlaceProvider({
       handleGoBack()
     } else {
       if (!hasSelectedImages) {
-        alert.showAlert(
-          'Erro a realizar postagem',
-          'Não selecionaste nenhuma foto da residência.',
-          'Ok',
-        )
+        alert.showAlert({
+          title: 'Erro a realizar postagem',
+          message: 'Não selecionaste nenhuma foto da residência.',
+        })
       } else if (!cover) {
-        alert.showAlert(
-          'Erro a realizar postagem',
-          'Escolha uma fotografia para ser a foto de capa da sua residência.',
-          'Ok',
-        )
+        alert.showAlert({
+          title: 'Erro a realizar postagem',
+          message:
+            'Escolha uma fotografia para ser a foto de capa da sua residência.',
+        })
       }
     }
   }
@@ -169,11 +169,10 @@ function EditorWithoutPlaceProvider({
         price: 0,
       })
     } catch {
-      alert.showAlert(
-        'Erro a realizar postagem',
-        'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
-        'Ok',
-      )
+      alert.showAlert({
+        title: 'Erro ao editar residência',
+        message: 'Não foi possível editar a residência.',
+      })
     }
   }
 
@@ -225,16 +224,17 @@ function EditorWithoutPlaceProvider({
       resetLocationField()
       return true
     } else {
-      alert.showAlert(
-        'Descartar alterações?',
-        'Você possui alterações não salvas, tem certeza de que deseja descartá-las?',
-        'Sim',
-        () => {
+      alert.showAlert({
+        title: 'Descartar alterações?',
+        message:
+          'Você possui alterações não salvas, tem certeza de que deseja descartá-las?',
+        primaryLabel: 'Sim',
+        secondaryLabel: 'Não',
+        onPressPrimary() {
           router.back()
           resetLocationField()
         },
-        'Não',
-      )
+      })
       return true
     }
   }, [

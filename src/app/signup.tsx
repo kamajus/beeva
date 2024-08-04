@@ -25,7 +25,7 @@ interface FormData {
   last_name: string
   email: string
   password: string
-  phone?: string
+  phone: string
 }
 
 const schema = z.object({
@@ -124,30 +124,27 @@ export default function SignIn() {
                 phone: data.phone,
                 photo_url: null,
               })
-
               router.replace(`/verification/${data.email}`)
             } catch {
-              alert.showAlert(
-                'Erro na criação da conta',
-                'Algo de errado aconteceu, tente novamente mais tarde.',
-                'Ok',
-              )
+              alert.showAlert({
+                title: 'Erro na criação da conta',
+                message:
+                  'Algo de errado aconteceu, tente novamente mais tarde.',
+              })
             }
           }
         } else {
-          alert.showAlert(
-            'Erro na autenticação',
-            'Algo de errado aconteceu, tente novamente mais tarde.',
-            'Ok',
-          )
+          alert.showAlert({
+            title: 'Erro na autenticação',
+            message: 'Algo de errado aconteceu, tente novamente mais tarde.',
+          })
         }
       })
       .catch(() => {
-        alert.showAlert(
-          'Erro na autenticação',
-          'Algo de errado aconteceu, tente novamente mais tarde.',
-          'Ok',
-        )
+        alert.showAlert({
+          title: 'Erro na autenticação',
+          message: 'Algo de errado aconteceu, tente novamente mais tarde.',
+        })
       })
       .finally(() => {
         setLoading(false)

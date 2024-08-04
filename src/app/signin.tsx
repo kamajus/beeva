@@ -72,11 +72,14 @@ export default function SignIn() {
   function onSubmit({ email, password }: FormData) {
     setLoading(true)
     signInWithPassword(email, password)
-      .then(() => router.replace('/(root)/home'))
+      .then(() => router.replace('/home'))
       .catch((response) => {
         if (response.redirect) router.replace(response.redirect)
         else {
-          alert.showAlert('Erro na autenticação', response.message, 'Ok')
+          alert.showAlert({
+            title: 'Erro na autenticação',
+            message: response.message,
+          })
         }
       })
       .finally(() => {

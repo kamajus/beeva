@@ -41,23 +41,21 @@ export default function Confirmation() {
     const { error } = await supabase.auth.resetPasswordForEmail(data.email)
 
     if (error) {
-      alert.showAlert(
-        'Erro na autenticação',
-        'Ocorreu um erro ao tentar enviar um email de recuperação da conta, tente novamente mais tarde.',
-        'Ok',
-      )
+      alert.showAlert({
+        title: 'Erro na autenticação',
+        message:
+          'Ocorreu um erro ao tentar enviar um email de recuperação da conta, tente novamente mais tarde.',
+      })
     } else {
-      alert.showAlert(
-        'Sucesso',
-        'Foi enviando um email com as instruções para conseguir alterar a sua senha.',
-        'Ok',
-        () => {
-          if (router.canGoBack()) {
-            router.back()
-            reset()
-          }
+      alert.showAlert({
+        title: 'Sucesso',
+        message:
+          'Foi enviando um email com as instruções para conseguir alterar a sua senha.',
+        onPressPrimary() {
+          router.back()
+          reset()
         },
-      )
+      })
     }
   }
 
