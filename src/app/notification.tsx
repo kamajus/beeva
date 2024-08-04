@@ -5,13 +5,15 @@ import { RefreshControl, ScrollView, View, Text } from 'react-native'
 import NoNotification from '@/assets/images/no-notification'
 import Header from '@/components/Header'
 import NotificationBox from '@/components/NotificationBox'
-import { useCache } from '@/hooks/useCache'
 import { useSupabase } from '@/hooks/useSupabase'
 import { NotificationRepository } from '@/repositories/notification.repository'
+import { useNotificationStore } from '@/store/NotificationStore'
 
 export default function Notification() {
   const { user } = useSupabase()
-  const { notifications, setNotifications } = useCache()
+
+  const notifications = useNotificationStore((state) => state.notifications)
+  const addNotification = useNotificationStore((state) => state.add)
 
   const notificationRepository = useMemo(() => new NotificationRepository(), [])
 
@@ -22,13 +24,16 @@ export default function Notification() {
     setTimeout(() => {
       async function getData() {
         const data = await notificationRepository.findByUserId(user.id)
-        setNotifications(data)
+
+        for (const item of data) {
+          addNotification(item)
+        }
       }
 
       getData()
       setRefreshing(false)
     }, 2000)
-  }, [notificationRepository, setNotifications, user.id])
+  }, [addNotification, notificationRepository, user.id])
 
   return (
     <View

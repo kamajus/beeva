@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useNavigation, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native'
 import { SheetProvider } from 'react-native-actions-sheet'
@@ -10,7 +10,7 @@ import Header from '@/components/Header'
 import HomeCard from '@/components/HomeCard'
 import { supabase } from '@/config/supabase'
 import constants from '@/constants'
-import { useCache } from '@/hooks/useCache'
+import { useSearchFilterStore } from '@/store/UseSearchFilter'
 
 export default function Search() {
   const navigation = useNavigation()
@@ -18,7 +18,8 @@ export default function Search() {
   const { location } = useLocalSearchParams<{ location: string }>()
   const [residences, setResidences] = useState<IResidence[]>()
   const [loading, setLoading] = useState(false)
-  const { filter, setFilter } = useCache()
+
+  const { filter, setFilter } = useSearchFilterStore()
 
   const addItemToHistory = async (newItem: string) => {
     try {
@@ -64,7 +65,7 @@ export default function Search() {
       })
 
       // @ts-expect-error: Safe to ignore TypeScript error for React Router DOM v6.
-      navigation.navigate('/home')
+      navigation.navigate('home')
     })
 
     async function fetchData() {
@@ -129,7 +130,7 @@ export default function Search() {
                       <HomeCard.Card
                         key={residence.id}
                         {...residence}
-                        cardType="search"
+                        type="search"
                       />
                     ))}
                   </View>
