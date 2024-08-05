@@ -149,7 +149,7 @@ export default function ResidenceMenuSheet(
               }}
               className="px-4">
               <Text className="font-poppins-semibold text-lg">
-                {saved ? 'Adicionar aos guardados' : 'Remover dos guardados'}
+                {saved ? 'Remover dos guardados':'Adicionar aos guardados'}
               </Text>
             </Pressable>
 

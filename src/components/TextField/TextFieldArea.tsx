@@ -20,6 +20,7 @@ const TextFieldArea = forwardRef<TextInput, ITextFieldInput>(
         )}
         onChangeText={onChangeValue}
         style={{ textAlignVertical: 'top' }}
+        multiline
         {...props}
       />
     )
