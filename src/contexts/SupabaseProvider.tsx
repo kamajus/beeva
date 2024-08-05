@@ -30,7 +30,12 @@ import { useOpenedResidenceStore } from '@/store/OpenedResidenceStore'
 import { useSavedResidenceStore } from '@/store/SavedResidenceStore'
 import { useUserResidenceStore } from '@/store/UserResidenceStore'
 
-type SupabaseContextProps = {
+interface IScheduleNotification {
+  title: string
+  body?: string
+}
+
+interface ISupabaseContext {
   user: IUser | null
   setUser: Dispatch<SetStateAction<IUser | null>> | null
   session: Session | null
@@ -50,17 +55,14 @@ type SupabaseContextProps = {
   signOut: () => Promise<void>
   saveResidence: (residence: IResidence, saved: boolean) => Promise<void>
   loveResidence: (residenceId: string, saved: boolean) => Promise<void>
-  handleCallNotification: (notification: {
-    title: string
-    body: string
-  }) => void
+  scheduleNotification: (notification: IScheduleNotification) => void
 }
 
 type SupabaseProviderProps = {
   children: React.ReactNode
 }
 
-export const SupabaseContext = createContext<SupabaseContextProps>({
+export const SupabaseContext = createContext<ISupabaseContext>({
   user: null,
   setUser: () => {},
   session: null,
@@ -72,7 +74,7 @@ export const SupabaseContext = createContext<SupabaseContextProps>({
   signOut: async () => {},
   saveResidence: async () => {},
   loveResidence: async () => {},
-  handleCallNotification: () => {},
+  scheduleNotification: () => {},
 })
 
 export function SupabaseProvider({ children }: SupabaseProviderProps) {
@@ -243,10 +245,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       })
   }, [clearCache])
 
-  const handleCallNotification = (notification: {
-    title: string
-    body: string
-  }) => {
+  const scheduleNotification = (notification: IScheduleNotification) => {
     Notifications.scheduleNotificationAsync({
       content: { title: notification.title, body: notification.body },
       trigger: null,
@@ -278,7 +277,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           async (payload: { new: INotification }) => {
             if (payload.new.user_id === userId && payload.new?.title) {
               addNotification(payload.new)
-              handleCallNotification({
+              scheduleNotification({
                 title: payload.new.title,
                 body: payload.new.description,
               })
@@ -376,7 +375,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         signOut,
         saveResidence,
         loveResidence,
-        handleCallNotification,
+        scheduleNotification,
         uploadResidencesImage,
       }}>
       {children}

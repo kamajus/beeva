@@ -14,7 +14,7 @@ import { useWisheStore } from '@/store/WisheStore'
 export default function WisheCard(props: IWishe) {
   const alert = useAlert()
   const removeWishe = useWisheStore((state) => state.remove)
-  const { handleCallNotification } = useSupabase()
+  const { scheduleNotification } = useSupabase()
 
   const wisheRepository = useMemo(() => new WisheRepository(), [])
 
@@ -23,9 +23,8 @@ export default function WisheCard(props: IWishe) {
       wisheRepository.deleteById(id)
       removeWishe(id)
 
-      handleCallNotification({
+      scheduleNotification({
         title: 'Desejo apagado',
-        body: 'O desejo foi removido da lista de desejos',
       })
     } catch {
       alert.showAlert({
