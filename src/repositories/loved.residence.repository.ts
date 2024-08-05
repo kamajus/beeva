@@ -20,4 +20,16 @@ export class LovedResidenceRepository extends BaseRepository<ILovedResidences> {
     if (error) throw error
     return data ?? null
   }
+
+  async countLovesByResidenceId(
+    residenceId: number | string,
+  ): Promise<number | null> {
+    const { count, error } = await supabase
+      .from(this.tableName)
+      .select('*', { count: 'exact' })
+      .eq('residence_id', residenceId)
+
+    if (error) throw error
+    return count ?? null
+  }
 }

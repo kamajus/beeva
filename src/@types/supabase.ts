@@ -314,7 +314,11 @@ export type Database = {
       }
     }
     Enums: {
-      notification_type: 'new-user-account' | 'residence-posted' | 'wishe-found'
+      notification_type:
+        | 'new-user-account'
+        | 'residence-posted'
+        | 'wishe-found'
+        | 'residence-loved'
       residence_kind: 'apartment' | 'villa' | 'land' | 'others'
       residence_state: 'sell' | 'rent'
     }
