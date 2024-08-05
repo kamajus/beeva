@@ -55,7 +55,7 @@ export default function Confirmation() {
             type: 'new-user-account',
             was_readed: false,
           })
-          router.replace('/(root)/home')
+          router.replace('/home')
         } else {
           setLoading(false)
           setError(true)
@@ -94,6 +94,8 @@ export default function Confirmation() {
             }}
             onTextChange={(value) => setCode(value)}
             focusStickBlinkingDuration={500}
+            onFilled={signInWithOtp}
+            autoFocus
           />
           <Text
             className={clsx('font-poppins-medium text-gray-300', {

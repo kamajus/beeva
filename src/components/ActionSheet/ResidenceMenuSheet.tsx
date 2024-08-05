@@ -18,7 +18,7 @@ import { useUserResidenceStore } from '@/store/UserResidenceStore'
 export default function ResidenceMenuSheet(
   props: SheetProps<'residence-menu-sheet'>,
 ) {
-  const { saveResidence, handleCallNotification, user } = useSupabase()
+  const { saveResidence, scheduleNotification, user } = useSupabase()
   const [saved, setSaved] = useState(false)
 
   const alert = useAlert()
@@ -66,9 +66,8 @@ export default function ResidenceMenuSheet(
         removeOpenedResidence(residence.id)
         removeUserResidence(residence.id)
 
-        handleCallNotification({
+        scheduleNotification({
           title: 'Residência apagada',
-          body: 'A residência foi apagada com sucesso',
         })
       } catch {
         alert.showAlert({
@@ -83,7 +82,7 @@ export default function ResidenceMenuSheet(
     residence.id,
     removeOpenedResidence,
     removeUserResidence,
-    handleCallNotification,
+    scheduleNotification,
     user.id,
     alert,
   ])
@@ -149,7 +148,7 @@ export default function ResidenceMenuSheet(
               }}
               className="px-4">
               <Text className="font-poppins-semibold text-lg">
-                {saved ? 'Remover dos guardados':'Adicionar aos guardados'}
+                {saved ? 'Remover dos guardados' : 'Adicionar aos guardados'}
               </Text>
             </Pressable>
 
