@@ -19,6 +19,7 @@ interface INotificationIcons {
 const notificationIcons: INotificationIcons = {
   'new-user-account': 'PartyPopper',
   'residence-posted': 'Smile',
+  'residence-loved': 'Heart',
   'wishe-found': 'Sparkles',
 }
 

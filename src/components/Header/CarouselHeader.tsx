@@ -1,12 +1,10 @@
 import expoConstants from 'expo-constants'
 import { useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
 import { View, Dimensions } from 'react-native'
+import { SheetManager } from 'react-native-actions-sheet'
 
 import IconButton from '@/components/IconButton'
-import { useSupabase } from '@/hooks/useSupabase'
 import { useOpenedResidenceStore } from '@/store/OpenedResidenceStore'
-import { useSavedResidenceStore } from '@/store/SavedResidenceStore'
 
 interface ICarouselHeader {
   owner_id: string
@@ -16,13 +14,6 @@ interface ICarouselHeader {
 export default function CarouselHeader(props: ICarouselHeader) {
   const openedResidences = useOpenedResidenceStore((state) => state.residences)
 
-  const savedResidences = useSavedResidenceStore((state) => state.residences)
-  const residenceSavedStatus = useSavedResidenceStore((state) => state.status)
-
-  const { saveResidence, user } = useSupabase()
-
-  const [saved, setSaved] = useState(false)
-
   const { width } = Dimensions.get('window')
 
   const residence = openedResidences.find(
@@ -30,18 +21,6 @@ export default function CarouselHeader(props: ICarouselHeader) {
   )?.residence
 
   const router = useRouter()
-
-  useEffect(() => {
-    async function checkSaved() {
-      if (residence) {
-        const isSaved = await residenceSavedStatus(residence.id, user)
-        setSaved(isSaved)
-      }
-    }
-
-    checkSaved()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [residence, savedResidences, user])
 
   return (
     <View
@@ -56,27 +35,14 @@ export default function CarouselHeader(props: ICarouselHeader) {
 
       <View className="flex gap-x-2 flex-row items-center">
         <IconButton
-          name="Bookmark"
+          name="EllipsisVertical"
           color="#000000"
-          fill={
-            props.owner_id !== user.id
-              ? saved
-                ? '#000000'
-                : 'transparent'
-              : 'transparent'
-          }
-          disabled={props.owner_id === user.id}
           onPress={() => {
-            async function handleSaveResidence() {
-              setSaved(!saved)
-              await saveResidence(residence, !saved)
-            }
-
-            handleSaveResidence()
+            SheetManager.show('residence-menu-sheet', {
+              payload: { residence },
+            })
           }}
         />
-
-        <IconButton name="Share" color="#000000" />
       </View>
     </View>
   )
