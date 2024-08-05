@@ -7,7 +7,7 @@ import Skeleton from './Skeleton'
 import constants from '@/constants'
 import { hexToRGBA } from '@/functions'
 
-interface CarouselProps {
+interface ICarousel {
   autoplay?: boolean
   loop?: boolean
   style?: StyleProp<ViewStyle>
@@ -19,7 +19,7 @@ export default function CustomCarousel({
   style,
   autoplay,
   loop,
-}: CarouselProps) {
+}: ICarousel) {
   return (
     <Carousel
       style={style}

@@ -111,7 +111,7 @@ function CreateWisheWithoutPlaceProvider({
   const wisheRepository = useMemo(() => new WisheRepository(), [])
   const addWishe = useWisheStore((state) => state.add)
 
-  const { handleCallNotification } = useSupabase()
+  const { scheduleNotification } = useSupabase()
 
   const alert = useAlert()
 
@@ -120,9 +120,8 @@ function CreateWisheWithoutPlaceProvider({
       const wisheData = await wisheRepository.create(data)
       addWishe(wisheData)
 
-      handleCallNotification({
+      scheduleNotification({
         title: 'Desejo criado',
-        body: 'O desejo foi criado com sucesso',
       })
     } catch {
       alert.showAlert({

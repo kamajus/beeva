@@ -8,7 +8,7 @@ import constants from '@/constants'
 const { width } = Dimensions.get('window')
 const inputWidth = width - width * 0.16
 
-interface IDialogProps {
+interface IDialog {
   visible: boolean
   title?: string
   message?: string
@@ -16,7 +16,7 @@ interface IDialogProps {
   buttons?: { text: string; onPress: () => void }[]
 }
 
-const Dialog: React.FC<IDialogProps> = ({
+const Dialog: React.FC<IDialog> = ({
   visible,
   title,
   message,

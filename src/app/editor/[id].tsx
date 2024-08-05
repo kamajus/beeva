@@ -75,7 +75,7 @@ function EditorWithoutPlaceProvider({
   const [cover, setCover] = useState<string | null | undefined>(
     defaultData?.residence.cover || undefined,
   )
-  const { uploadResidencesImage, handleCallNotification } = useSupabase()
+  const { uploadResidencesImage, scheduleNotification } = useSupabase()
 
   const [isPhotoChaged, setPhotoChanged] = useState(false)
   const alert = useAlert()
@@ -91,9 +91,8 @@ function EditorWithoutPlaceProvider({
     setForceExiting(true)
     navigation.goBack()
 
-    handleCallNotification({
-      title: 'Residência editada',
-      body: 'A residência foi editada com sucesso.',
+    scheduleNotification({
+      title: 'Residência editada com sucesso',
     })
   }
 
@@ -222,6 +221,7 @@ function EditorWithoutPlaceProvider({
     ) {
       router.back()
       resetLocationField()
+
       return true
     } else {
       alert.showAlert({
@@ -235,6 +235,7 @@ function EditorWithoutPlaceProvider({
           resetLocationField()
         },
       })
+
       return true
     }
   }, [
