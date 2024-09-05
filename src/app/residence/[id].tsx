@@ -126,7 +126,7 @@ export default function ResidenceDetail() {
     // Create a notification
     if (user.id !== cachedData?.residence.owner_id && !loved) {
       const notification = await notificationRepository.create({
-        user_id: user.id,
+        user_id: cachedData?.residence.owner_id,
         title: 'Alguém curtiu sua residência!',
         description:
           'Parabéns! Sua residência recebeu uma curtida de outro usuário.',
