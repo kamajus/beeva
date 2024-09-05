@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from 'react-native'
-import { SheetManager, SheetProvider } from 'react-native-actions-sheet'
+import { SheetManager } from 'react-native-actions-sheet'
 
 import NoWishe from '@/assets/images/no-wishe'
 import Button from '@/components/Button'
@@ -63,63 +63,61 @@ export default function Wishes() {
   }, [getWishList])
 
   return (
-    <SheetProvider>
-      <View className="relative bg-white">
-        <View className="absolute">
-          <Header.Normal showIcon={false} title="Lista de desejos" />
-        </View>
-
-        {!loading ? (
-          <ScrollView
-            style={{ padding: 16, marginTop: constants.customHeaderDistance }}
-            className="bg-white h-full"
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }>
-            <Button
-              className="absolute right-2 top-[75%] rounded-full h-14 w-14"
-              labelStyle={{
-                fontSize: 20,
-              }}
-              onPress={() => {
-                SheetManager.show('create-wishe-sheet')
-              }}
-              title="+"
-            />
-
-            <View className="w-full flex-1 flex items-center justify-center">
-              {wishes.length > 0 ? (
-                <View
-                  style={{
-                    height: height - 74 - constants.customHeaderDistance,
-                  }}
-                  className="w-full flex-1">
-                  {wishes.map(({ id, ...data }) => (
-                    <View key={id} className="mt-3">
-                      <WisheCard key={id} id={id} {...data} />
-                    </View>
-                  ))}
-                </View>
-              ) : (
-                <View
-                  style={{
-                    height: height - 74 - constants.customHeaderDistance,
-                  }}
-                  className="w-full flex-1 flex items-center justify-center">
-                  <View className="flex items-center justify-center">
-                    <NoWishe />
-                    <Text className="font-poppins-medium text-gray-400 text-center">
-                      Nenhum item na lista de desejos.
-                    </Text>
-                  </View>
-                </View>
-              )}
-            </View>
-          </ScrollView>
-        ) : (
-          <LoadScreen />
-        )}
+    <View className="relative bg-white">
+      <View className="absolute">
+        <Header.Normal showIcon={false} title="Lista de desejos" />
       </View>
-    </SheetProvider>
+
+      {!loading ? (
+        <ScrollView
+          style={{ padding: 16, marginTop: constants.customHeaderDistance }}
+          className="bg-white h-full"
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
+          <Button
+            className="absolute right-2 top-[75%] rounded-full h-14 w-14"
+            labelStyle={{
+              fontSize: 20,
+            }}
+            onPress={() => {
+              SheetManager.show('create-wishe-sheet')
+            }}
+            title="+"
+          />
+
+          <View className="w-full flex-1 flex items-center justify-center">
+            {wishes.length > 0 ? (
+              <View
+                style={{
+                  height: height - 74 - constants.customHeaderDistance,
+                }}
+                className="w-full flex-1">
+                {wishes.map(({ id, ...data }) => (
+                  <View key={id} className="mt-3">
+                    <WisheCard key={id} id={id} {...data} />
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View
+                style={{
+                  height: height - 74 - constants.customHeaderDistance,
+                }}
+                className="w-full flex-1 flex items-center justify-center">
+                <View className="flex items-center justify-center">
+                  <NoWishe />
+                  <Text className="font-poppins-medium text-gray-400 text-center">
+                    Nenhum item na lista de desejos.
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
+        </ScrollView>
+      ) : (
+        <LoadScreen />
+      )}
+    </View>
   )
 }

@@ -53,8 +53,10 @@ interface ISupabaseContext {
     images: ImagePicker.ImagePickerAsset[],
   ) => Promise<void>
   signOut: () => Promise<void>
+
   saveResidence: (residence: IResidence, saved: boolean) => Promise<void>
   loveResidence: (residenceId: string, saved: boolean) => Promise<void>
+
   scheduleNotification: (notification: IScheduleNotification) => void
 }
 
