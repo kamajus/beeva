@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useLocalSearchParams, useNavigation } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { ScrollView, Text, View, ActivityIndicator } from 'react-native'
-import { SheetProvider } from 'react-native-actions-sheet'
 
 import { IResidence, IResidenceFilterEnum, IResidenceStateEnum } from '@/@types'
 import NoData from '@/assets/images/no-data'
@@ -111,52 +110,50 @@ export default function Search() {
   }
 
   return (
-    <SheetProvider>
-      <View className="w-full h-full bg-white ">
-        <Header.Search value={location} filter={filter} />
+    <View className="w-full h-full bg-white ">
+      <Header.Search value={location} filter={filter} />
 
-        <View>
-          {!loading ? (
-            <View>
-              {residences && residences.length > 0 ? (
-                <ScrollView
-                  showsVerticalScrollIndicator={false}
-                  className="bg-white flex flex-col px-4 pt-4">
-                  <Text className="font-poppins-semibold text-lg">
-                    {residences?.length} resultado(s) encontrado(s)
-                  </Text>
-                  <View>
-                    {residences?.map((residence) => (
-                      <HomeCard.Card
-                        key={residence.id}
-                        {...residence}
-                        type="search"
-                      />
-                    ))}
-                  </View>
-
-                  <View style={{ marginBottom: 190 }} />
-                </ScrollView>
-              ) : (
-                <View className="w-full h-3/4 flex justify-center items-center">
-                  <NoData />
-                  <Text className="font-poppins-medium text-gray-400 text-center">
-                    Nenhum resultado encontrado!
-                  </Text>
+      <View>
+        {!loading ? (
+          <View>
+            {residences && residences.length > 0 ? (
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                className="bg-white flex flex-col px-4 pt-4">
+                <Text className="font-poppins-semibold text-lg">
+                  {residences?.length} resultado(s) encontrado(s)
+                </Text>
+                <View>
+                  {residences?.map((residence) => (
+                    <HomeCard.Card
+                      key={residence.id}
+                      {...residence}
+                      type="search"
+                    />
+                  ))}
                 </View>
-              )}
-            </View>
-          ) : (
-            <View className="h-2/3 flex items-center justify-center">
-              <ActivityIndicator
-                animating
-                color={constants.colors.primary}
-                size={40}
-              />
-            </View>
-          )}
-        </View>
+
+                <View style={{ marginBottom: 190 }} />
+              </ScrollView>
+            ) : (
+              <View className="w-full h-3/4 flex justify-center items-center">
+                <NoData />
+                <Text className="font-poppins-medium text-gray-400 text-center">
+                  Nenhum resultado encontrado!
+                </Text>
+              </View>
+            )}
+          </View>
+        ) : (
+          <View className="h-2/3 flex items-center justify-center">
+            <ActivityIndicator
+              animating
+              color={constants.colors.primary}
+              size={40}
+            />
+          </View>
+        )}
       </View>
-    </SheetProvider>
+    </View>
   )
 }

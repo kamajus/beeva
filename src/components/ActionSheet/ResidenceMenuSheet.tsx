@@ -77,13 +77,12 @@ export default function ResidenceMenuSheet(
       }
     }
   }, [
-    residence.photos,
     residenceRepository,
-    residence.id,
+    residence,
     removeOpenedResidence,
     removeUserResidence,
     scheduleNotification,
-    user.id,
+    user,
     alert,
   ])
 
@@ -99,12 +98,12 @@ export default function ResidenceMenuSheet(
           <Text className="font-poppins-semibold text-sm">Opções</Text>
         </View>
 
-        {residence.owner_id === user.id ? (
+        {residence.owner_id === user?.id ? (
           <View className="flex gap-y-6 px-2 py-4">
             <Pressable
               onPress={() => {
                 SheetManager.hide('residence-menu-sheet')
-                router.push(`/editor/${residence.id}`)
+                router.push(`/editor/${residence?.id}`)
               }}
               className="px-4">
               <Text className="font-poppins-semibold text-lg">
@@ -140,13 +139,9 @@ export default function ResidenceMenuSheet(
         ) : (
           <View className="flex gap-y-6 px-2 py-4">
             <Pressable
-              onPress={() => {
-                async function handleSaveResidence() {
-                  setSaved(!saved)
-                  await saveResidence(residence, !saved)
-                }
-
-                handleSaveResidence()
+              onPress={async () => {
+                setSaved(!saved)
+                await saveResidence(residence, !saved)
               }}
               className="px-4">
               <Text className="font-poppins-semibold text-lg">

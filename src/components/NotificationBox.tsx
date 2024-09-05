@@ -3,7 +3,7 @@ import { router } from 'expo-router'
 import { icons } from 'lucide-react-native'
 import { ReactNode, useEffect, useMemo, useState } from 'react'
 import { Text, View } from 'react-native'
-import { SheetManager, SheetProvider } from 'react-native-actions-sheet'
+import { SheetManager } from 'react-native-actions-sheet'
 
 import { INotification } from '@/@types'
 import PublishedSince from '@/components/PublishedSince'
@@ -119,34 +119,32 @@ export default function NotificationBox(notification: INotification) {
 
   return (
     <View>
-      <SheetProvider>
-        <NotificationBoxLink notification={notification}>
-          <View className="w-full px-2 py-2 flex items-center flex-row border-b border-gray-300">
-            <View className="relative">
-              <LucideIcon color={constants.colors.primary} size={30} />
-              <View
-                className={clsx(
-                  'absolute bottom-7 left-7 bg-[#e83f5b] rounded-full flex justify-center items-center w-2 h-2',
-                  {
-                    hidden: notification.was_readed,
-                  },
-                )}
-              />
-            </View>
-
-            <View className="p-4 pr-8">
-              <Text className="font-poppins-medium text-sm leading-relaxed text-black">
-                {notification.description}
-              </Text>
-
-              <PublishedSince
-                className="mt-1 font-poppins-medium text-xs text-gray-500"
-                date={notification.created_at}
-              />
-            </View>
+      <NotificationBoxLink notification={notification}>
+        <View className="w-full px-2 py-2 flex items-center flex-row border-b border-gray-300">
+          <View className="relative">
+            <LucideIcon color={constants.colors.primary} size={30} />
+            <View
+              className={clsx(
+                'absolute bottom-7 left-7 bg-[#e83f5b] rounded-full flex justify-center items-center w-2 h-2',
+                {
+                  hidden: notification.was_readed,
+                },
+              )}
+            />
           </View>
-        </NotificationBoxLink>
-      </SheetProvider>
+
+          <View className="p-4 pr-8">
+            <Text className="font-poppins-medium text-sm leading-relaxed text-black">
+              {notification.description}
+            </Text>
+
+            <PublishedSince
+              className="mt-1 font-poppins-medium text-xs text-gray-500"
+              date={notification.created_at}
+            />
+          </View>
+        </View>
+      </NotificationBoxLink>
     </View>
   )
 }
