@@ -140,6 +140,8 @@ export default function ResidenceMenuSheet(
           <View className="flex gap-y-6 px-2 py-4">
             <Pressable
               onPress={async () => {
+                SheetManager.hide('residence-menu-sheet')
+
                 setSaved(!saved)
                 await saveResidence(residence, !saved)
               }}
