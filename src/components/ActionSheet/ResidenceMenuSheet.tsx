@@ -103,6 +103,7 @@ export default function ResidenceMenuSheet(
           <View className="flex gap-y-6 px-2 py-4">
             <Pressable
               onPress={() => {
+                SheetManager.hide('residence-menu-sheet')
                 router.push(`/editor/${residence.id}`)
               }}
               className="px-4">
@@ -113,6 +114,7 @@ export default function ResidenceMenuSheet(
 
             <Pressable
               onPress={() => {
+                SheetManager.hide('residence-menu-sheet')
                 alert.showAlert({
                   title: 'Atenção',
                   message: 'Você tem certeza que quer apagar essa residência?',
