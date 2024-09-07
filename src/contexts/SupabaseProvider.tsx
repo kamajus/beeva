@@ -229,7 +229,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       email,
       options: {
         shouldCreateUser: true,
-        emailRedirectTo: 'https://example.com/welcome',
       },
     })
     if (error) throw error
@@ -295,6 +294,8 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_, session) => {
+      console.log('-----------------------------')
+      console.log(session)
       if (session) {
         try {
           await userRepository.findById(session.user.id).then((data) => {
