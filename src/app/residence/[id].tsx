@@ -17,6 +17,7 @@ import Carousel from '@/components/Carousel'
 import Header from '@/components/Header'
 import IconButton from '@/components/IconButton'
 import PublishedSince from '@/components/PublishedSince'
+import Toast from '@/components/Toast'
 import constants from '@/constants'
 import { formatMoney, formatPhoneNumber } from '@/functions/format'
 import { useSupabase } from '@/hooks/useSupabase'
@@ -157,6 +158,8 @@ export default function ResidenceDetail() {
         owner_id={cachedData?.residence?.owner_id}
         residence_id={cachedData?.residence?.id}
       />
+
+      <Toast description="Let's go." />
 
       <View className="px-4 bg-white flex mt-7">
         <View className="flex flex-row items-center justify-between">

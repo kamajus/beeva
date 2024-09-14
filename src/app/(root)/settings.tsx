@@ -29,8 +29,7 @@ export default function Settings() {
       <View>
         <Header.Normal showIcon={false} title="Definições" />
       </View>
-
-      <ScrollView className="bg-white h-full">
+      <ScrollView className="h-full">
         <TouchableBrightness href="/perfil">
           <View
             style={{ width }}
