@@ -7,12 +7,15 @@ import ActionSheet, {
 } from 'react-native-actions-sheet'
 
 import IconButton from '@/components/IconButton'
+import { useToast } from '@/hooks/useToast'
 import { NotificationRepository } from '@/repositories/notification.repository'
 import { useNotificationStore } from '@/store/NotificationStore'
 
 export default function NotificationMenuSheet(
   props: SheetProps<'notification-menu-sheet'>,
 ) {
+  const toast = useToast()
+
   const notificationRepository = useMemo(() => new NotificationRepository(), [])
   const addNotification = useNotificationStore((state) => state.add)
   const removeNotification = useNotificationStore((state) => state.remove)
@@ -45,6 +48,10 @@ export default function NotificationMenuSheet(
                 ...props.payload.notification,
                 was_readed: false,
               })
+
+              toast.show({
+                description: 'Notificação foi marcada como não lida',
+              })
             }}
             className="px-4">
             <Text
@@ -63,6 +70,10 @@ export default function NotificationMenuSheet(
                 props.payload.notification.id,
               )
               removeNotification(props.payload.notification.id)
+
+              toast.show({
+                description: 'Notificação foi apagada',
+              })
             }}
             className="px-4">
             <Text className="font-poppins-semibold text-lg">

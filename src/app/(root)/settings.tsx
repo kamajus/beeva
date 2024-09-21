@@ -94,7 +94,7 @@ export default function Settings() {
         {session && (
           <TouchableBrightness
             onPress={() => {
-              alert.showAlert({
+              alert.show({
                 title: 'Atenção',
                 message: 'Você tem certeza que deseja terminar sessão?',
                 primaryLabel: 'Sim',

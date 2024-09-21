@@ -41,13 +41,13 @@ export default function Confirmation() {
     const { error } = await supabase.auth.resetPasswordForEmail(data.email)
 
     if (error) {
-      alert.showAlert({
+      alert.show({
         title: 'Erro na autenticação',
         message:
           'Ocorreu um erro ao tentar enviar um email de recuperação da conta, tente novamente mais tarde.',
       })
     } else {
-      alert.showAlert({
+      alert.show({
         title: 'Sucesso',
         message:
           'Foi enviando um email com as instruções para conseguir alterar a sua senha.',

@@ -25,6 +25,7 @@ import PlaceInputProvider from '@/contexts/PlaceInputProvider'
 import { useAlert } from '@/hooks/useAlert'
 import { usePlaceInput } from '@/hooks/usePlaceInput'
 import { useSupabase } from '@/hooks/useSupabase'
+import { useToast } from '@/hooks/useToast'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useOpenedResidenceStore } from '@/store/OpenedResidenceStore'
 
@@ -75,9 +76,11 @@ function EditorWithoutPlaceProvider({
   const [cover, setCover] = useState<string | null | undefined>(
     defaultData?.residence.cover || undefined,
   )
-  const { uploadResidencesImage, scheduleNotification } = useSupabase()
+  const { uploadResidencesImage } = useSupabase()
 
   const [isPhotoChaged, setPhotoChanged] = useState(false)
+
+  const toast = useToast()
   const alert = useAlert()
 
   const { setOpen: setOpenLocationField, resetField: resetLocationField } =
@@ -91,8 +94,8 @@ function EditorWithoutPlaceProvider({
     setForceExiting(true)
     navigation.goBack()
 
-    scheduleNotification({
-      title: 'Residência editada com sucesso',
+    toast.show({
+      description: 'Residência editada com sucesso',
     })
   }
 
@@ -121,12 +124,12 @@ function EditorWithoutPlaceProvider({
       handleGoBack()
     } else {
       if (!hasSelectedImages) {
-        alert.showAlert({
+        alert.show({
           title: 'Erro a realizar postagem',
           message: 'Não selecionaste nenhuma foto da residência.',
         })
       } else if (!cover) {
-        alert.showAlert({
+        alert.show({
           title: 'Erro a realizar postagem',
           message:
             'Escolha uma fotografia para ser a foto de capa da sua residência.',
@@ -168,7 +171,7 @@ function EditorWithoutPlaceProvider({
         price: 0,
       })
     } catch {
-      alert.showAlert({
+      alert.show({
         title: 'Erro ao editar residência',
         message: 'Não foi possível editar a residência.',
       })
@@ -224,7 +227,7 @@ function EditorWithoutPlaceProvider({
 
       return true
     } else {
-      alert.showAlert({
+      alert.show({
         title: 'Descartar alterações?',
         message:
           'Você possui alterações não salvas, tem certeza de que deseja descartá-las?',

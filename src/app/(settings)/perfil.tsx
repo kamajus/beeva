@@ -137,7 +137,7 @@ export default function Perfil() {
       })
 
       if (session?.user.email !== data.email) {
-        alert.showAlert({
+        alert.show({
           title: 'Sucesso',
           message:
             'Foi enviando um email com as instruções para conseguir alterar o seu email.',
@@ -154,7 +154,7 @@ export default function Perfil() {
         })
       }
     } catch {
-      alert.showAlert({
+      alert.show({
         title: 'Erro a atualizar informações',
         message:
           'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
@@ -210,7 +210,7 @@ export default function Perfil() {
         }
 
         if (error) {
-          alert.showAlert({
+          alert.show({
             title: 'Erro a atualizar informações',
             message:
               'Houve algum problema ao tentar atualizar as informações, verifica a tua conexão a internet ou tente denovo mais tarde.',
@@ -239,7 +239,7 @@ export default function Perfil() {
 
           e.preventDefault()
 
-          alert.showAlert({
+          alert.show({
             title: 'Descartar alterações?',
             message:
               'Você possui alterações não salvas. Tem certeza de que deseja descartá-las e sair da tela?',

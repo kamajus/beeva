@@ -9,8 +9,8 @@ import {
 import { SheetManager } from 'react-native-actions-sheet'
 
 import NoWishe from '@/assets/images/no-wishe'
-import Button from '@/components/Button'
 import Header from '@/components/Header'
+import IconButton from '@/components/IconButton'
 import LoadScreen from '@/components/LoadScreen'
 import WisheCard from '@/components/WisheCard'
 import constants from '@/constants'
@@ -75,15 +75,13 @@ export default function Wishes() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }>
-          <Button
-            className="absolute right-2 top-[75%] rounded-full h-14 w-14"
-            labelStyle={{
-              fontSize: 20,
-            }}
+          <IconButton
+            className="absolute right-2 top-[75%] rounded-full h-14 w-14 bg-primary flex items-center justify-center"
+            name="Plus"
+            color="#ffffff"
             onPress={() => {
               SheetManager.show('create-wishe-sheet')
             }}
-            title="+"
           />
 
           <View className="w-full flex-1 flex items-center justify-center">
