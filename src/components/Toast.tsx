@@ -1,4 +1,6 @@
-import { Text, Dimensions, TouchableOpacity } from 'react-native'
+import { Text, Dimensions, Pressable } from 'react-native'
+
+import constants from '@/constants'
 
 interface IToast {
   description: string
@@ -9,10 +11,15 @@ export default function Toast({ description }: IToast) {
   const finalWidth = width - width * 0.06
 
   return (
-    <TouchableOpacity
-      style={{ width: finalWidth }}
-      className="bg-black flex items-center justify-center min-h-[60px] rounded-xl">
-      <Text className="text-white font-poppins-regular">{description}</Text>
-    </TouchableOpacity>
+    <Pressable
+      style={{
+        width: finalWidth,
+        top: constants.customHeaderDistance - 50,
+        left: '50%', // Centraliza horizontalmente
+        transform: [{ translateX: -(finalWidth / 2) }],
+      }}
+      className="absolute bg-black flex px-2 justify-center min-h-[60px] rounded-xl">
+      <Text className="text-white font-poppins-medium">{description}</Text>
+    </Pressable>
   )
 }

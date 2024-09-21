@@ -7,11 +7,11 @@ interface IToastObject {
 }
 
 interface IToastContext {
-  showAlert: (props: IToastObject) => void
+  show: (props: IToastObject) => void
 }
 
 export const ToastContext = createContext<IToastContext>({
-  showAlert: () => {},
+  show: () => {},
 })
 
 interface ToastProviderProps {
@@ -19,23 +19,23 @@ interface ToastProviderProps {
 }
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
-  const [alertVisible, setAlertVisible] = useState(false)
-  const [toastObject, setToastObject] = useState<IToastObject | null>(null)
+  const [visible, setVisible] = useState(false)
+  const [toastObject, setObject] = useState<IToastObject | null>(null)
 
-  const showAlert = (props: IToastObject) => {
-    setToastObject(props)
-    setAlertVisible(true)
+  const show = (props: IToastObject) => {
+    setObject(props)
+    setVisible(true)
 
-    // Faz o toast desaparecer após 3 segundos
+    // Makes the toast disappear after 3 seconds
     setTimeout(() => {
-      setAlertVisible(false)
-    }, 3000) // 3000 ms = 3 segundos
+      setVisible(false)
+    }, 2000) // 2000 ms = 2 seconds
   }
 
   return (
-    <ToastContext.Provider value={{ showAlert }}>
+    <ToastContext.Provider value={{ show }}>
       {children}
-      {alertVisible && toastObject && (
+      {visible && toastObject && (
         <Toast description={toastObject.description} />
       )}
     </ToastContext.Provider>

@@ -62,7 +62,7 @@ export default function DeleteActionSheet(props: SheetProps) {
     if (verifyResponse.data === true) {
       const { error } = await supabase.rpc('deleteUser')
       if (error) {
-        alert.showAlert({
+        alert.show({
           title: 'Erro',
           message:
             'Parece que aconteceu algum erro no processo de eliminação da sua conta, tente novamente mais tarde.',

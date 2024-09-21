@@ -126,7 +126,7 @@ export default function SignIn() {
               })
               router.replace(`/verification/${data.email}`)
             } catch {
-              alert.showAlert({
+              alert.show({
                 title: 'Erro na criação da conta',
                 message:
                   'Algo de errado aconteceu, tente novamente mais tarde.',
@@ -134,14 +134,14 @@ export default function SignIn() {
             }
           }
         } else {
-          alert.showAlert({
+          alert.show({
             title: 'Erro na autenticação',
             message: 'Algo de errado aconteceu, tente novamente mais tarde.',
           })
         }
       })
       .catch(() => {
-        alert.showAlert({
+        alert.show({
           title: 'Erro na autenticação',
           message: 'Algo de errado aconteceu, tente novamente mais tarde.',
         })

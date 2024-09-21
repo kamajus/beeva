@@ -76,7 +76,7 @@ export default function SignIn() {
       .catch((response) => {
         if (response.redirect) router.replace(response.redirect)
         else {
-          alert.showAlert({
+          alert.show({
             title: 'Erro na autenticação',
             message: response.message,
           })

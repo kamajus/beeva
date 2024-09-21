@@ -12,13 +12,13 @@ interface IAlertObject {
 }
 
 interface IAlertContext {
-  showAlert: (props: IAlertObject) => void
+  show: (props: IAlertObject) => void
   hideAlert: () => void
 }
 
 export const AlertContext = createContext<IAlertContext>({
   hideAlert: () => {},
-  showAlert: () => {},
+  show: () => {},
 })
 
 interface AlertProviderProps {
@@ -29,7 +29,7 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
   const [alertVisible, setAlertVisible] = useState(false)
   const [alertObject, setAlertObject] = useState<IAlertObject | null>(null)
 
-  const showAlert = ({ primaryLabel = 'Ok', ...props }: IAlertObject) => {
+  const show = ({ primaryLabel = 'Ok', ...props }: IAlertObject) => {
     setAlertObject({ primaryLabel, ...props })
     setAlertVisible(true)
   }
@@ -39,7 +39,7 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
   }
 
   return (
-    <AlertContext.Provider value={{ showAlert, hideAlert }}>
+    <AlertContext.Provider value={{ show, hideAlert }}>
       {children}
       {alertVisible && alertObject && (
         <CustomAlert
