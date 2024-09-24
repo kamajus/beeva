@@ -1,6 +1,7 @@
+import * as Linking from 'expo-linking'
 import { router } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import { Pressable, ScrollView, Share, Text, View } from 'react-native'
 import ActionSheet, {
   SheetProps,
   SheetManager,
@@ -34,6 +35,18 @@ export default function ResidenceMenuSheet(
   const removeUserResidence = useUserResidenceStore((state) => state.remove)
 
   const residence = props.payload.residence
+
+  const handleShare = async () => {
+    const url = Linking.createURL(`/residence/${residence.id}`)
+
+    try {
+      await Share.share({
+        message: `${url}`,
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
     async function checkSaved() {
@@ -132,7 +145,12 @@ export default function ResidenceMenuSheet(
               </Text>
             </Pressable>
 
-            <Pressable className="px-4">
+            <Pressable
+              onPress={() => {
+                SheetManager.hide('residence-menu-sheet')
+                handleShare()
+              }}
+              className="px-4">
               <Text className="font-poppins-semibold text-lg">
                 Compartilhar
               </Text>
@@ -153,7 +171,12 @@ export default function ResidenceMenuSheet(
               </Text>
             </Pressable>
 
-            <Pressable className="px-4">
+            <Pressable
+              onPress={() => {
+                SheetManager.hide('residence-menu-sheet')
+                handleShare()
+              }}
+              className="px-4">
               <Text className="font-poppins-semibold text-lg">
                 Compartilhar
               </Text>
