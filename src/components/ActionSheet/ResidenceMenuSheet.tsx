@@ -1,3 +1,4 @@
+import * as Clipboard from 'expo-clipboard'
 import { router } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
@@ -10,6 +11,7 @@ import IconButton from '@/components/IconButton'
 import { supabase } from '@/config/supabase'
 import { useAlert } from '@/hooks/useAlert'
 import { useSupabase } from '@/hooks/useSupabase'
+import { useToast } from '@/hooks/useToast'
 import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useOpenedResidenceStore } from '@/store/OpenedResidenceStore'
 import { useSavedResidenceStore } from '@/store/SavedResidenceStore'
@@ -18,10 +20,11 @@ import { useUserResidenceStore } from '@/store/UserResidenceStore'
 export default function ResidenceMenuSheet(
   props: SheetProps<'residence-menu-sheet'>,
 ) {
-  const { saveResidence, scheduleNotification, user } = useSupabase()
+  const { saveResidence, user } = useSupabase()
   const [saved, setSaved] = useState(false)
 
   const alert = useAlert()
+  const toast = useToast()
 
   const residenceRepository = useMemo(() => new ResidenceRepository(), [])
 
@@ -32,6 +35,16 @@ export default function ResidenceMenuSheet(
   const removeUserResidence = useUserResidenceStore((state) => state.remove)
 
   const residence = props.payload.residence
+
+  const handleShare = async () => {
+    await Clipboard.setStringAsync(
+      `${process.env.EXPO_PUBLIC_WEBSITE_URL}/residence/${residence.id}`,
+    )
+
+    toast.show({
+      description: 'Ligação copiada com sucesso!',
+    })
+  }
 
   useEffect(() => {
     async function checkSaved() {
@@ -66,11 +79,11 @@ export default function ResidenceMenuSheet(
         removeOpenedResidence(residence.id)
         removeUserResidence(residence.id)
 
-        scheduleNotification({
-          title: 'Residência apagada',
+        toast.show({
+          description: 'Residência apagada',
         })
       } catch {
-        alert.showAlert({
+        alert.show({
           message: 'Erro ao tentar apagar',
           title: 'Não foi possível apagar a residência, tente mais tarde.',
         })
@@ -81,9 +94,9 @@ export default function ResidenceMenuSheet(
     residence,
     removeOpenedResidence,
     removeUserResidence,
-    scheduleNotification,
     user,
     alert,
+    toast,
   ])
 
   return (
@@ -114,7 +127,7 @@ export default function ResidenceMenuSheet(
             <Pressable
               onPress={() => {
                 SheetManager.hide('residence-menu-sheet')
-                alert.showAlert({
+                alert.show({
                   title: 'Atenção',
                   message: 'Você tem certeza que quer apagar essa residência?',
                   primaryLabel: 'Sim',
@@ -130,20 +143,25 @@ export default function ResidenceMenuSheet(
               </Text>
             </Pressable>
 
-            <Pressable className="px-4">
+            <Pressable
+              onPress={() => {
+                SheetManager.hide('residence-menu-sheet')
+                handleShare()
+              }}
+              className="px-4">
               <Text className="font-poppins-semibold text-lg">
-                Compartilhar
+                Copiar a ligação
               </Text>
             </Pressable>
           </View>
         ) : (
           <View className="flex gap-y-6 px-2 py-4">
             <Pressable
-              onPress={async () => {
-                SheetManager.hide('residence-menu-sheet')
-
-                setSaved(!saved)
-                await saveResidence(residence, !saved)
+              onPress={() => {
+                SheetManager.hide('residence-menu-sheet').then(async () => {
+                  setSaved(!saved)
+                  await saveResidence(residence, !saved)
+                })
               }}
               className="px-4">
               <Text className="font-poppins-semibold text-lg">
@@ -151,9 +169,14 @@ export default function ResidenceMenuSheet(
               </Text>
             </Pressable>
 
-            <Pressable className="px-4">
+            <Pressable
+              onPress={() => {
+                SheetManager.hide('residence-menu-sheet')
+                handleShare()
+              }}
+              className="px-4">
               <Text className="font-poppins-semibold text-lg">
-                Compartilhar
+                Copiar a ligação
               </Text>
             </Pressable>
           </View>

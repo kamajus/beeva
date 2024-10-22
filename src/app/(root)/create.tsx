@@ -107,7 +107,7 @@ function EditorWithoutPlaceProvider({
         resetOpenedResidences()
         router.replace('/home')
       } catch {
-        alert.showAlert({
+        alert.show({
           title: 'Erro a realizar postagem',
           message:
             'Algo deve ter dado errado, reveja a tua conexão a internet ou tente novamente mais tarde.',
@@ -115,12 +115,12 @@ function EditorWithoutPlaceProvider({
       }
     } else {
       if (images.length === 0) {
-        alert.showAlert({
+        alert.show({
           title: 'Erro a realizar postagem',
           message: 'Não selecionaste nenhuma foto da residência.',
         })
       } else {
-        alert.showAlert({
+        alert.show({
           title: 'Erro a realizar postagem',
           message:
             'Escolha uma fotografia para ser a foto de capa da sua residência.',
@@ -144,7 +144,7 @@ function EditorWithoutPlaceProvider({
       router.back()
       return true
     } else {
-      alert.showAlert({
+      alert.show({
         title: 'Descartar alterações?',
         message:
           'Você possui alterações não salvas, tem certeza de que deseja descartá-las?',

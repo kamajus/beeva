@@ -52,7 +52,7 @@ export type Database = {
           id: string
           title: string
           type: Database['public']['Enums']['notification_type']
-          user_id: string | null
+          user_id: string
           was_readed: boolean
         }
         Insert: {
@@ -61,7 +61,7 @@ export type Database = {
           id?: string
           title: string
           type: Database['public']['Enums']['notification_type']
-          user_id?: string | null
+          user_id: string
           was_readed?: boolean
         }
         Update: {
@@ -70,7 +70,7 @@ export type Database = {
           id?: string
           title?: string
           type?: Database['public']['Enums']['notification_type']
-          user_id?: string | null
+          user_id?: string
           was_readed?: boolean
         }
         Relationships: [

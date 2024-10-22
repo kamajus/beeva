@@ -29,8 +29,7 @@ export default function Settings() {
       <View>
         <Header.Normal showIcon={false} title="Definições" />
       </View>
-
-      <ScrollView className="bg-white h-full">
+      <ScrollView className="h-full">
         <TouchableBrightness href="/perfil">
           <View
             style={{ width }}
@@ -95,7 +94,7 @@ export default function Settings() {
         {session && (
           <TouchableBrightness
             onPress={() => {
-              alert.showAlert({
+              alert.show({
                 title: 'Atenção',
                 message: 'Você tem certeza que deseja terminar sessão?',
                 primaryLabel: 'Sim',

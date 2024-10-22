@@ -124,7 +124,7 @@ function CreateWisheWithoutPlaceProvider({
         title: 'Desejo criado',
       })
     } catch {
-      alert.showAlert({
+      alert.show({
         title: 'Erro a realizar postagem',
         message: 'Occoreu um erro ao adicionar o item na lista de desejos.',
       })

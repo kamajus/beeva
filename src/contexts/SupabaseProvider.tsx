@@ -19,6 +19,7 @@ import { supabase } from '@/config/supabase'
 import constants from '@/constants'
 import { useAlert } from '@/hooks/useAlert'
 import { useReset } from '@/hooks/useReset'
+import { useToast } from '@/hooks/useToast'
 import { LovedResidenceRepository } from '@/repositories/loved.residence.repository'
 import { NotificationRepository } from '@/repositories/notification.repository'
 import { ResidenceRepository } from '@/repositories/residence.repository'
@@ -81,6 +82,7 @@ export const SupabaseContext = createContext<ISupabaseContext>({
 
 export function SupabaseProvider({ children }: SupabaseProviderProps) {
   const alert = useAlert()
+  const toast = useToast()
 
   const [user, setUser] = useState<IUser | null>(null)
   const [session, setSession] = useState<Session | null>(null)
@@ -153,14 +155,14 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
           }
 
           if (uploadError) {
-            alert.showAlert({
+            alert.show({
               title: 'Erro a realizar postagem',
               message:
                 'Houve um problema ao tentar carregar as imagens que você forneceu.',
             })
           }
         } catch {
-          alert.showAlert({
+          alert.show({
             title: 'Erro a realizar postagem',
             message:
               'Houve um problema ao tentar carregar as imagens que você forneceu.',
@@ -180,12 +182,19 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     if (saved) {
       await savedResidenceRepository.create({ residence_id: residence.id })
       addSavedResidence(residence)
+      toast.show({
+        description: 'Residência adicionada dos guardados',
+      })
     } else {
       await savedResidenceRepository.delete({
         residence_id: residence.id,
         user_id: session.user.id,
       })
+
       removeSavedResidence(residence.id)
+      toast.show({
+        description: 'Residência removida dos guardados',
+      })
     }
   }
 
@@ -229,7 +238,6 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       email,
       options: {
         shouldCreateUser: true,
-        emailRedirectTo: 'https://example.com/welcome',
       },
     })
     if (error) throw error
@@ -295,6 +303,8 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_, session) => {
+      console.log('-----------------------------')
+      console.log(session)
       if (session) {
         try {
           await userRepository.findById(session.user.id).then((data) => {
