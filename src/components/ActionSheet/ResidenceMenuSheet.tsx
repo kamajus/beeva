@@ -1,7 +1,7 @@
-import * as Linking from 'expo-linking'
+import * as Clipboard from 'expo-clipboard'
 import { router } from 'expo-router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Pressable, ScrollView, Share, Text, View } from 'react-native'
+import { Pressable, ScrollView, Text, View } from 'react-native'
 import ActionSheet, {
   SheetProps,
   SheetManager,
@@ -37,15 +37,13 @@ export default function ResidenceMenuSheet(
   const residence = props.payload.residence
 
   const handleShare = async () => {
-    const url = Linking.createURL(`/residence/${residence.id}`)
+    await Clipboard.setStringAsync(
+      `${process.env.EXPO_PUBLIC_WEBSITE_URL}/residence/${residence.id}`,
+    )
 
-    try {
-      await Share.share({
-        message: `${url}`,
-      })
-    } catch (error) {
-      console.log(error)
-    }
+    toast.show({
+      description: 'Ligação copiada com sucesso!',
+    })
   }
 
   useEffect(() => {
@@ -152,7 +150,7 @@ export default function ResidenceMenuSheet(
               }}
               className="px-4">
               <Text className="font-poppins-semibold text-lg">
-                Compartilhar
+                Copiar a ligação
               </Text>
             </Pressable>
           </View>
@@ -178,7 +176,7 @@ export default function ResidenceMenuSheet(
               }}
               className="px-4">
               <Text className="font-poppins-semibold text-lg">
-                Compartilhar
+                Copiar a ligação
               </Text>
             </Pressable>
           </View>
