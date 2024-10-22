@@ -23,7 +23,7 @@ export default function HomeRoot({
         </View>
         {!withoutPlus && (
           <TouchableOpacity className="flex flex-row justify-center items-center gap-2">
-            <Text className="font-poppins-medium text-primary">Ver mais</Text>
+            <Text className="font-poppins-medium text-primary">Mais</Text>
             <ArrowRight color={constants.colors.primary} size={20} />
           </TouchableOpacity>
         )}

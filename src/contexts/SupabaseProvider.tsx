@@ -183,16 +183,17 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       await savedResidenceRepository.create({ residence_id: residence.id })
       addSavedResidence(residence)
       toast.show({
-        description: 'Residência removida dos guardados',
+        description: 'Residência adicionada dos guardados',
       })
     } else {
       await savedResidenceRepository.delete({
         residence_id: residence.id,
         user_id: session.user.id,
       })
+
       removeSavedResidence(residence.id)
       toast.show({
-        description: 'Residência adicionada dos guardados',
+        description: 'Residência removida dos guardados',
       })
     }
   }
