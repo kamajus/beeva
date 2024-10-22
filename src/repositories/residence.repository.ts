@@ -19,4 +19,16 @@ export class ResidenceRepository extends BaseRepository<IResidence> {
     if (error) throw error
     return data ?? null
   }
+
+  async findRecent(): Promise<IResidence[] | null> {
+    const { data, error } = await supabase
+      .from(this.tableName)
+      .select('*')
+      .order('created_at', { ascending: true })
+      .limit(10)
+      .returns<IResidence[]>()
+
+    if (error) throw error
+    return data ?? null
+  }
 }

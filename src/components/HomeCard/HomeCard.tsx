@@ -53,13 +53,17 @@ export default function HomeCard(residence: IHomeCard) {
         )}
       </Pressable>
 
-      <View className="w-full gap-1 mt-2">
+      <View
+        className={clsx('w-full gap-1 mt-2', {
+          'gap-1 mt-2 w-[272px]': residence.type === 'big',
+          'gap-1 mt-2 w-[172px]': residence.type === 'small',
+        })}>
         <Text className="font-poppins-semibold text-base">
-          {residence.location.length > 70
-            ? `${residence.location.slice(0, 60)}...`
+          {residence.location.length > 30
+            ? `${residence.location.slice(0, 30)}...`
             : residence.location}
         </Text>
-        <View className="flex flex-row gap-x-1">
+        <View className="flex flex-row flex-wrap gap-x-1">
           <Text className="text-base font-poppins-medium">
             {formatMoney(residence.price)}
           </Text>

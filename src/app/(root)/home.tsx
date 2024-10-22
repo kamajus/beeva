@@ -1,7 +1,8 @@
 import clsx from 'clsx'
 import { Link, useRouter } from 'expo-router'
+import _ from 'lodash'
 import { SearchIcon } from 'lucide-react-native'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   View,
   ScrollView,
@@ -11,24 +12,48 @@ import {
   StatusBar,
 } from 'react-native'
 
-import { RESIDENCE_DATA } from '@/assets/data'
+import { IResidence } from '@/@types'
 import HomeCard from '@/components/HomeCard'
 import IconButton from '@/components/IconButton'
 import Filter from '@/components/ResidenceFilterButton'
 import TextField from '@/components/TextField'
+import { supabase } from '@/config/supabase'
 import constants from '@/constants'
+import { ResidenceRepository } from '@/repositories/residence.repository'
 import { useNotificationStore } from '@/store/NotificationStore'
 
 export default function House() {
   const [refreshing, setRefreshing] = useState(false)
+
+  const [topResidences, setTopResidences] = useState<IResidence[]>()
+  const [recentResidences, setRecentResidences] = useState<IResidence[]>()
+
+  const residenceRepository = useMemo(() => new ResidenceRepository(), [])
   const router = useRouter()
 
-  const onRefresh = useCallback(() => {
+  const fetchData = useCallback(async () => {
+    try {
+      const { data: top, error } = await supabase.rpc('get_popular_residences')
+      if (error) console.error('Error fetching data:', error)
+
+      setTopResidences(top)
+
+      const recent = await residenceRepository.findRecent()
+      setRecentResidences(recent)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    }
+  }, [residenceRepository])
+
+  const onRefresh = useCallback(async () => {
     setRefreshing(true)
-    setTimeout(() => {
-      setRefreshing(false)
-    }, 2000)
-  }, [])
+    await fetchData() // Fetch data on refresh
+    setRefreshing(false)
+  }, [fetchData])
+
+  useEffect(() => {
+    fetchData() // Fetch data on component mount
+  }, [fetchData])
 
   const notifications = useNotificationStore((state) => state.notifications)
 
@@ -93,44 +118,36 @@ export default function House() {
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={RESIDENCE_DATA}
+            data={topResidences} // Use fetched residences here
             className="w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
             renderItem={({ item }) => <HomeCard.Card {...item} type="big" />}
+            keyExtractor={(item) => item.id} // Use unique id as key
           />
         </HomeCard.Root>
 
-        <HomeCard.Root title="Talvez você goste">
+        <HomeCard.Root title="Próximas de mim">
           <Filter paddingHorizontal={16} />
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={RESIDENCE_DATA}
+            data={_.shuffle(recentResidences)}
             className="mt-5 w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
             renderItem={({ item }) => <HomeCard.Card {...item} type="small" />}
+            keyExtractor={(item) => item.id}
           />
         </HomeCard.Root>
 
-        <HomeCard.Root title="Próximas de você">
+        <HomeCard.Root title="Postadas recentemente">
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={RESIDENCE_DATA}
+            data={recentResidences}
             className="w-full flex flex-row"
             contentContainerStyle={{ paddingHorizontal: 16 }}
             renderItem={({ item }) => <HomeCard.Card {...item} type="small" />}
-          />
-        </HomeCard.Root>
-
-        <HomeCard.Root title="Mais visualizadas hoje">
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={RESIDENCE_DATA}
-            className="w-full flex flex-row"
-            contentContainerStyle={{ paddingHorizontal: 16 }}
-            renderItem={({ item }) => <HomeCard.Card {...item} type="small" />}
+            keyExtractor={(item) => item.id}
           />
         </HomeCard.Root>
       </View>
