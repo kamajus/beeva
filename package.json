@@ -18,7 +18,7 @@
     "@react-native-async-storage/async-storage": "1.23.1",
     "@shopify/flash-list": "1.6.4",
     "@supabase/supabase-js": "^2.45.0",
-    "axios": "^1.6.5",
+    "axios": "^1.8.2",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "base64-arraybuffer": "^1.0.2",
     "clsx": "^2.0.0",
